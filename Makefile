@@ -39,7 +39,8 @@ proto:
 	done
 
 check:
-	./build/lint.sh
+	chmod +x ./build/lint.sh
+	sh ./build/lint.sh
 
 # Run go fmt against code
 fmt:
