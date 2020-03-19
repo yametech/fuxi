@@ -2,16 +2,17 @@ package workload
 
 import (
 	"fmt"
-
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-var _ WorkloadsResourceHandler = &Deployment{}
+var _ ResourceGenerator = &Deployment{""}
 
 type Deployment struct{ ns string }
+
+func NewDeploymentEntity(ns string) ResourceGenerator { return &Deployment{ns: ns} }
 
 func (d *Deployment) QueryList(res, namespace, name string, limit int) (WorkloadsSlice, error) {
 	selector, err := labels.Parse(fmt.Sprintf("%s=%s", LableForResourceTypeHistory, res))
@@ -26,12 +27,6 @@ func (d *Deployment) QueryList(res, namespace, name string, limit int) (Workload
 		Workloadses(namespace).
 		List(selector)
 }
-
-var _ ResourceGenerator = &Deployment{""}
-
-type Deployment struct{ ns string }
-
-func NewDeployment(ns string) ResourceGenerator { return &Deployment{ns: ns} }
 
 func (d *Deployment) Update(obj *unstructured.Unstructured) error {
 	if _, err := dyn.SharedCacheInformerFactory.Client().
