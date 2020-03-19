@@ -1,18 +1,10 @@
 package handler
 
 import (
-<<<<<<< HEAD
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/logging"
 	"github.com/yametech/fuxi/pkg/service/ops"
 	"net/http"
-=======
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-	"github.com/yametech/fuxi/pkg/logging"
-	"github.com/yametech/fuxi/pkg/service/ops"
->>>>>>> 0c71acc6e0202644d124b914f3c302d8c1d93ea5
 )
 
 //CreateOrUpdatePipelineRun creates or updates a pipeline run
@@ -39,30 +31,61 @@ func (o *OpsController) CreateOrUpdatePipelineRun(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"msg":  "create or update pipelinerun success",
+		"msg":  "create or update pipeline run success",
 		"code": http.StatusCreated,
 		"data": "",
 	})
 }
 
-//PipelineRunList gets pipeline run list
-func (o *OpsController) PipelineRunList(c *gin.Context) {
+//GetLatestPipelineRunList gets pipeline run list
+func (o *OpsController) GetLatestPipelineRunList(c *gin.Context) {
 
 	namespace := c.Param("namespace")
-	prs, err := o.Service.PipelineRunList(namespace)
+	paramsMap := make(map[string]string)
+	paramsMap["namespace"] = namespace
+	paramsMap["latest"] = "true"
+	prs, err := o.Service.GetLatestPipelineRunList(namespace, paramsMap)
 
 	if err != nil {
 		logging.Log.Error("---------->PipelineRunList error", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "get  pipelines error:" + err.Error(),
+			"msg":  "get latest pipeline run list error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"msg":  "get task run list success",
-		"code": http.StatusCreated,
+		"code": http.StatusOK,
+		"data": prs,
+	})
+}
+
+//GetPipelineRunHistoryList gets pipeline run list
+func (o *OpsController) GetPipelineRunHistoryList(c *gin.Context) {
+
+	//name: "ABC-1" will replace "ABC"
+	name := c.Param("name")
+	namespace := c.Param("namespace")
+	paramsMap := make(map[string]string)
+	paramsMap["name"] = name
+	paramsMap["namespace"] = namespace
+	paramsMap["latest"] = "true"
+	prs, err := o.Service.GetPipelineRunList(namespace, paramsMap)
+
+	if err != nil {
+		logging.Log.Error("---------->GetPipelineRunHistoryList error", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "get  pipeline run history list error:" + err.Error(),
+			"code": http.StatusInternalServerError,
+			"data": "",
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"msg":  "get  pipeline run history list success",
+		"code": http.StatusOK,
 		"data": prs,
 	})
 }
