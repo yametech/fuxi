@@ -1,0 +1,68 @@
+info:
+  contact:
+    email: laik.lj@me.com
+    name: laik author
+    url: github.com/yametech
+  description: Gin swagger base
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Gin swagger
+  version: "1.0"
+paths:
+  /workload/v1/:ns/pod/:name/get:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a pod detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload pod get
+      tags:
+      - Pod
+  /workload/v1/:ns/pod/list:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list pod
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload pod list
+      tags:
+      - Pod
+swagger: "2.0"

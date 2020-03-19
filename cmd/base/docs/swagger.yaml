@@ -1,0 +1,69 @@
+basePath: '{{.BasePath}}'
+host: '{{.Host}}'
+info:
+  contact:
+    email: laik.lj@me.com
+    name: laik author
+    url: github.com/yametech
+  description: Gin swagger base
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Gin swagger
+  version: "1.0"
+paths:
+  /base/v1/user:
+    get:
+      consumes:
+      - multipart/form-data
+      description: User info query
+      parameters:
+      - description: user_id
+        in: query
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "user_name"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Please login"}'
+          schema:
+            type: string
+      summary: base service user into
+      tags:
+      - user
+    post:
+      consumes:
+      - multipart/form-data
+      description: User info query
+      parameters:
+      - description: username
+        in: query
+        name: user
+        required: true
+        type: string
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base service user into
+      tags:
+      - user
+swagger: "2.0"

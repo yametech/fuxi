@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package go.micro.api.ops;
+
+
+
+service Ops {
+	rpc ListRepos (RepoRequest) returns (RepoResponse){}
+	rpc ListBranchs (BranchRequest) returns (BranchResponse){}
+	rpc BuidProject (BuildRequest) returns (BuildResponse){}
+}
+
+message Git {
+	string url = 1;
+	string username = 2;
+	string token= 3;
+	string gitprovider = 4;
+	int64  userid= 5;
+}
+
+message RepoRequest {
+	string username = 1;
+}
+
+message BranchRequest {
+	string reponame = 1;
+	string username = 2;
+}
+
+message BranchResponse {
+	repeated string branchs = 1;
+}
+
+
+message RepoResponse {
+	repeated string repos = 1;
+}
+
+message  BuildRequest {
+	string reponame = 1;
+	string branchname = 2;
+	string username = 3 ;
+}
+
+message  BuildResponse {
+	string reponame = 1;
+	string branchname = 2;
+}
+
+
+
+
+

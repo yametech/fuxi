@@ -1,0 +1,30 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+.idea/.gitignore
+.idea/fuxi.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+
+# ingore vendor
+vendor
+bin/api-base
+bin/api-gateway
+bin/api-ops
+bin/crd-manager
+bin/srv-ns
+bin/srv-ops
+default.etcd/member/snap/db
+default.etcd/member/wal/0000000000000000-0000000000000000.wal

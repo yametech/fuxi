@@ -1,0 +1,11 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: fuxi
+subjects:
+- kind: ServiceAccount
+  name: fuxi
+roleRef:
+  kind: Role
+  name: fuxi
+  apiGroup: rbac.authorization.k8s.io
