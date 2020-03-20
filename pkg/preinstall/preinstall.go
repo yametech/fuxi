@@ -109,9 +109,11 @@ func EtcdStringFlag() cli.StringFlag {
 		Name:   "etcd_address",
 		Usage:  "etcd address for config K/V",
 		EnvVar: "ETCD_ADDRESS",
-		Value:  "fuxi.io",
+		Value:  "fuxi.io:12379",
 	}
 }
+
+//--registry_address 10.200.100.200:2379 fuxi.io
 
 //todo:考虑把参数封装成ServiceOption struct
 //todo: RegisterTTL RegisterInterval 也基于参数的方式配置进来

@@ -209,7 +209,7 @@ func (ops *Ops) CreateOrUpdatePipelineRun(pr *PipelineRun) error {
 		}
 
 		//++number
-		pr.Labels["number"] = string(values[l-1] + 1)
+		pr.Labels["number"] = string(values[length-1] + 1)
 		//and then create the pipeline run resource
 		_, err = ops.client.
 			PipelineRuns(pr.Namespace).

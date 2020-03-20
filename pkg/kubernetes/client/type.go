@@ -15,6 +15,16 @@ const (
 	Pod         ResourceName = "pod"
 )
 
+var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
+	Deployment:  {Group: "apps", Version: "v1", Resource: "deployments"},
+	ReplicaSet:  {Group: "apps", Version: "v1", Resource: "replicasets"},
+	Stone:       {Group: "nuwa.nip.io", Version: "v1", Resource: "stones"},
+	StatefulSet: {Group: "nuwa.nip.io", Version: "v1", Resource: "statefulsets"},
+	Water:       {Group: "nuwa.nip.io", Version: "v1", Resource: "waters"},
+	Injector:    {Group: "nuwa.nip.io", Version: "v1", Resource: "injectors"},
+	Pod:         {Group: "core", Version: "v1", Resource: "pods"},
+}
+
 var (
 	ResourceDeployment  = gvr(Deployment)
 	ResourceReplicaSet  = gvr(ReplicaSet)
@@ -23,14 +33,6 @@ var (
 	ResourcePod         = gvr(Pod)
 	ResourceInjector    = gvr(Injector)
 )
-
-var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
-	Stone:       {Group: "nuwa.nip.io", Version: "v1", Resource: "stones"},
-	StatefulSet: {Group: "nuwa.nip.io", Version: "v1", Resource: "statefulsets"},
-	Water:       {Group: "nuwa.nip.io", Version: "v1", Resource: "waters"},
-	Injector:    {Group: "nuwa.nip.io", Version: "v1", Resource: "injectors"},
-	Pod:         {Group: "core", Version: "v1", Resource: "pods"},
-}
 
 func gvr(rs ResourceName) schema.GroupVersionResource {
 	gvr, exist := GroupVersionResources[rs]

@@ -52,8 +52,9 @@ func main() {
 	}
 	// ops
 	{
-		group.GET("/v1/repos", ops.ListRepos)
-		group.GET("/v1/branchs", ops.ListBranchs)
+		group.GET("/v1/log",ops.GetRealLog)
+		//group.GET("/v1/repos", ops.ListRepos)
+		//group.GET("/v1/branchs", ops.ListBranchs)
 	}
 
 	service.Handle("/", router)
