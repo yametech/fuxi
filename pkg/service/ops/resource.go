@@ -2,10 +2,11 @@ package ops
 
 import (
 	"errors"
+	"reflect"
+
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	kubeeror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"reflect"
 )
 
 type ResourceService interface {
