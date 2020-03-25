@@ -67,7 +67,7 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - fuxi.nio.io
+  - fuxi.nip.io
   resources:
   - '*'
   verbs:
@@ -78,7 +78,6 @@ rules:
   - patch
   - update
   - watch
-<<<<<<< HEAD
 - apiGroups:
   - fuxi.nip.io
   resources:
@@ -91,5 +90,3 @@ rules:
   - patch
   - update
   - watch
-=======
->>>>>>> 0c71acc6e0202644d124b914f3c302d8c1d93ea5

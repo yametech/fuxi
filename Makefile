@@ -64,14 +64,14 @@ run:
 uninstall-crd:
 	kubectl delete -f deploy/crds/
 
-crd-deploy: generate
+deploy: generate
 	kubectl apply -f deploy/crds/
 
 generate:
 	operator-sdk generate k8s
 	operator-sdk generate crds
 
-sdk-up: generate
+up: generate
 	operator-sdk up local
 
 gen-crd-client:

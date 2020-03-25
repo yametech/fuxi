@@ -10,9 +10,9 @@ import (
 
 var _ ResourceGenerator = &Deployment{""}
 
-type Deployment struct{ ns string }
+type Deployment struct{ Namespace string }
 
-func NewDeploymentEntity(ns string) ResourceGenerator { return &Deployment{ns: ns} }
+func NewDeploymentEntity(Namespace string) ResourceGenerator { return &Deployment{Namespace: Namespace} }
 
 func (d *Deployment) QueryList(res, namespace, name string, limit int) (WorkloadsSlice, error) {
 	selector, err := labels.Parse(fmt.Sprintf("%s=%s", LableForResourceTypeHistory, res))

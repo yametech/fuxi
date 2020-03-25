@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yametech/fuxi/pkg/api/workload/template"
 	"gopkg.in/igm/sockjs-go.v2/sockjs"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -13,20 +14,14 @@ import (
 
 const END_OF_TRANSMISSION = "\u0004"
 
-type Request struct {
-	Namespace     string
-	PodName       string
-	ContainerName string
-}
-
 type SessionManager struct {
+	restClient rest.RESTClient
+	cfg        *rest.Config
 }
 
 // Process executed cmd in the container specified in request and connects it up with the  SessionChannel (a session)
 func (sm *SessionManager) Process(
-	restClient rest.RESTClient,
-	cfg *rest.Config,
-	request *Request,
+	request *template.AttachPodRequest,
 	cmd []string,
 	sess *SessionChannel,
 ) error {
@@ -38,13 +33,13 @@ func (sm *SessionManager) Process(
 		Stderr:    true,
 		TTY:       true,
 	}
-	req := restClient.Post().Resource("pods").
+	req := sm.restClient.Post().Resource("pods").
 		Name(request.PodName).
 		Namespace(request.Namespace).
 		SubResource("exec").
 		VersionedParams(podExecOpt, scheme.ParameterCodec)
 
-	exec, err := remotecommand.NewSPDYExecutor(cfg, "POST", req.URL())
+	exec, err := remotecommand.NewSPDYExecutor(sm.cfg, "POST", req.URL())
 	if err != nil {
 		return err
 	}
@@ -117,5 +112,7 @@ func (s *SessionChannel) Read(p []byte) (n int, err error) {
 }
 
 func CreateAttachHandler(prefix string) http.Handler {
-	return sockjs.NewHandler(prefix, sockjs.DefaultOptions, func(session sockjs.Session) {})
+	return sockjs.NewHandler(prefix, sockjs.DefaultOptions, func(session sockjs.Session) {
+
+	})
 }

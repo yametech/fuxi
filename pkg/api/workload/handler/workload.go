@@ -6,9 +6,9 @@ import (
 	"net/http"
 )
 
-type WorkloadApi struct{}
+type WorkloadsApi struct{}
 
-func (w *WorkloadApi) ListStone(g *gin.Context) {
+func (w *WorkloadsApi) ListStone(g *gin.Context) {
 	stone := &template.StoneRequest{}
 	if err := g.ShouldBind(stone); err != nil {
 		g.JSON(http.StatusBadRequest,
@@ -16,10 +16,12 @@ func (w *WorkloadApi) ListStone(g *gin.Context) {
 				code:   http.StatusBadRequest,
 				data:   "",
 				msg:    err.Error(),
-				status: "Request bad parameter"})
+				status: "Request bad parameter"},
+		)
 		return
 	}
 }
+
 
 //func (w *WorkloadApi) ListDeployments(c *gin.Context) {
 //	deploy := &template.Deployment{}
