@@ -13,7 +13,6 @@ proto:
 
 .PHONY: build
 build: proto
-
 	go build -o workload-api main.go plugin.go
 
 .PHONY: test

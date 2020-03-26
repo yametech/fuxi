@@ -1,7 +1,0 @@
-apiVersion: fuxi.nip.io/v1
-kind: Workloads
-metadata:
-  name: example-workloads
-spec:
-  # Add fields here
-  size: 3

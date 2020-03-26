@@ -2,10 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	corev1 "k8s.io/api/core/v1"
 )
-
-type Pod corev1.PodTemplate
 
 // Pod doc
 // @Summary workload pod list
@@ -17,7 +14,7 @@ type Pod corev1.PodTemplate
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/v1/:ns/pod/list [get]
-func (p *Pod) List(g *gin.Context) {
+func PodList(g *gin.Context) {
 
 }
 
@@ -32,21 +29,7 @@ func (p *Pod) List(g *gin.Context) {
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/v1/:ns/pod/:name/get [get]
-func (p *Pod) Get(g *gin.Context) {
+func PodGet(g *gin.Context) {
 
 }
 
-func (p *Pod) Update(g *gin.Context) {
-
-}
-
-func (p *Pod) Delete(g *gin.Context) {
-
-}
-
-func (p *Pod) Attach(g *gin.Context) {
-
-}
-
-func (p *Pod) Log(g *gin.Context) {
-}

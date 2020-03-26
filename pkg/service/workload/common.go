@@ -33,7 +33,6 @@ type ResourceGenerator interface {
 	Watch(name string) (itemChan chan *unstructured.Unstructured, closed chan struct{}, err error)
 	Update(obj *unstructured.Unstructured) error
 	Delete(name string) error
-	Attach(name string) (itemChan chan *unstructured.Unstructured, close chan struct{}, err error)
 }
 
 type StoreVersions interface {
