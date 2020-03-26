@@ -6,6 +6,7 @@ type AttachPodRequest struct {
 	Namespace     string `json:"namespace"`
 	PodName       string `json:"pod_name"`
 	ContainerName string `json:"container_name"`
+	Shell         string `json:"shell"`
 }
 
 type PodRequest struct {

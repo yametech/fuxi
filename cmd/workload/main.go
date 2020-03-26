@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
 	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
+	"github.com/yametech/fuxi/pkg/api/workload/handler"
 	"github.com/yametech/fuxi/pkg/preinstall"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
 	// swagger doc
@@ -42,14 +43,20 @@ func main() {
 	router.Use(gin2micro.TracerWrapper)
 	router.Use()
 
+	handler.CreateSharedSessionManager()
+	workloadApi := &handler.WorkloadsApi{}
+	router.GET("/workload/attach", gin.WrapH(handler.CreateAttachHandler("/workload/attach")))
+	router.GET("/workload/attach/pod", workloadApi.PodAttach)
+
+	/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
+	/// Release production environment can be turned on
+	router.GET("/workload/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
+
 	group := router.Group("/workload")
 	_ = group
 	//group.GET("/list/:ns/deployment", ListDeployments)
 	//group.GET("/resource", GetResource)
 
-	/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
-	/// Release production environment can be turned on
-	router.GET("/workload/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	service.Handle("/", router)
 
 	// Run service
