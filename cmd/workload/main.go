@@ -9,6 +9,7 @@ import (
 	"github.com/yametech/fuxi/pkg/api/workload/handler"
 	"github.com/yametech/fuxi/pkg/preinstall"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
+
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
@@ -45,8 +46,9 @@ func main() {
 
 	handler.CreateSharedSessionManager()
 	workloadApi := &handler.WorkloadsApi{}
+
 	router.GET("/workload/attach", gin.WrapH(handler.CreateAttachHandler("/workload/attach")))
-	router.GET("/workload/attach/pod", workloadApi.PodAttach)
+	router.GET("/workload/pod", workloadApi.PodAttach)
 
 	/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
 	/// Release production environment can be turned on
@@ -64,56 +66,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-//
-//type event struct {
-//	pubsub.Publisher
-//	clients ws.Clients
-//}
-//
-//func newEvent() event {
-//	return event{clients: ws.NewClients()}
-//}
-//
-//func (e *event) Collection() {
-//	for {
-//		// call kubernetes client watch api receive data
-//		e.Publish(`{"msg"":123}`)
-//		time.Sleep(1 * time.Second)
-//	}
-//}
-//
-//// /workload/v1/:ns/event
-//func (e *event) Event(g *gin.Context) {
-//	deadline := time.Now().Add(time.Second * 2)
-//	// Upgrade initial GET request to a websocket
-//	conn, err := e.clients.Upgrade(g, 1024, 4096, deadline)
-//	if err != nil {
-//		//
-//	}
-//	closeChan := make(chan struct{})
-//	r, _ := e.SubChannel(nil)
-//	go func() {
-//		for {
-//			select {
-//			case <-closeChan:
-//				return
-//			case msg, ok := <-r:
-//				if !ok {
-//					ws.CloseTheWebsocket(conn)
-//				}
-//				if err := conn.WriteJSON(msg); err != nil {
-//					ws.CloseTheWebsocket(conn)
-//				}
-//			}
-//		}
-//	}()
-//	// recv publish
-//	for {
-//		var data map[string]string
-//		if err := conn.ReadJSON(data); err != nil {
-//			break
-//		}
-//	}
-//	closeChan <- struct{}{}
-//}

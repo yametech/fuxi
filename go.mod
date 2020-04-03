@@ -36,7 +36,8 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.2.0 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/franela/goreq v0.0.0-20171204163338-bcd34c9993f8 // indirect
-	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-contrib/static v0.0.0-20191128031702-f81c604d8ac2
+	github.com/gin-gonic/gin v1.5.0
 	github.com/go-log/log v0.1.0
 	github.com/go-openapi/spec v0.19.6 // indirect
 	github.com/go-openapi/swag v0.19.7 // indirect
@@ -54,7 +55,7 @@ require (
 	github.com/hashicorp/memberlist v0.1.5 // indirect
 	github.com/hashicorp/vault/api v1.0.4 // indirect
 	github.com/hudl/fargo v1.3.0 // indirect
-	github.com/igm/pubsub v1.0.0
+	github.com/igm/pubsub v1.0.0 // indirect
 	github.com/igm/sockjs-go v2.0.1+incompatible // indirect
 	github.com/jcmturner/gofork v1.0.0 // indirect
 	github.com/jinzhu/gorm v1.9.12
