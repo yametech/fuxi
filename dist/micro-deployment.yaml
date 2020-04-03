@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: micro
+  name: micro
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: micro
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/fuxi-net: "true"
+        io.kompose.service: micro
+    spec:
+      containers:
+      - args:
+        - --registry_address=etcd:2379
+        - api
+        - --handler=rpc
+        image: microhq/micro:latest
+        imagePullPolicy: ""
+        name: micro
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}
