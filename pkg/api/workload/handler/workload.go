@@ -26,7 +26,7 @@ func (w *WorkloadsApi) ListStone(g *gin.Context) {
 
 func (w *WorkloadsApi) PodAttach(g *gin.Context) {
 	attachPodRequest := &template.AttachPodRequest{}
-	if err := g.Bind(attachPodRequest); err != nil {
+	if err := g.ShouldBind(attachPodRequest); err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{
 				code:   http.StatusBadRequest,

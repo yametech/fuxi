@@ -2,13 +2,7 @@ package workload
 
 import (
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
-	versioned "github.com/yametech/fuxi/pkg/client/clientset/versioned"
-	"github.com/yametech/fuxi/pkg/client/informers/externalversions"
-	k8sclient "github.com/yametech/fuxi/pkg/k8s/client"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/client-go/rest"
-	"time"
 )
 
 const (
@@ -27,87 +21,52 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 	return false
 }
 
-type ResourceGenerator interface {
-	List(pos int64, size int64, flag string) (list *unstructured.UnstructuredList, err error)
-	Get(name string, resourceVersion string) (item *unstructured.Unstructured, err error)
-	Watch(name string) (itemChan chan *unstructured.Unstructured, closed chan struct{}, err error)
-	Update(obj *unstructured.Unstructured) error
-	Delete(name string) error
+type ResourceQuery interface {
+	List(res, pos int64, size int64, flag string) (list *unstructured.UnstructuredList, err error)
+	Get(res, name string, resourceVersion string) (item *unstructured.Unstructured, err error)
+	Watch(res, name string) (itemChan chan *unstructured.Unstructured, closed chan struct{}, err error)
 }
 
-type StoreVersions interface {
-	QueryList(res, namespace, name string, limit int) (WorkloadsSlice, error)
+type ResourceApply interface {
+	Apply(res, obj *unstructured.Unstructured) error
+	Delete(res, namespace, name string) error
+}
+
+type HistoryQuery interface {
+	HistoryList(res, namespace, name string, limit int) (WorkloadsSlice, error)
 }
 
 type WorkloadsResourceHandler interface {
-	ResourceGenerator
-	StoreVersions
+	HistoryQuery
+	ResourceQuery
+	ResourceApply
 }
 
-var SharedClientsCacheSet *ClientsCacheSet
+var _ WorkloadsResourceHandler = &defaultImplWorkloadsResourceHandler{}
 
-type FuxiClientSet struct {
-	stopChan              chan struct{}
-	SharedInformerFactory externalversions.SharedInformerFactory
+type defaultImplWorkloadsResourceHandler struct{}
+
+func (d defaultImplWorkloadsResourceHandler) HistoryList(res, namespace, name string, limit int) (WorkloadsSlice, error) {
+	panic("implement me")
 }
 
-func NewFuxiClientSet(rest *rest.Config) (*FuxiClientSet, error) {
-	stop := make(chan struct{})
-	client, err := versioned.NewForConfig(rest)
-	if err != nil {
-		return nil, err
-	}
-	sharedInformerFactory := externalversions.NewSharedInformerFactory(client, time.Duration(time.Second*30))
-	genericInformer, err := sharedInformerFactory.ForResource(fv1.SchemeGroupVersion.WithResource("workloads"))
-	if err != nil {
-		return nil, err
-	}
-	go genericInformer.Informer().Run(stop)
-
-	sharedInformerFactory.Start(stop)
-
-	return &FuxiClientSet{
-		stopChan:              stop,
-		SharedInformerFactory: sharedInformerFactory,
-	}, nil
+func (d defaultImplWorkloadsResourceHandler) List(res, pos int64, size int64, flag string) (list *unstructured.UnstructuredList, err error) {
+	panic("implement me")
 }
 
-type ClientsCacheSet struct {
-	dynClient     *dyn.CacheInformerFactory  // nuwa resource client
-	defaultClient *k8sclient.ResourceHandler // kubernetes native resource clients
-	fxClientSet   *FuxiClientSet             // fuxi resoruce client
+func (d defaultImplWorkloadsResourceHandler) Get(res, name string, resourceVersion string) (item *unstructured.Unstructured, err error) {
+	panic("implement me")
 }
 
-func NewClientsCacheSet(dynClient *dyn.CacheInformerFactory, defaultClient *k8sclient.ResourceHandler, rest *rest.Config) (*ClientsCacheSet, error) {
-	fuxiClientSet, err := NewFuxiClientSet(rest)
-	if err != nil {
-		return nil, err
-	}
-	return &ClientsCacheSet{
-		dynClient:     dynClient,
-		defaultClient: defaultClient,
-		fxClientSet:   fuxiClientSet,
-	}, nil
+func (d defaultImplWorkloadsResourceHandler) Watch(res, name string) (itemChan chan *unstructured.Unstructured, closed chan struct{}, err error) {
+	panic("implement me")
 }
 
-//
-//
-//func Visit(obj interface{}, res ResourceGenerator) error {
-//	switch obj.(type) {
-//	case *Deployment:
-//	case *Stone:
-//		_ = obj.(*Stone)
-//	default:
-//	}
-//	return nil
-//}
-
-func Visit(obj interface{}, res ResourceGenerator) error {
-	switch obj.(type) {
-	case *Deployment:
-	case *Stone:
-		_ = obj.(*Stone)
-	default:
-	}
-	return nil
+func (d defaultImplWorkloadsResourceHandler) Apply(res, obj *unstructured.Unstructured) error {
+	panic("implement me")
 }
+
+func (d defaultImplWorkloadsResourceHandler) Delete(res, namespace, name string) error {
+	panic("implement me")
+}
+

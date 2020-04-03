@@ -8,11 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-var _ ResourceGenerator = &Deployment{""}
-
 type Deployment struct{ Namespace string }
-
-func NewDeploymentEntity(Namespace string) ResourceGenerator { return &Deployment{Namespace: Namespace} }
 
 func (d *Deployment) QueryList(res, namespace, name string, limit int) (WorkloadsSlice, error) {
 	selector, err := labels.Parse(fmt.Sprintf("%s=%s", LableForResourceTypeHistory, res))

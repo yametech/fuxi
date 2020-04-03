@@ -109,9 +109,16 @@ func (sm *sessionManager) close(sessionId string, status uint32, reason string) 
 
 // process executed cmd in the container specified in request and connects it up with the  SessionChannel (a session)
 func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, sess *SessionChannel) error {
+	beautifyCmd := []string{
+		"/bin/sh",
+		"-c",
+		`TERM=xterm-256color; export TERM; [ -x /bin/bash ] && ([ -x /usr/bin/script ] && /usr/bin/script -q -c "/bin/bash" /dev/null || exec /bin/bash) || exec /bin/sh`,
+	}
+	beautifyCmd = append(beautifyCmd, cmd...)
+
 	podExecOpt := &v1.PodExecOptions{
 		Container: request.ContainerName,
-		Command:   cmd,
+		Command:   beautifyCmd,
 		Stdin:     true,
 		Stdout:    true,
 		Stderr:    true,
@@ -281,7 +288,7 @@ func WaitForTerminal(request *template.AttachPodRequest, sessionId string) {
 	}
 	select {
 	case <-sharedSessionManager.get(sessionId).bound:
-		close(sharedSessionManager.get(sessionId).bound)
+		defer close(sharedSessionManager.get(sessionId).bound)
 		var err error
 		validShells := []string{"bash", "sh", "powershell", "cmd"}
 

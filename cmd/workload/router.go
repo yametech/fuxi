@@ -32,4 +32,3 @@ func PodList(g *gin.Context) {
 func PodGet(g *gin.Context) {
 
 }
-
