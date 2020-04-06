@@ -48,7 +48,7 @@ type History interface {
 	HistoryList(selector labels.Selector, limit int) (WorkloadsSlice, error)
 }
 
-// workloadsResourceHandler all needed interface defined
+// WorkloadsResourceHandler all needed interface defined
 type WorkloadsResourceHandler interface {
 	History
 	ResourceQuery
