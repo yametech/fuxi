@@ -1,5 +1,4 @@
 package workload
 
-type Stone struct {
-	ns string
-}
+// Stone is nuwa project resources stones
+type Stone struct{}

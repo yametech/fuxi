@@ -1,3 +1,4 @@
 package workload
 
-type Water struct{ ns string }
+// Water is nuwa project resources waters
+type Water struct{}

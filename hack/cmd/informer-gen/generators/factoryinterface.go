@@ -79,8 +79,8 @@ var externalSharedInformerFactoryInterface = `
 // NewInformerFunc takes {{.clientSetPackage|raw}} and {{.timeDuration|raw}} to return a SharedIndexInformer.
 type NewInformerFunc func({{.clientSetPackage|raw}}, {{.timeDuration|raw}}) cache.SharedIndexInformer
 
-// SharedInformerFactory a small interface to allow for adding an informer without an import cycle
-type SharedInformerFactory interface {
+// informer a small interface to allow for adding an informer without an import cycle
+type informer interface {
 	Start(stopCh <-chan struct{})
 	InformerFor(obj {{.runtimeObject|raw}}, newFunc NewInformerFunc) {{.cacheSharedIndexInformer|raw}}
 }
