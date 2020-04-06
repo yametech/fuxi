@@ -60,15 +60,13 @@ func (o *OpsController) GetPipelineRunLog(c *gin.Context) {
 	})
 }
 
-
 var upGrader = websocket.Upgrader{
-	CheckOrigin: func (r *http.Request) bool {
+	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
 
-
-func(o *OpsController) GetRealLog(ctx *gin.Context){
+func (o *OpsController) GetRealLog(ctx *gin.Context) {
 	//升级get请求为webSocket协议
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
@@ -92,4 +90,3 @@ func(o *OpsController) GetRealLog(ctx *gin.Context){
 		}
 	}
 }
-

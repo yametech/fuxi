@@ -1,8 +1,6 @@
 package client
 
 import (
-	"encoding/json"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"time"
 
 	dyn "k8s.io/client-go/dynamic"
@@ -72,32 +70,6 @@ func NewCacheInformerFactory(master string, config clientcmdapiv1.Config) (*Cach
 	}
 
 	return SharedCacheInformerFactory, nil
-}
-
-func (c *CacheInformerFactory) List(res ResourceName, ns string, opt metav1.ListOptions) ([]byte, error) {
-	unstructd, err := c.client.Resource(gvr(res)).Namespace(ns).List(opt)
-
-	if err != nil {
-		return nil, err
-	}
-	bytes, err := json.Marshal(unstructd)
-	if err != nil {
-		return nil, err
-	}
-	return bytes, nil
-}
-
-func (c *CacheInformerFactory) Get(res ResourceName, ns, name string, opt metav1.GetOptions) ([]byte, error) {
-	unstructd, err := c.client.Resource(gvr(res)).Namespace(ns).Get(name, opt)
-
-	if err != nil {
-		return nil, err
-	}
-	bytes, err := json.Marshal(unstructd)
-	if err != nil {
-		return nil, err
-	}
-	return bytes, nil
 }
 
 func (c *CacheInformerFactory) Client() dyn.Interface {

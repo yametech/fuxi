@@ -1,3 +1,4 @@
 package workload
 
-type Statfulset struct{ ns string }
+// Statfulset is kubernetes default resource statfulsets
+type Statfulset struct{}

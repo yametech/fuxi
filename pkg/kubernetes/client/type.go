@@ -24,15 +24,15 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 }
 
 var (
-	ResourceWater       = gvr(Water)
-	ResourceDeployment  = gvr(Deployment)
-	ResourceStone       = gvr(Stone)
-	ResourceStatefulSet = gvr(StatefulSet)
-	ResourceInjector    = gvr(Injector)
-	ResourcePod         = gvr(Pod)
+	ResourceWater       = GetGVR(Water)
+	ResourceDeployment  = GetGVR(Deployment)
+	ResourceStone       = GetGVR(Stone)
+	ResourceStatefulSet = GetGVR(StatefulSet)
+	ResourceInjector    = GetGVR(Injector)
+	ResourcePod         = GetGVR(Pod)
 )
 
-func gvr(rs ResourceName) schema.GroupVersionResource {
+func GetGVR(rs ResourceName) schema.GroupVersionResource {
 	gvr, exist := GroupVersionResources[rs]
 	if !exist {
 		panic("try to get an undefined resource")
