@@ -48,7 +48,7 @@ func main() {
 	workloadsAPI := &handler.WorkloadsAPI{}
 
 	router.GET("/workload/attach", gin.WrapH(handler.CreateAttachHandler("/workload/attach")))
-	router.GET("/workload/pod", workloadsAPI.PodAttach)
+	router.GET("/workload/pod", workloadsAPI.AttachPod)
 
 	/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
 	/// Release production environment can be turned on

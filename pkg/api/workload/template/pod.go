@@ -11,6 +11,7 @@ type AttachPodRequest struct {
 
 type PodRequest struct {
 	Model CommonTemplate `json:"model" from:"model"`
+
 	Spec  corev1.PodSpec `json:"spec"`
 }
 
