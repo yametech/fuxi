@@ -4,3 +4,7 @@ package workload
 type Deployment struct {
 	WorkloadsResourceHandler // extended for workloadsResourceHandler
 }
+
+func NewDeployment() *Deployment {
+	return &Deployment{&defaultImplWorkloadsResourceHandler{}}
+}

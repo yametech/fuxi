@@ -14,6 +14,7 @@ const (
 	Pod         ResourceName = "pod"
 )
 
+// GroupVersionResources describe resource collection
 var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Water:       {Group: "nuwa.nip.io", Version: "v1", Resource: "waters"},
 	Deployment:  {Group: "apps", Version: "v1", Resource: "deployments"},
