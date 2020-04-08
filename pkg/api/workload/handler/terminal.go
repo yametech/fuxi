@@ -118,7 +118,7 @@ func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []stri
 	beautifyCmd = append(beautifyCmd, cmd...)
 
 	podExecOpt := &v1.PodExecOptions{
-		Container: request.ContainerName,
+		Container: request.Container,
 		Command:   beautifyCmd,
 		Stdin:     true,
 		Stdout:    true,
@@ -126,7 +126,7 @@ func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []stri
 		TTY:       true,
 	}
 	req := sm.client.Post().Resource("pods").
-		Name(request.PodName).
+		Name(request.Name).
 		Namespace(request.Namespace).
 		SubResource("exec").
 		VersionedParams(podExecOpt, scheme.ParameterCodec)

@@ -1,9 +1,6 @@
 package workload
 
 import (
-	"time"
-
-	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"github.com/yametech/fuxi/pkg/client/clientset/versioned"
 	"github.com/yametech/fuxi/pkg/client/informers/externalversions"
 	k8sclient "github.com/yametech/fuxi/pkg/k8s/client"
@@ -11,58 +8,57 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-// sharedClientsCacheSet internal global use
-var sharedClientsCacheSet *ClientsCacheSet
+// sharedK8sClient internal global use
+var sharedK8sClient *k8sClientSet
 
-type fuxiClientSet struct {
+type clientSet struct {
 	stopChan chan struct{}
 	client   *versioned.Clientset
 	informer externalversions.SharedInformerFactory
 }
 
-func newFuxiClientSet(rest *rest.Config) (*fuxiClientSet, error) {
+func newFuxiClientSet(rest *rest.Config) (*clientSet, error) {
 	stop := make(chan struct{})
 	client, err := versioned.NewForConfig(rest)
 	if err != nil {
 		return nil, err
 	}
-	informer := externalversions.NewSharedInformerFactory(client, time.Duration(time.Second*30))
-	genericInformer, err := informer.ForResource(fv1.SchemeGroupVersion.WithResource("workloads"))
-	if err != nil {
-		return nil, err
-	}
-	go genericInformer.Informer().Run(stop)
+	//informer := externalversions.NewSharedInformerFactory(client, time.Duration(time.Second*30))
+	//genericInformer, err := informer.ForResource(fv1.Resource("workloads").WithVersion("v1"))
+	//if err != nil {
+	//	return nil, err
+	//}
+	//go genericInformer.Informer().Run(stop)
+	//
+	//informer.Start(stop)
 
-	informer.Start(stop)
-
-	return &fuxiClientSet{
+	return &clientSet{
 		stopChan: stop,
 		client:   client,
-		informer: informer,
+		//informer: informer,
 	}, nil
 }
 
-// ClientsCacheSet interface package
-type ClientsCacheSet struct {
-	dynClient     *dyn.CacheInformerFactory  // nuwa project resource use dyn client
-	defaultClient *k8sclient.ResourceHandler // kubernetes native resource clients
-	fuxiClientSet *fuxiClientSet             // fuxi resoruce client
+// k8sClientSet interface package
+type k8sClientSet struct {
+	cacheInformer   *dyn.CacheInformerFactory  // nuwa project resource use dyn client
+	resourceHandler *k8sclient.ResourceHandler // kubernetes native resource clients
+	clientSet       *clientSet                 // fuxi resoruce client
 }
 
-// NewClientsCacheSet kubernetes client required for external initialization workload
-func NewClientsCacheSet(dynClient *dyn.CacheInformerFactory, defaultClient *k8sclient.ResourceHandler, rest *rest.Config) (*ClientsCacheSet, error) {
-	if sharedClientsCacheSet != nil {
-		return sharedClientsCacheSet, nil
+// NewK8sClientSet kubernetes client required for external initialization workload
+func NewK8sClientSet(cacheInformer *dyn.CacheInformerFactory, res *k8sclient.ResourceHandler, rest *rest.Config) error {
+	if sharedK8sClient != nil {
+		return nil
 	}
 	clientSet, err := newFuxiClientSet(rest)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	sharedClientsCacheSet = &ClientsCacheSet{
-		dynClient:     dynClient,
-		defaultClient: defaultClient,
-		fuxiClientSet: clientSet,
+	sharedK8sClient = &k8sClientSet{
+		cacheInformer:   cacheInformer,
+		resourceHandler: res,
+		clientSet:       clientSet,
 	}
-
-	return sharedClientsCacheSet, nil
+	return nil
 }

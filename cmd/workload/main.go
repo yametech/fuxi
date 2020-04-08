@@ -5,11 +5,14 @@ import (
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
+	"github.com/micro/go-micro/web"
 	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	"github.com/yametech/fuxi/pkg/api/workload/handler"
+	"github.com/yametech/fuxi/pkg/k8s/client"
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"github.com/yametech/fuxi/pkg/preinstall"
+	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
-
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
@@ -30,7 +33,7 @@ const (
 	ver  = "latest"
 )
 
-func main() {
+func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsAPI) {
 	service, _, err := preinstall.InitApi(50, name, ver, "")
 	if err != nil {
 		panic(err)
@@ -42,22 +45,40 @@ func main() {
 
 	router := gin.Default()
 	router.Use(gin2micro.TracerWrapper)
-	router.Use()
+
+	err = workloadservice.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sResourceHandler, client.RestConf)
+	if err != nil {
+		panic(err)
+	}
 
 	handler.CreateSharedSessionManager()
-	workloadsAPI := &handler.WorkloadsAPI{}
 
-	router.GET("/workload/attach", gin.WrapH(handler.CreateAttachHandler("/workload/attach")))
-	router.GET("/workload/pod", workloadsAPI.AttachPod)
+	return service, router, router.Group("/workload"), handler.NewWorkladAPI()
+}
 
-	/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
-	/// Release production environment can be turned on
-	router.GET("/workload/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
+var service, router, group, workloadsAPI = initNeed()
 
-	group := router.Group("/workload")
-	_ = group
-	//group.GET("/list/:ns/deployment", ListDeployments)
-	//group.GET("/resource", GetResource)
+func main() {
+
+	// Pod
+	{
+		group.GET("/shell/pod", gin.WrapH(handler.CreateAttachHandler("/workload/shell/pod")))
+		group.GET("/attach/namespace/:namespace/pod/:name/container/:container", PodAttach)
+	}
+
+	// deployment
+	{
+		group.GET("/apis/apps/v1/deployments", workloadsAPI.ListDeployment)
+		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", workloadsAPI.GetDeployment)
+
+	}
+
+	// swag
+	{
+		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
+		/// Release production environment can be turned on
+		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
+	}
 
 	service.Handle("/", router)
 
