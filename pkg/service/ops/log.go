@@ -15,6 +15,7 @@ import (
 type LogService interface {
 	GetTaskRunLog(name, namespace string) (*TaskRunLog, error)
 	GetPipelineRunLog(name, namespace string) (PipelineRunLog, error)
+	GetTaskRealLog(name, namespace string,logs chan []string) error
 }
 
 type PipelineRunLog []TaskRunLog
@@ -117,4 +118,44 @@ func (ops *Ops) GetPipelineRunLog(name, namespace string) (PipelineRunLog, error
 	}
 
 	return pipelineRunLogs, nil
+}
+
+
+func (ops *Ops)GetTaskRealLog(name, namespace string,logs chan []string) error {
+
+	pipelinerun, err := ops.client.PipelineRuns(namespace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, taskrunstatus := range pipelinerun.Status.TaskRuns {
+		podname := taskrunstatus.Status.PodName
+		pod, err := client.K8sClient.CoreV1().Pods(namespace).Get(podname, metav1.GetOptions{})
+		if err != nil {
+			continue
+		}
+
+		buf := new(bytes.Buffer)
+		if pod.Spec.Containers != nil {
+			for _, container := range pod.Spec.Containers {
+				req := client.K8sClient.CoreV1().Pods(pod.GetNamespace()).GetLogs(pod.Name, &v1.PodLogOptions{Container: container.Name})
+				if req.URL().Path == "" {
+					continue
+				}
+				podLogs, _ := req.Stream()
+				if podLogs == nil {
+					continue
+				}
+				_, err := io.Copy(buf, podLogs)
+				if err != nil {
+					podLogs.Close()
+					continue
+				}
+				logs <- strings.Split(buf.String(), "\n")
+			}
+		}
+	}
+
+	return nil
+
 }

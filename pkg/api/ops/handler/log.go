@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/yametech/fuxi/pkg/logging"
+	"golang.org/x/sync/errgroup"
 	"net/http"
-	"time"
 )
+
 
 //GetTaskRunLog get task run log
 func (o *OpsController) GetTaskRunLog(c *gin.Context) {
@@ -60,33 +62,75 @@ func (o *OpsController) GetPipelineRunLog(c *gin.Context) {
 	})
 }
 
+
 var upGrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
+	CheckOrigin: func (r *http.Request) bool {
 		return true
 	},
 }
 
-func (o *OpsController) GetRealLog(ctx *gin.Context) {
-	//升级get请求为webSocket协议
+
+func(o *OpsController) GetRealLog(ctx *gin.Context){
+
+	namespace := ctx.Param("namespace")
+	name := ctx.Param("name")
+
+	if namespace == "" && name == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get GetRealLog error: namespace or name cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get GetRealLog error: " + err.Error(),
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
+	defer ws.Close()
+
+
+	mt, _, err := ws.ReadMessage()
 	if err != nil {
 		return
 	}
-	defer ws.Close()
-	for {
-		//读取ws中的数据
-		mt, message, err := ws.ReadMessage()
+
+	var logs = make(chan []string,10)
+	var g errgroup.Group
+	g.Go(func() error{
+		err := o.Service.GetTaskRealLog(name,namespace,logs)
 		if err != nil {
-			break
+			close(logs)
 		}
-		if string(message) == "ping" {
-			message = []byte("pong")
-		}
-		time.Sleep(2000)
-		//写入ws数据
-		err = ws.WriteMessage(mt, message)
-		if err != nil {
-			break
+		return err
+	})
+
+	if err := g.Wait(); err == nil {
+		for{
+
+			select{
+
+			case ss,ok:=<- logs:
+				if !ok {
+					return
+				}
+
+				for i :=range ss {
+					fmt.Println(ss[i])
+					ws.WriteMessage(mt, []byte(ss[i]))
+				}
+
+			}
 		}
 	}
+
+
 }
+
