@@ -9,3 +9,4 @@ type CronJob struct {
 func NewCronJob() *CronJob {
 	return &CronJob{&defaultImplWorkloadsResourceHandler{}}
 }
+

@@ -1,4 +1,11 @@
 package workload
 
 // Statfulset is kubernetes default resource statfulsets
-type Statfulset struct{}
+type StatefulSet struct {
+	WorkloadsResourceHandler
+}
+
+// NewStatfulset exported
+func NewStatefulSet() *StatefulSet {
+	return &StatefulSet{&defaultImplWorkloadsResourceHandler{}}
+}

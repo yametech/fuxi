@@ -66,11 +66,34 @@ func main() {
 		group.GET("/attach/namespace/:namespace/pod/:name/container/:container", PodAttach)
 	}
 
-	// deployment
+	// Deployment
 	{
-		group.GET("/apis/apps/v1/deployments", workloadsAPI.ListDeployment)
-		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", workloadsAPI.GetDeployment)
+		group.GET("/apis/apps/v1/deployments", DeploymentList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
+	}
 
+	// CronJob
+	{
+		group.GET("/apis/batch/v1beta1/cronjobs", CronJobList)
+		group.GET("/apis/batch/v1beta1/namespaces/:namespace/cronjobs/:name", CronJobGet)
+	}
+
+	// StatefulSet
+	{
+		group.GET("/apis/apps/v1/statefulsets", StatefulSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/statefulsets/:name", StatefulSetGet)
+	}
+
+	// DaemonSet
+	{
+		group.GET("/apis/apps/v1/daemonsets", DaemonSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/daemonsets/:name", DaemonSetGet)
+	}
+
+	// Job
+	{
+		group.GET("/apis/batch/v1/jobs/", JobList)
+		group.GET("/apis/batch/v1/namespaces/:namespace/jobs/:name", JobGet)
 	}
 
 	// swag

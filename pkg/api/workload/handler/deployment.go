@@ -11,19 +11,6 @@ import (
 )
 
 func (w *WorkloadsAPI) GetDeployment(g *gin.Context) {
-	//deploymentRequest := &template.DeploymentRequest{}
-	////g.Param("namespaces")
-	//if err := g.ShouldBind(deploymentRequest); err != nil {
-	//	g.JSON(http.StatusBadRequest,
-	//		gin.H{
-	//			code:   http.StatusBadRequest,
-	//			data:   "",
-	//			msg:    err.Error(),
-	//			status: "Request bad parameter",
-	//		},
-	//	)
-	//	return
-	//}
 	namespace := g.Param("namespace")
 	name := g.Param("name")
 	item, err := w.deployments.Get(dyn.ResourceDeployment, namespace, name)
@@ -40,7 +27,7 @@ func (w *WorkloadsAPI) ListDeployment(g *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	json.Unmarshal(data, deploymentList)
+	_ = json.Unmarshal(data, deploymentList)
 	g.JSON(http.StatusOK, deploymentList)
 }
 
@@ -59,6 +46,4 @@ func (w *WorkloadsAPI) ApplyDeployment(g *gin.Context) {
 	}
 }
 
-func (w *WorkloadsAPI) DeleteDeployment(g *gin.Context) {
-
-}
+func (w *WorkloadsAPI) DeleteDeployment(g *gin.Context) {}
