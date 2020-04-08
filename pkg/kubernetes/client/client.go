@@ -1,14 +1,13 @@
 package client
 
 import (
-	"time"
-
 	dyn "k8s.io/client-go/dynamic"
 	informers "k8s.io/client-go/dynamic/dynamicinformer"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	clientcmdlatest "k8s.io/client-go/tools/clientcmd/api/latest"
 	clientcmdapiv1 "k8s.io/client-go/tools/clientcmd/api/v1"
+	"time"
 )
 
 const (
@@ -25,9 +24,7 @@ var SharedCacheInformerFactory *CacheInformerFactory
 func buildDynamicClient(master string, config clientcmdapiv1.Config) (dyn.Interface, error) {
 	cfg, err := clientcmdlatest.Scheme.ConvertToVersion(&config, clientcmdapi.SchemeGroupVersion)
 	clientCfg, err := clientcmd.NewDefaultClientConfig(*(cfg.(*clientcmdapi.Config)),
-		&clientcmd.ConfigOverrides{
-			ClusterDefaults: clientcmdapi.Cluster{Server: master},
-		}).ClientConfig()
+		&clientcmd.ConfigOverrides{ClusterDefaults: clientcmdapi.Cluster{Server: master}}).ClientConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +40,8 @@ func buildDynamicClient(master string, config clientcmdapiv1.Config) (dyn.Interf
 }
 
 type CacheInformerFactory struct {
-	client   dyn.Interface
-	informer informers.DynamicSharedInformerFactory
+	Client   dyn.Interface
+	Informer informers.DynamicSharedInformerFactory
 	stopChan chan struct{}
 }
 
@@ -70,11 +67,4 @@ func NewCacheInformerFactory(master string, config clientcmdapiv1.Config) (*Cach
 	}
 
 	return SharedCacheInformerFactory, nil
-}
-
-func (c *CacheInformerFactory) Client() dyn.Interface {
-	if c.client == nil {
-		panic("client not initialized")
-	}
-	return c.client
 }

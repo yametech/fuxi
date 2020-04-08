@@ -24,7 +24,7 @@ func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 		return
 	}
 	podService := workload.NewPod()
-	item, err := podService.Get(dyn.ResourcePod, *podRequest.Model.Namespace, podRequest.Model.Name)
+	item, err := podService.Get(dyn.ResourcePod, *podRequest.Namespace, podRequest.Name)
 	if err != nil {
 		g.JSON(http.StatusInternalServerError,
 			gin.H{
@@ -36,12 +36,12 @@ func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 		)
 		return
 	}
-	g.JSON(http.StatusOK, *item)
+	g.JSON(http.StatusOK, item)
 }
 
 // ListPod list namespace pod, admin
 func (w *WorkloadsAPI) ListPod(g *gin.Context) {
-
+	//podList := corev1.PodList{}
 }
 
 // AttachPod request and backend pod pty bing
