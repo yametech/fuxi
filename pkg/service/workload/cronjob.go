@@ -7,5 +7,5 @@ type CronJob struct {
 
 // NewCronJob exported
 func NewCronJob() *CronJob {
-	return &CronJob{defaultImplWorkloadsResourceHandler{}}
+	return &CronJob{&defaultImplWorkloadsResourceHandler{}}
 }

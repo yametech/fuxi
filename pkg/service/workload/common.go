@@ -1,6 +1,7 @@
 package workload
 
 import (
+	"k8s.io/apimachinery/pkg/runtime"
 	"sort"
 
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
@@ -30,9 +31,9 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 
 // ResourceQuery query resource interface
 type ResourceQuery interface {
-	List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64) (list *unstructured.UnstructuredList, err error)
-	Get(resource schema.GroupVersionResource, namespace, name string) (item *unstructured.Unstructured, err error)
-	Watch(resource schema.GroupVersionResource, namespace, name string) (itemChan chan *unstructured.Unstructured, closed chan struct{}, err error)
+	List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64, selector labels.Selector) (*unstructured.UnstructuredList, error)
+	Get(resource schema.GroupVersionResource, namespace, name string) (runtime.Object, error)
+	Watch(resource schema.GroupVersionResource, namespace string, selector labels.Selector, closed chan struct{}) (chan runtime.Object, error)
 }
 
 // ResourceApply update resource interface
@@ -45,7 +46,7 @@ type ResourceApply interface {
 type History interface {
 	HistoryGet(namespace, name string) (*fv1.Workloads, error)
 	HistorySave(namespace string, workloads *fv1.Workloads) error
-	HistoryList(selector labels.Selector, limit int) (WorkloadsSlice, error)
+	HistoryList(namespace string, selector labels.Selector, limit int) (WorkloadsSlice, error)
 }
 
 // WorkloadsResourceHandler all needed interface defined
@@ -60,69 +61,126 @@ var _ WorkloadsResourceHandler = &defaultImplWorkloadsResourceHandler{}
 
 type defaultImplWorkloadsResourceHandler struct{}
 
-func (d defaultImplWorkloadsResourceHandler) HistoryGet(namespace, name string) (*fv1.Workloads, error) {
-	return sharedClientsCacheSet.fuxiClientSet.client.FuxiV1().Workloadses(namespace).Get(name, metav1.GetOptions{})
+func (d *defaultImplWorkloadsResourceHandler) HistoryGet(namespace, name string) (*fv1.Workloads, error) {
+	return sharedK8sClient.
+		clientSet.
+		client.
+		FuxiV1().
+		Workloadses(namespace).
+		Get(name, metav1.GetOptions{})
 }
 
-func (d defaultImplWorkloadsResourceHandler) HistorySave(namespace string, workloads *fv1.Workloads) error {
-	_, err := sharedClientsCacheSet.fuxiClientSet.client.FuxiV1().Workloadses(namespace).Create(workloads)
+func (d *defaultImplWorkloadsResourceHandler) HistorySave(namespace string, workloads *fv1.Workloads) error {
+	_, err := sharedK8sClient.
+		clientSet.
+		client.
+		FuxiV1().
+		Workloadses(namespace).
+		Create(workloads)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// TODO 参数selector 改成string
-func (d defaultImplWorkloadsResourceHandler) HistoryList(selector labels.Selector, limit int) (WorkloadsSlice, error) {
-	list, err := sharedClientsCacheSet.fuxiClientSet.informer.Fuxi().V1().Workloadses().Lister().List(selector)
+func (d *defaultImplWorkloadsResourceHandler) HistoryList(
+	namespace string,
+	selector labels.Selector,
+	limit int,
+) (WorkloadsSlice, error) {
+	list, err := sharedK8sClient.
+		clientSet.
+		informer.
+		Fuxi().
+		V1().
+		Workloadses().
+		Lister().
+		Workloadses(namespace).
+		List(selector)
 	if err != nil {
 		return nil, err
 	}
 	workloads := WorkloadsSlice(list)
 	sort.Sort(workloads)
+
 	if limit > 0 && len(workloads) <= limit {
 		workloads = workloads[0 : limit-1]
 	}
+
 	return workloads, nil
 }
 
-func (d defaultImplWorkloadsResourceHandler) List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64) (list *unstructured.UnstructuredList, err error) {
-	labelFromSet := labels.SelectorFromSet(
-		labels.Set(map[string]string{
-			ResourcePredicateNamespaceKey: namespace,
-		}),
-	)
-	opt := metav1.ListOptions{
-		Continue:      flag,
-		LabelSelector: labelFromSet.String(),
+func (d *defaultImplWorkloadsResourceHandler) List(
+	resource schema.GroupVersionResource,
+	namespace,
+	flag string,
+	pos,
+	size int64,
+	selector labels.Selector,
+) (items *unstructured.UnstructuredList, err error) {
+	opts := metav1.ListOptions{}
+	if selector != nil {
+		opts.LabelSelector = selector.String()
+	}
+	if flag != "" {
+		opts.Continue = flag
 	}
 	if size > 0 {
-		opt.Limit = size + pos
+		opts.Limit = size + pos
 	}
-	items, err := sharedClientsCacheSet.dynClient.Client().Resource(resource).List(opt)
+	items, err = sharedK8sClient.
+		cacheInformer.
+		Client.
+		Resource(resource).
+		Namespace(namespace).
+		List(opts)
 	if err != nil {
 		return nil, err
 	}
-	items.Items = items.Items[pos : pos+size]
+	if opts.Limit <= int64(len(items.Items)) {
+		items.Items = items.Items[pos : pos+size]
+	}
 
 	return items, nil
 }
 
-func (d defaultImplWorkloadsResourceHandler) Get(resource schema.GroupVersionResource, namespace, name string) (item *unstructured.Unstructured, err error) {
-	opt := metav1.GetOptions{}
-	item, err = sharedClientsCacheSet.dynClient.Client().Resource(resource).Get(name, opt)
+func (d *defaultImplWorkloadsResourceHandler) Get(
+	resource schema.GroupVersionResource,
+	namespace,
+	name string,
+) (runtime.Object, error) {
+	object, err := sharedK8sClient.
+		cacheInformer.
+		Informer.
+		ForResource(resource).
+		Lister().
+		ByNamespace(namespace).Get(name)
 	if err != nil {
 		return nil, err
 	}
-	return item, nil
+	return object, nil
 }
 
-func (d defaultImplWorkloadsResourceHandler) Watch(resource schema.GroupVersionResource, namespace, name string) (itemChan chan *unstructured.Unstructured, closed chan struct{}, err error) {
-	itemChan = make(chan *unstructured.Unstructured)
+func (d *defaultImplWorkloadsResourceHandler) Watch(
+	resource schema.GroupVersionResource,
+	namespace string,
+	selector labels.Selector,
+	closed chan struct{},
+) (chan runtime.Object, error) {
+	itemChan := make(chan runtime.Object)
 	closed = make(chan struct{})
-	recv, err := sharedClientsCacheSet.dynClient.Client().Resource(resource).Watch(metav1.ListOptions{})
+	recv, err := sharedK8sClient.
+		cacheInformer.
+		Client.
+		Resource(resource).
+		Namespace(namespace).
+		Watch(
+			metav1.ListOptions{
+				LabelSelector: selector.String(),
+			},
+		)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	go func() {
 		for {
@@ -133,23 +191,39 @@ func (d defaultImplWorkloadsResourceHandler) Watch(resource schema.GroupVersionR
 				if !ok {
 					return
 				}
-				item := event.Object.(*unstructured.Unstructured)
-				itemChan <- item
+				itemChan <- event.Object
 			}
 		}
 	}()
-	return itemChan, closed, nil
+	return itemChan, nil
 }
 
-func (d defaultImplWorkloadsResourceHandler) Apply(resource schema.GroupVersionResource, obj *unstructured.Unstructured) error {
-	if _, err := sharedClientsCacheSet.dynClient.Client().Resource(resource).Update(obj, metav1.UpdateOptions{}); err != nil {
+func (d *defaultImplWorkloadsResourceHandler) Apply(
+	resource schema.GroupVersionResource,
+	obj *unstructured.Unstructured,
+) error {
+	_, err := sharedK8sClient.
+		cacheInformer.
+		Client.
+		Resource(resource).
+		Update(obj, metav1.UpdateOptions{})
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (d defaultImplWorkloadsResourceHandler) Delete(resource schema.GroupVersionResource, namespace, name string) error {
-	if err := sharedClientsCacheSet.dynClient.Client().Resource(resource).Delete(name, &metav1.DeleteOptions{}); err != nil {
+func (d *defaultImplWorkloadsResourceHandler) Delete(
+	resource schema.GroupVersionResource,
+	namespace, name string,
+) error {
+	err := sharedK8sClient.
+		cacheInformer.
+		Client.
+		Resource(resource).
+		Namespace(namespace).
+		Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
 		return err
 	}
 	return nil
