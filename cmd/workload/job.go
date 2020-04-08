@@ -2,27 +2,27 @@ package main
 
 import "github.com/gin-gonic/gin"
 
-// DaemonSet doc
+// Job doc
 // @Summary workload daemonSet list
 // @Description workload service for list cronJob
-// @Tags DaemonSet
+// @Tags Job
 // @Accept mpfd
 // @Produce json
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/apps/v1/daemonsets [get]
-func DaemonSetList(g *gin.Context) { workloadsAPI.ListDaemonSet(g) }
+// @Router /workload/apis/batch/v1/jobs [get]
+func JobList(g *gin.Context) { workloadsAPI.ListJob(g) }
 
-// DaemonSet doc
+// Job doc
 // @Summary workload daemonSet get
 // @Description workload service for get a cronJob detail
-// @Tags DaemonSet
+// @Tags Job
 // @Accept mpfd
 // @Produce json
 // @Param namespace query string true "namespace"
 // @Param name query string true "name"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/v1/namespace/:namespace/daemonsets/:name [get]
-func DaemonSetGet(g *gin.Context) { workloadsAPI.GetDaemonSet(g) }
+// @Router /workload/apis/batch/v1/namespaces/:namespace/jobs/:name [get]
+func JobGet(g *gin.Context) { workloadsAPI.GetJob(g) }

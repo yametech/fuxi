@@ -7,6 +7,7 @@ import (
 // WorkloadsAPI all resource operate
 type WorkloadsAPI struct {
 	deployments *workloadservice.Deployment
+	job         *workloadservice.Job
 	cronJob     *workloadservice.CronJob
 	statefulSet *workloadservice.StatefulSet
 	daemonSet   *workloadservice.DaemonSet
@@ -18,5 +19,6 @@ func NewWorkladAPI() *WorkloadsAPI {
 		cronJob:     workloadservice.NewCronJob(),
 		statefulSet: workloadservice.NewStatefulSet(),
 		daemonSet:   workloadservice.NewDaemonSet(),
+		job:         workloadservice.NewJob(),
 	}
 }

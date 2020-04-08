@@ -13,6 +13,7 @@ const (
 	DaemonSet   ResourceName = "daemonsets"
 	Injector    ResourceName = "injector"
 	Pod         ResourceName = "pod"
+	Job         ResourceName = "jobs"
 	CronJobs    ResourceName = "cronjobs"
 )
 
@@ -25,11 +26,13 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	DaemonSet:   {Group: "apps", Version: "v1", Resource: "daemonsets"},
 	Injector:    {Group: "nuwa.nip.io", Version: "v1", Resource: "injectors"},
 	Pod:         {Group: "", Version: "v1", Resource: "pods"},
+	Job:         {Group: "batch", Version: "v1", Resource: "jobs"},
 	CronJobs:    {Group: "batch", Version: "v1beta1", Resource: "cronjobs"},
 }
 
 var (
 	ResourceWater       = GetGVR(Water)
+	ResourceJob         = GetGVR(Job)
 	ResourceDeployment  = GetGVR(Deployment)
 	ResourceStone       = GetGVR(Stone)
 	ResourceStatefulSet = GetGVR(StatefulSet)
