@@ -12,9 +12,7 @@ import "github.com/gin-gonic/gin"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/v1/:ns/pod/list [get]
-func PodList(g *gin.Context) {
-
-}
+func PodList(g *gin.Context) { workloadsAPI.ListPod(g) }
 
 // Pod doc
 // @Summary workload pod get
@@ -27,9 +25,7 @@ func PodList(g *gin.Context) {
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/v1/:ns/pod/:name/get [get]
-func PodGet(g *gin.Context) {
-
-}
+func PodGet(g *gin.Context) { workloadsAPI.GetPod(g) }
 
 // Pod doc
 // @Summary workload pod get
