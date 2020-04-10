@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/yametech/fuxi/pkg/logging"
 	"net/http"
-	"time"
 )
+
 
 //GetTaskRunLog get task run log
 func (o *OpsController) GetTaskRunLog(c *gin.Context) {
@@ -60,33 +61,96 @@ func (o *OpsController) GetPipelineRunLog(c *gin.Context) {
 	})
 }
 
+
 var upGrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
+	CheckOrigin: func (r *http.Request) bool {
 		return true
 	},
 }
 
-func (o *OpsController) GetRealLog(ctx *gin.Context) {
-	//升级get请求为webSocket协议
+
+func(o *OpsController) GetRealLog(ctx *gin.Context){
+
+	namespace := ctx.Param("namespace")
+	name := ctx.Param("name")
+
+	if namespace == "" && name == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get GetRealLog error: namespace or name cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "get GetRealLog error: " + err.Error(),
+			"code": http.StatusInternalServerError,
+			"data": "",
+		})
+		return
+	}
+
+	defer ws.Close()
+
+
+	mt, _, err := ws.ReadMessage()
 	if err != nil {
 		return
 	}
-	defer ws.Close()
-	for {
-		//读取ws中的数据
-		mt, message, err := ws.ReadMessage()
-		if err != nil {
-			break
-		}
-		if string(message) == "ping" {
-			message = []byte("pong")
-		}
-		time.Sleep(2000)
-		//写入ws数据
-		err = ws.WriteMessage(mt, message)
-		if err != nil {
-			break
+
+
+	logC,errC,err := o.Service.ReadLivePipelineLogs(namespace, name,nil)
+	if err != nil {
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "get GetRealLog error: " + err.Error(),
+			"code": http.StatusInternalServerError,
+			"data": "",
+		})
+		return
+	}
+
+	for logC != nil || errC != nil {
+		select {
+		case l, ok := <-logC:
+			if !ok {
+				logC = nil
+				continue
+			}
+
+			if l.Log == "EOFLOG" {
+				//fmt.Fprintf(s.Out, "\n")
+				continue
+			}
+			j,err := json.Marshal(l)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"msg":  "get GetRealLog error: " + err.Error(),
+					"code": http.StatusInternalServerError,
+					"data": "",
+				})
+			}
+			ws.WriteMessage(mt, j)
+			//switch lw.logType {
+			//case LogTypePipeline:
+			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s : %s] ", l.Task, l.Step)
+			//case LogTypeTask:
+			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s] ", l.Step)
+			//}
+			//
+			//fmt.Fprintf(s.Out, "%s\n", l.Log)
+		case e, ok := <-errC:
+			if !ok {
+				errC = nil
+				continue
+			}
+			ws.WriteMessage(mt, []byte(e.Error()))
 		}
 	}
+
+
 }
+

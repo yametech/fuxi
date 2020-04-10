@@ -19,11 +19,13 @@ type OpsService interface {
 
 type Ops struct {
 	client pipelineClient.TektonV1alpha1Interface
+	log *Logger
 }
 
 func NewOps() *Ops {
 	return &Ops{
 		client: tekton.TektonClient.TektonV1alpha1(),
+		log:new(Logger),
 	}
 }
 
