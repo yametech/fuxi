@@ -1,11 +1,10 @@
 package handler
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/yametech/fuxi/pkg/logging"
-	"golang.org/x/sync/errgroup"
 	"net/http"
 )
 
@@ -86,9 +85,9 @@ func(o *OpsController) GetRealLog(ctx *gin.Context){
 
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "get GetRealLog error: " + err.Error(),
-			"code": http.StatusBadRequest,
+			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 		return
@@ -102,32 +101,53 @@ func(o *OpsController) GetRealLog(ctx *gin.Context){
 		return
 	}
 
-	var logs = make(chan []string,10)
-	var g errgroup.Group
-	g.Go(func() error{
-		err := o.Service.GetTaskRealLog(name,namespace,logs)
-		if err != nil {
-			close(logs)
-		}
-		return err
-	})
 
-	if err := g.Wait(); err == nil {
-		for{
+	logC,errC,err := o.Service.ReadLivePipelineLogs(namespace, name,nil)
+	if err != nil {
 
-			select{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "get GetRealLog error: " + err.Error(),
+			"code": http.StatusInternalServerError,
+			"data": "",
+		})
+		return
+	}
 
-			case ss,ok:=<- logs:
-				if !ok {
-					return
-				}
-
-				for i :=range ss {
-					fmt.Println(ss[i])
-					ws.WriteMessage(mt, []byte(ss[i]))
-				}
-
+	for logC != nil || errC != nil {
+		select {
+		case l, ok := <-logC:
+			if !ok {
+				logC = nil
+				continue
 			}
+
+			if l.Log == "EOFLOG" {
+				//fmt.Fprintf(s.Out, "\n")
+				continue
+			}
+			j,err := json.Marshal(l)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"msg":  "get GetRealLog error: " + err.Error(),
+					"code": http.StatusInternalServerError,
+					"data": "",
+				})
+			}
+			ws.WriteMessage(mt, j)
+			//switch lw.logType {
+			//case LogTypePipeline:
+			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s : %s] ", l.Task, l.Step)
+			//case LogTypeTask:
+			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s] ", l.Step)
+			//}
+			//
+			//fmt.Fprintf(s.Out, "%s\n", l.Log)
+		case e, ok := <-errC:
+			if !ok {
+				errC = nil
+				continue
+			}
+			ws.WriteMessage(mt, []byte(e.Error()))
 		}
 	}
 

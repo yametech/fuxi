@@ -108,9 +108,9 @@ func (o *OpsController) PipelineRunDelete(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusNoContent, gin.H{
 		"msg":  "delete pipeline run success",
-		"code": http.StatusOK,
+		"code": http.StatusNoContent,
 		"data": "",
 	})
 }
@@ -161,6 +161,32 @@ func (o *OpsController) ReRunPipeline(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"msg":  "rerun  pipeline run success",
 		"code": http.StatusOK,
+		"data": "",
+	})
+}
+
+
+//CancelPipelineRun cancel a pipeline run
+func (o *OpsController) CancelPipelineRun(c *gin.Context) {
+
+	userName := o.getUserName(c)
+	if userName == "" {
+		return
+	}
+	namespace := c.Param("namespace")
+	err := o.Service.CancelPipelineRun(userName, namespace)
+	if err != nil {
+		logging.Log.Error("---------->cancel pipelinerun error: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "cancel pipelinerun error:" + err.Error(),
+			"code": http.StatusInternalServerError,
+			"data": "",
+		})
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{
+		"msg":  "",
+		"code": http.StatusNoContent,
 		"data": "",
 	})
 }
