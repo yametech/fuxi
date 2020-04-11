@@ -4,15 +4,14 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
-	v1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	"net/http"
 )
 
-// Get Job
-func (w *WorkloadsAPI) GetJob(g *gin.Context) {
-	namespace := g.Param("namespace")
-	name := g.Param("name")
-	item, err := w.job.Get(dyn.ResourceJob, namespace, name)
+// Get Node
+func (w *WorkloadsAPI) GetNode(g *gin.Context) {
+	node := g.Param("node")
+	item, err := w.node.Get(dyn.ResourceNode, "", node)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
@@ -21,16 +20,16 @@ func (w *WorkloadsAPI) GetJob(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List Job
-func (w *WorkloadsAPI) ListJob(g *gin.Context) {
-	list, _ := w.job.List(dyn.ResourceJob, "", "", 0, 10000, nil)
-	jobList := &v1.JobList{}
+// List Node
+func (w *WorkloadsAPI) ListNode(g *gin.Context) {
+	list, _ := w.node.List(dyn.ResourceNode, "", "", 0, 10000, nil)
+	nodeList := &corev1.NodeList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
 		return
 	}
-	_ = json.Unmarshal(marshalData, jobList)
-	g.JSON(http.StatusOK, jobList)
+	_ = json.Unmarshal(marshalData, nodeList)
+	g.JSON(http.StatusOK, nodeList)
 }

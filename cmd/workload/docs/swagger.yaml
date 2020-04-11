@@ -10,6 +10,281 @@ info:
   title: Gin swagger
   version: "1.0"
 paths:
+  /workload/apis/apps/v1/daemonsets:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list cronJob
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload daemonSet list
+      tags:
+      - DaemonSet
+  /workload/apis/apps/v1/namespaces/:namespace/statefulsets/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a cronJob detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload statefulSet get
+      tags:
+      - StatefulSet
+  /workload/apis/apps/v1/statefulsets:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list cronJob
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload statefulSet list
+      tags:
+      - StatefulSet
+  /workload/apis/batch/v1/jobs:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list cronJob
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload daemonSet list
+      tags:
+      - Job
+  /workload/apis/batch/v1/namespaces/:namespace/jobs/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a cronJob detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload daemonSet get
+      tags:
+      - Job
+  /workload/apis/batch/v1beta1/cronjobs:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list cronJob
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload cronJob list
+      tags:
+      - CronJob
+  /workload/apis/batch/v1beta1/deployment:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list cronJob
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload deployment list
+      tags:
+      - Deployment
+  /workload/attach/namespace/:namespace/pod/:name/container/:container:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a pod detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload pod get
+      tags:
+      - Pod
+  /workload/v1/:ns/cronjobs/:name/get:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a cronJob detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload cronJob get
+      tags:
+      - CronJob
+  /workload/v1/:ns/deployment/:name/get:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a cronJob detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload cronJob get
+      tags:
+      - Deployment
   /workload/v1/:ns/pod/:name/get:
     get:
       consumes:
@@ -65,4 +340,34 @@ paths:
       summary: workload pod list
       tags:
       - Pod
+  /workload/v1/namespace/:namespace/daemonsets/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a cronJob detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload daemonSet get
+      tags:
+      - DaemonSet
 swagger: "2.0"

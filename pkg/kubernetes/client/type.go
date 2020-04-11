@@ -15,6 +15,9 @@ const (
 	Pod         ResourceName = "pod"
 	Job         ResourceName = "jobs"
 	CronJobs    ResourceName = "cronjobs"
+	Replicaset  ResourceName = "replicasets"
+	Event       ResourceName = "events"
+	Node        ResourceName = "nodes"
 )
 
 // GroupVersionResources describe resource collection
@@ -26,8 +29,11 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	DaemonSet:   {Group: "apps", Version: "v1", Resource: "daemonsets"},
 	Injector:    {Group: "nuwa.nip.io", Version: "v1", Resource: "injectors"},
 	Pod:         {Group: "", Version: "v1", Resource: "pods"},
+	Node:        {Group: "", Version: "v1", Resource: "nodes"},
+	Event:       {Group: "", Version: "v1", Resource: "events"},
 	Job:         {Group: "batch", Version: "v1", Resource: "jobs"},
 	CronJobs:    {Group: "batch", Version: "v1beta1", Resource: "cronjobs"},
+	Replicaset:  {Group: "apps", Version: "v1", Resource: "replicasets"},
 }
 
 var (
@@ -40,6 +46,9 @@ var (
 	ResourceInjector    = GetGVR(Injector)
 	ResourcePod         = GetGVR(Pod)
 	ResourceCronJobs    = GetGVR(CronJobs)
+	ResourceReplicaset  = GetGVR(Replicaset)
+	ResourceEvent       = GetGVR(Event)
+	ResourceNode        = GetGVR(Node)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {
