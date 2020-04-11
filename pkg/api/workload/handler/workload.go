@@ -11,6 +11,10 @@ type WorkloadsAPI struct {
 	cronJob     *workloadservice.CronJob
 	statefulSet *workloadservice.StatefulSet
 	daemonSet   *workloadservice.DaemonSet
+	replicaSet  *workloadservice.ReplicaSet
+	pod         *workloadservice.Pod
+	event       *workloadservice.Event
+	node        *workloadservice.Node
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -20,5 +24,9 @@ func NewWorkladAPI() *WorkloadsAPI {
 		statefulSet: workloadservice.NewStatefulSet(),
 		daemonSet:   workloadservice.NewDaemonSet(),
 		job:         workloadservice.NewJob(),
+		replicaSet:  workloadservice.NewReplicaSet(),
+		pod:         workloadservice.NewPod(),
+		event:       workloadservice.NewEvent(),
+		node:        workloadservice.NewNode(),
 	}
 }

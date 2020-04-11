@@ -109,7 +109,7 @@ func EtcdStringFlag() cli.StringFlag {
 		Name:   "etcd_address",
 		Usage:  "etcd address for config K/V",
 		EnvVar: "ETCD_ADDRESS",
-		Value:  "fuxi.io:12379",
+		Value:  "gz.nuwa.xyz:12379",
 	}
 }
 
@@ -194,7 +194,9 @@ func InitSrv(name, version string) micro.Service {
 func configureDb(addr string) {
 	configServer := NewConfig(addr)
 	mysqlOption := mysql.NewOption()
-	err := json.Unmarshal(configServer.Get("go", "micro", "database", "db").Bytes(), mysqlOption)
+	// TODO need check config from configured centent
+	bytes := configServer.Get("go", "micro", "database", "db").Bytes()
+	err := json.Unmarshal(bytes, mysqlOption)
 	if err != nil {
 		log.Fatal("unmarshal bytes error: " + err.Error())
 	}
@@ -259,7 +261,7 @@ func InitKubeClientFactoryResourceHandler() error {
 }
 
 func NewConfig(addr string) config.Config {
-	log.Info("start load config from etcd adddress:" + addr)
+	log.Info("start load config from etcd adddress: " + addr)
 	configure := common.NewConfigServer(addr, common.ConfigPrefix)
 	configServer := config.NewConfig()
 	if err := configServer.Load(configure); err != nil {
