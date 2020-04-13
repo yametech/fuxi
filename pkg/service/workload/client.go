@@ -5,7 +5,12 @@ import (
 	"github.com/yametech/fuxi/pkg/client/informers/externalversions"
 	k8sclient "github.com/yametech/fuxi/pkg/k8s/client"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/rest"
+)
+
+var (
+	workloadsGvr = schema.GroupVersionResource{Group: "fuxi.nip.io", Version: "v1", Resource: "workloads"}
 )
 
 // sharedK8sClient internal global use
@@ -17,14 +22,14 @@ type clientSet struct {
 	informer externalversions.SharedInformerFactory
 }
 
-func newFuxiClientSet(rest *rest.Config) (*clientSet, error) {
+func newClientSet(rest *rest.Config) (*clientSet, error) {
 	stop := make(chan struct{})
 	client, err := versioned.NewForConfig(rest)
 	if err != nil {
 		return nil, err
 	}
 	//informer := externalversions.NewSharedInformerFactory(client, time.Duration(time.Second*30))
-	//genericInformer, err := informer.ForResource(fv1.Resource("workloads").WithVersion("v1"))
+	//genericInformer, err := informer.ForResource(workloadsGvr)
 	//if err != nil {
 	//	return nil, err
 	//}
@@ -51,7 +56,7 @@ func NewK8sClientSet(cacheInformer *dyn.CacheInformerFactory, res *k8sclient.Res
 	if sharedK8sClient != nil {
 		return nil
 	}
-	clientSet, err := newFuxiClientSet(rest)
+	clientSet, err := newClientSet(rest)
 	if err != nil {
 		return err
 	}

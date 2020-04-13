@@ -1,7 +1,9 @@
 package ops
 
 import (
+	"fmt"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,6 +15,7 @@ type PipelineService interface {
 	PipelineList(namespace string) ([]Pipeline, error)
 	PipelineDelete(namespace, name string) error
 	GetPipeline(namespace, name string) (*Pipeline, error)
+	CancelPipelineRun(namespace, name string)  error
 }
 
 type Pipeline struct {
@@ -138,4 +141,28 @@ func (ops *Ops) GetPipeline(namespace, name string) (*Pipeline, error) {
 		Resources:  p.Spec.Resources,
 		ParamSpecs: p.Spec.Params,
 	}, nil
+}
+
+func (ops *Ops)CancelPipelineRun(namespace, name string)  error{
+
+	pr, err :=ops.client.PipelineRuns(namespace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to find pipelinerun: %s", name)
+	}
+
+	status := pr.Status.Conditions[0].Status
+	//ConditionFalse == Failed
+	//ConditionTrue == Succeeded
+	//ConditionUnknown == Running
+	if status == corev1.ConditionFalse || status==corev1.ConditionTrue || status==corev1.ConditionUnknown {
+		return fmt.Errorf("failed to cancel pipelinerun %s: pipelinerun has already finished execution", name)
+	}
+
+	pr.Spec.Status = v1alpha1.PipelineRunSpecStatusCancelled
+	_, err =ops.client.PipelineRuns(namespace).Update(pr)
+	if err != nil {
+		return fmt.Errorf("failed to cancel pipelinerun: %s, err: %s", name, err.Error())
+	}
+
+	return nil
 }

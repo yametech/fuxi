@@ -1,47 +1,40 @@
 package handler
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/workload/template"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
-	workload "github.com/yametech/fuxi/pkg/service/workload"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/remotecommand"
 	"net/http"
 )
 
-//GetPod return the pod info allow list all
+// Get Pod
 func (w *WorkloadsAPI) GetPod(g *gin.Context) {
-	podRequest := &template.PodRequest{}
-	if err := g.ShouldBind(podRequest); err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    err.Error(),
-				status: "Request bad parameter",
-			},
-		)
-		return
-	}
-	podService := workload.NewPod()
-	item, err := podService.Get(dyn.ResourcePod, *podRequest.Namespace, podRequest.Name)
+	namespace := g.Param("namespace")
+	name := g.Param("name")
+	item, err := w.pod.Get(dyn.ResourcePod, namespace, name)
 	if err != nil {
-		g.JSON(http.StatusInternalServerError,
-			gin.H{
-				code:   http.StatusInternalServerError,
-				data:   "",
-				msg:    err.Error(),
-				status: "internal get pod error",
-			},
-		)
+		g.JSON(http.StatusBadRequest,
+			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
 		return
 	}
 	g.JSON(http.StatusOK, item)
 }
 
-// ListPod list namespace pod, admin
+// List Pods
 func (w *WorkloadsAPI) ListPod(g *gin.Context) {
-	//podList := corev1.PodList{}
+	list, _ := w.pod.List(dyn.ResourcePod, "", "", 0, 10000, nil)
+	podList := &corev1.PodList{}
+	marshalData, err := json.Marshal(list)
+	if err != nil {
+		g.JSON(http.StatusBadRequest,
+			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		return
+	}
+	_ = json.Unmarshal(marshalData, podList)
+	g.JSON(http.StatusOK, podList)
 }
 
 // AttachPod request and backend pod pty bing

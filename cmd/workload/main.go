@@ -64,6 +64,20 @@ func main() {
 	{
 		group.GET("/shell/pod", gin.WrapH(handler.CreateAttachHandler("/workload/shell/pod")))
 		group.GET("/attach/namespace/:namespace/pod/:name/container/:container", PodAttach)
+		group.GET("/api/v1/pods", PodList)
+		group.GET("/api/v1/namespace/:namespace/pod/:name", PodGet)
+	}
+
+	// event
+	{
+		group.GET("/api/v1/events", EventList)
+		group.GET("/api/v1/namespace/:namespace/event/:name", EventGet)
+	}
+
+	// node
+	{
+		group.GET("/api/v1/nodes", NodeList)
+		group.GET("/api/v1/nodes/:node", NodeGet)
 	}
 
 	// Deployment
@@ -92,8 +106,14 @@ func main() {
 
 	// Job
 	{
-		group.GET("/apis/batch/v1/jobs/", JobList)
+		group.GET("/apis/batch/v1/jobs", JobList) //TODO fix route
 		group.GET("/apis/batch/v1/namespaces/:namespace/jobs/:name", JobGet)
+	}
+
+	// ReplicaSet
+	{
+		group.GET("/apis/apps/v1/replicasets", ReplicaSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets/:name", ReplicaSetGet)
 	}
 
 	// swag
