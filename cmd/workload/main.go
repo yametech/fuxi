@@ -70,13 +70,13 @@ func main() {
 		group.GET("/api/v1/namespace/:namespace/pod/:name", PodGet)
 	}
 
-	// event
+	// Event
 	{
 		group.GET("/api/v1/events", EventList)
 		group.GET("/api/v1/namespace/:namespace/event/:name", EventGet)
 	}
 
-	// node
+	// Node
 	{
 		group.GET("/api/v1/nodes", NodeList)
 		group.GET("/api/v1/nodes/:node", NodeGet)
@@ -144,8 +144,8 @@ func main() {
 
 	// Ingress
 	{
-		group.GET("/apis/networking.k8s.io/v1beta1/ingresses", IngressList)
-		group.GET("/apis/networking.k8s.io/v1beta1/namespaces/:namespace/ingresses/:name", IngressGet)
+		group.GET("/apis/extensions/v1beta1/ingresses", IngressList)
+		group.GET("/apis/extensions/v1beta1/namespaces/:namespace/ingresses/:name", IngressGet)
 	}
 
 	// NetworkPolicy
@@ -154,7 +154,7 @@ func main() {
 		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
 	}
 
-	// swag
+	// Swag
 	{
 		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
 		/// Release production environment can be turned on
