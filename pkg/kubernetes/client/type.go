@@ -44,7 +44,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Secrets:       {Group: "", Version: "v1", Resource: "secrets"},
 	ResourceQuota: {Group: "", Version: "v1", Resource: "resourcequotas"},
 	Service:       {Group: "", Version: "v1", Resource: "services"},
-	Ingress:       {Group: "networking.k8s.io", Version: "v1beta1", Resource: "ingresses"},
+	Ingress:       {Group: "extensions", Version: "v1beta1", Resource: "ingresses"},
 	NetworkPolicy: {Group: "networking.k8s.io", Version: "v1", Resource: "networkpolicies"},
 }
 

@@ -11,7 +11,7 @@ import "github.com/gin-gonic/gin"
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/networking.k8s.io/v1beta1/ingresses [get]
+// @Router /workload/apis/extensions/v1beta1/ingresses [get]
 func IngressList(g *gin.Context) { workloadsAPI.ListIngress(g) }
 
 // Ingress doc
@@ -24,5 +24,5 @@ func IngressList(g *gin.Context) { workloadsAPI.ListIngress(g) }
 // @Param name query string true "name"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/networking.k8s.io/v1beta1/namespaces/:namespace/ingresses/:name [get]
+// @Router /workload/apis/extensions/v1beta1/namespaces/:namespace/ingresses/:name [get]
 func IngressGet(g *gin.Context) { workloadsAPI.GetIngress(g) }
