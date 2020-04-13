@@ -128,10 +128,28 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
 	}
 
-	// ResourceQuotaList
+	// ResourceQuota
 	{
 		group.GET("/api/v1/resourcequotas", ResourceQuotaList)
 		group.GET("/api/v1/namespaces/:namespace/resourcequotas/:name", ResourceQuotaGet)
+	}
+
+	// Service
+	{
+		group.GET("/api/v1/services", ServiceList)
+		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
+	}
+
+	// Ingress
+	{
+		group.GET("/apis/networking.k8s.io/v1beta1/ingresses", IngressList)
+		group.GET("/apis/networking.k8s.io/v1beta1/namespaces/:namespace/ingresses/:name", IngressGet)
+	}
+
+	// NetworkPolicy
+	{
+		group.GET("/apis/networking.k8s.io/v1/networkpolicies", NetworkPolicyList)
+		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
 	}
 
 	// swag
