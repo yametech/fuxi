@@ -2,6 +2,8 @@ package ops
 
 import (
 	"errors"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 	"reflect"
 
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
@@ -104,15 +106,21 @@ func (ops *Ops) PipelineResourceList(namespace string) ([]Resource, error) {
 		return nil, errors.New("namespace should not be empty")
 	}
 
-	op := metav1.ListOptions{
-		LabelSelector: namespace,
-	}
-	rs, err := ops.client.PipelineResources(namespace).List(op)
+	var strVals []string
+	strVals = append(strVals, namespace)
+	key := "namespace"
+	rq := labels.Requirement{key, selection.Equals, strVals}
+	lable := labels.NewSelector().Add(rq)
+	rs, err := ops.informer.Tekton().V1alpha1().PipelineResources().
+		Lister().
+		PipelineResources(namespace).List(lable)
+
 	if err != nil {
 		return nil, err
 	}
+
 	var res []Resource
-	for _, ps := range rs.Items {
+	for _, ps := range rs {
 		res = append(res, Resource{
 			Name:         ps.Name,
 			Lables:       nil,

@@ -120,7 +120,7 @@ require (
 	k8s.io/gengo v0.0.0-20191010091904-7fa3014cb28f
 	k8s.io/klog v1.0.0
 	k8s.io/kube-openapi v0.0.0-20191107075043-30be4d16710a
-	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706 // indirect
+	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706
 	sigs.k8s.io/controller-runtime v0.4.0
 )
 

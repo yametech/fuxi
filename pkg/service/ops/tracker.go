@@ -54,6 +54,8 @@ func (t *Tracker) Monitor(allowed []string) <-chan []Run {
 		informers.WithNamespace(t.Ns),
 		informers.WithTweakListOptions(pipelinerunOpts(t.Name)))
 
+	//pipelineInfomer :=factory.Tekton().V1alpha1().PipelineRuns()
+	//pipelineInfomer.Lister().List()
 	informer := factory.Tekton().V1alpha1().PipelineRuns().Informer()
 
 	stopC := make(chan struct{})
