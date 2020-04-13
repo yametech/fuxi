@@ -9,7 +9,7 @@ import (
 )
 
 // Get ReplicaSet
-func (w *WorkloadsAPI) GetReplicaset(g *gin.Context) {
+func (w *WorkloadsAPI) GetReplicaSet(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
 	item, err := w.replicaSet.Get(dyn.ResourceReplicaset, namespace, name)
@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetReplicaset(g *gin.Context) {
 }
 
 // List ReplicaSet
-func (w *WorkloadsAPI) ListReplicaset(g *gin.Context) {
+func (w *WorkloadsAPI) ListReplicaSet(g *gin.Context) {
 	list, _ := w.replicaSet.List(dyn.ResourceReplicaset, "", "", 0, 10000, nil)
 	replicaSetList := &v1.ReplicaSet{}
 	marshalData, err := json.Marshal(list)
