@@ -16,6 +16,7 @@ type WorkloadsAPI struct {
 	event       *workloadservice.Event
 	node        *workloadservice.Node
 	configMaps  *workloadservice.ConfigMaps
+	secret      *workloadservice.Secrets
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -30,5 +31,6 @@ func NewWorkladAPI() *WorkloadsAPI {
 		event:       workloadservice.NewEvent(),
 		node:        workloadservice.NewNode(),
 		configMaps:  workloadservice.NewConfigMaps(),
+		secret:      workloadservice.NewSecrets(),
 	}
 }

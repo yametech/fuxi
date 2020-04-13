@@ -19,6 +19,7 @@ const (
 	Event       ResourceName = "events"
 	Node        ResourceName = "nodes"
 	ConfigMaps  ResourceName = "configmaps"
+	Secrets     ResourceName = "secrets"
 )
 
 // GroupVersionResources describe resource collection
@@ -36,6 +37,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	CronJobs:    {Group: "batch", Version: "v1beta1", Resource: "cronjobs"},
 	ReplicaSet:  {Group: "apps", Version: "v1", Resource: "replicasets"},
 	ConfigMaps:  {Group: "", Version: "v1", Resource: "configmaps"},
+	Secrets:     {Group: "", Version: "v1", Resource: "secrets"},
 }
 
 var (
@@ -52,6 +54,7 @@ var (
 	ResourceEvent       = GetGVR(Event)
 	ResourceNode        = GetGVR(Node)
 	ResourceConfigMaps  = GetGVR(ConfigMaps)
+	ResourceSecrets     = GetGVR(Secrets)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {
