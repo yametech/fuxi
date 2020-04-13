@@ -6,6 +6,7 @@ import (
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	corev1 "k8s.io/api/core/v1"
 	"net/http"
+	"strconv"
 )
 
 // Get Event
@@ -23,7 +24,19 @@ func (w *WorkloadsAPI) GetEvent(g *gin.Context) {
 
 // List Event
 func (w *WorkloadsAPI) ListEvent(g *gin.Context) {
-	list, _ := w.event.List(dyn.ResourceEvent, "", "", 0, 10000, nil)
+	limit := g.Param("limit")
+	limitNum := int64(10000)
+	var err error
+	if limit != "" {
+		limitNum, err = strconv.ParseInt(limit, 64, 10)
+		if err != nil {
+			g.JSON(http.StatusBadRequest,
+				gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+			return
+		}
+	}
+
+	list, _ := w.event.List(dyn.ResourceEvent, "", "", 0, limitNum, nil)
 	eventList := &corev1.EventList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
