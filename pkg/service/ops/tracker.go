@@ -66,7 +66,6 @@ func (t *Tracker) Monitor(allowed []string) <-chan []Run {
 		close(trC)
 	}()
 
-
 	eventHandler := func(obj interface{}) {
 		pr, ok := obj.(*v1alpha1.PipelineRun)
 		if !ok || pr == nil {
@@ -86,7 +85,6 @@ func (t *Tracker) Monitor(allowed []string) <-chan []Run {
 			UpdateFunc: func(_, newObj interface{}) { eventHandler(newObj) },
 		},
 	)
-
 
 	factory.Start(stopC)
 	factory.WaitForCacheSync(stopC)

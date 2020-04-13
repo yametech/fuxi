@@ -20,8 +20,8 @@ import (
 type LogService interface {
 	GetTaskRunLog(name, namespace string) (*TaskRunLog, error)
 	GetPipelineRunLog(name, namespace string) (PipelineRunLog, error)
-	GetTaskRealLog(name, namespace string,logs chan []string) error
-    ReadLivePipelineLogs(name, namespace string,tasks []string) (<-chan Log, <-chan error, error)
+	GetTaskRealLog(name, namespace string, logs chan []string) error
+	ReadLivePipelineLogs(name, namespace string, tasks []string) (<-chan Log, <-chan error, error)
 }
 
 // Log represents data to write on log channel
@@ -32,12 +32,11 @@ type Log struct {
 	Log      string
 }
 
-
 type Logger struct {
 	number int
-	run string
-	task string
-	ns string
+	run    string
+	task   string
+	ns     string
 }
 
 type PipelineRunLog []TaskRunLog
@@ -142,8 +141,7 @@ func (ops *Ops) GetPipelineRunLog(name, namespace string) (PipelineRunLog, error
 	return pipelineRunLogs, nil
 }
 
-
-func (ops *Ops)GetTaskRealLog(name, namespace string,logs chan []string) error {
+func (ops *Ops) GetTaskRealLog(name, namespace string, logs chan []string) error {
 
 	pipelinerun, err := ops.client.PipelineRuns(namespace).Get(name, metav1.GetOptions{})
 	if err != nil {
@@ -182,12 +180,11 @@ func (ops *Ops)GetTaskRealLog(name, namespace string,logs chan []string) error {
 
 }
 
-
-func (ops *Ops) ReadLivePipelineLogs(name, namespace string,tasks []string) (<-chan Log, <-chan error, error) {
+func (ops *Ops) ReadLivePipelineLogs(name, namespace string, tasks []string) (<-chan Log, <-chan error, error) {
 	pr, err := ops.client.
 		PipelineRuns(namespace).Get(name, metav1.GetOptions{})
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 	logC := make(chan Log)
 	errC := make(chan error)
@@ -198,7 +195,7 @@ func (ops *Ops) ReadLivePipelineLogs(name, namespace string,tasks []string) (<-c
 
 		prTracker := NewTracker(name, namespace, tekton.TektonClient)
 		if tasks == nil {
-			tasks = make([]string,0)
+			tasks = make([]string, 0)
 		}
 		trC := prTracker.Monitor(tasks)
 
@@ -232,14 +229,13 @@ func (ops *Ops) ReadLivePipelineLogs(name, namespace string,tasks []string) (<-c
 	return logC, errC, nil
 }
 
-
 func (log *Logger) setUpTask(taskNumber int, tr Run) {
 	log.setNumber(taskNumber)
 	log.setRun(tr.Name)
 	log.setTask(tr.Task)
 }
 
-func (o *Ops)clone() *Logger{
+func (o *Ops) clone() *Logger {
 	l := *o.log
 	return &l
 }
@@ -256,7 +252,6 @@ func (log *Logger) setTask(task string) {
 	log.task = task
 }
 
-
 func empty(status v1alpha1.PipelineRunStatus) bool {
 	if status.Conditions == nil {
 		return true
@@ -264,10 +259,8 @@ func empty(status v1alpha1.PipelineRunStatus) bool {
 	return len(status.Conditions) == 0
 }
 
-
-
 func (log *Logger) pipeLogs(logC chan<- Log, errC chan<- error) {
-	tlogC, terrC, err := log.readTaskLog(log.task,log.ns)
+	tlogC, terrC, err := log.readTaskLog(log.task, log.ns)
 	if err != nil {
 		errC <- err
 		return

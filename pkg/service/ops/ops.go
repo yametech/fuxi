@@ -22,24 +22,22 @@ type OpsService interface {
 }
 
 type Ops struct {
-	client pipelineClient.TektonV1alpha1Interface
-	log *Logger
+	client   pipelineClient.TektonV1alpha1Interface
+	log      *Logger
 	informer informers.SharedInformerFactory
 }
 
 func NewOps(defaultResync time.Duration) *Ops {
 	return &Ops{
-		client: tekton.TektonClient.TektonV1alpha1(),
-		log:new(Logger),
-		informer:informers.NewSharedInformerFactory(tekton.TektonClient, defaultResync),
+		client:   tekton.TektonClient.TektonV1alpha1(),
+		log:      new(Logger),
+		informer: informers.NewSharedInformerFactory(tekton.TektonClient, defaultResync),
 	}
 }
 
-
-func (ops *Ops)Start(stopCh <-chan struct{}) {
+func (ops *Ops) Start(stopCh <-chan struct{}) {
 	ops.informer.Start(stopCh)
 }
-
 
 var _ OpsService = (*Ops)(nil)
 

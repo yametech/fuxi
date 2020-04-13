@@ -97,11 +97,11 @@ func (ops *Ops) TaskList(namespace string) ([]Task, error) {
 	}
 
 	var strVals []string
-	strVals = append(strVals,namespace)
+	strVals = append(strVals, namespace)
 	key := "namespace"
-	rq := labels.Requirement{key,selection.Equals,strVals}
+	rq := labels.Requirement{key, selection.Equals, strVals}
 	lable := labels.NewSelector().Add(rq)
-	ts, err :=ops.informer.Tekton().V1alpha1().Tasks().
+	ts, err := ops.informer.Tekton().V1alpha1().Tasks().
 		Lister().
 		Tasks(namespace).List(lable)
 
