@@ -18,6 +18,7 @@ type WorkloadsAPI struct {
 	configMaps    *workloadservice.ConfigMaps
 	secret        *workloadservice.Secrets
 	resourceQuota *workloadservice.ResourceQuota
+	service       *workloadservice.Service
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -34,5 +35,6 @@ func NewWorkladAPI() *WorkloadsAPI {
 		configMaps:    workloadservice.NewConfigMaps(),
 		secret:        workloadservice.NewSecrets(),
 		resourceQuota: workloadservice.NewResourceQuota(),
+		service:       workloadservice.NewService(),
 	}
 }

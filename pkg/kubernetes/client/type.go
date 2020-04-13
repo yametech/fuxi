@@ -20,7 +20,8 @@ const (
 	Node          ResourceName = "nodes"
 	ConfigMaps    ResourceName = "configmaps"
 	Secrets       ResourceName = "secrets"
-	ResourceQuota ResourceName = "resourcequota"
+	ResourceQuota ResourceName = "resourcequotas"
+	Service       ResourceName = "services"
 )
 
 // GroupVersionResources describe resource collection
@@ -40,6 +41,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	ConfigMaps:    {Group: "", Version: "v1", Resource: "configmaps"},
 	Secrets:       {Group: "", Version: "v1", Resource: "secrets"},
 	ResourceQuota: {Group: "", Version: "v1", Resource: "resourcequotas"},
+	Service:       {Group: "", Version: "v1", Resource: "services"},
 }
 
 var (
@@ -58,6 +60,7 @@ var (
 	ResourceConfigMaps    = GetGVR(ConfigMaps)
 	ResourceSecrets       = GetGVR(Secrets)
 	ResourceResourceQuota = GetGVR(ResourceQuota)
+	ResourceService       = GetGVR(Service)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {

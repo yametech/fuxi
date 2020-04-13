@@ -128,10 +128,16 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
 	}
 
-	// ResourceQuotaList
+	// ResourceQuota
 	{
 		group.GET("/api/v1/resourcequotas", ResourceQuotaList)
 		group.GET("/api/v1/namespaces/:namespace/resourcequotas/:name", ResourceQuotaGet)
+	}
+
+	// Service
+	{
+		group.GET("/api/v1/services", ServiceList)
+		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
 	}
 
 	// swag
