@@ -24,7 +24,7 @@ func (w *WorkloadsAPI) GetReplicaSet(g *gin.Context) {
 // List ReplicaSet
 func (w *WorkloadsAPI) ListReplicaSet(g *gin.Context) {
 	list, _ := w.replicaSet.List(dyn.ResourceReplicaSet, "", "", 0, 10000, nil)
-	replicaSetList := &v1.ReplicaSet{}
+	replicaSetList := &v1.ReplicaSetList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,

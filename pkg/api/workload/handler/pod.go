@@ -40,17 +40,10 @@ func (w *WorkloadsAPI) ListPod(g *gin.Context) {
 // AttachPod request and backend pod pty bing
 func (w *WorkloadsAPI) AttachPod(g *gin.Context) {
 	attachPodRequest := &template.AttachPodRequest{}
-	if err := g.ShouldBind(attachPodRequest); err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    err.Error(),
-				status: "Request bad parameter",
-			},
-		)
-		return
-	}
+	attachPodRequest.Namespace = g.Param("namespace")
+	attachPodRequest.Name = g.Param("name")
+	attachPodRequest.Container = g.Param("container")
+
 	sessionID, _ := GenTerminalsessionID()
 	sharedSessionManager.set(sessionID, &SessionChannel{
 		id:       sessionID,
