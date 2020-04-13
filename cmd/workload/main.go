@@ -13,6 +13,8 @@ import (
 	"github.com/yametech/fuxi/pkg/preinstall"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
+	"net/http"
+
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
@@ -159,6 +161,7 @@ func main() {
 		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	}
 
+	
 	service.Handle("/", router)
 
 	// Run service
