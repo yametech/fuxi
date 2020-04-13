@@ -288,7 +288,7 @@ func (log *Logger) pipeLogs(logC chan<- Log, errC chan<- error) {
 				terrC = nil
 				continue
 			}
-			errC <- fmt.Errorf("failed to get logs for task %s : %s", r.task, e)
+			errC <- fmt.Errorf("failed to get logs for task %s : %s", log.task, e)
 		}
 	}
 }
