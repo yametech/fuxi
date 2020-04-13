@@ -15,6 +15,7 @@ type WorkloadsAPI struct {
 	pod         *workloadservice.Pod
 	event       *workloadservice.Event
 	node        *workloadservice.Node
+	configMaps  *workloadservice.ConfigMaps
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -28,5 +29,6 @@ func NewWorkladAPI() *WorkloadsAPI {
 		pod:         workloadservice.NewPod(),
 		event:       workloadservice.NewEvent(),
 		node:        workloadservice.NewNode(),
+		configMaps:  workloadservice.NewConfigMaps(),
 	}
 }

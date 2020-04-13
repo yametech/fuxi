@@ -12,7 +12,7 @@ import (
 func (w *WorkloadsAPI) GetReplicaSet(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.replicaSet.Get(dyn.ResourceReplicaset, namespace, name)
+	item, err := w.replicaSet.Get(dyn.ResourceReplicaSet, namespace, name)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
@@ -23,7 +23,7 @@ func (w *WorkloadsAPI) GetReplicaSet(g *gin.Context) {
 
 // List ReplicaSet
 func (w *WorkloadsAPI) ListReplicaSet(g *gin.Context) {
-	list, _ := w.replicaSet.List(dyn.ResourceReplicaset, "", "", 0, 10000, nil)
+	list, _ := w.replicaSet.List(dyn.ResourceReplicaSet, "", "", 0, 10000, nil)
 	replicaSetList := &v1.ReplicaSet{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {

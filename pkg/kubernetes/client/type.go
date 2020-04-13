@@ -15,9 +15,10 @@ const (
 	Pod         ResourceName = "pod"
 	Job         ResourceName = "jobs"
 	CronJobs    ResourceName = "cronjobs"
-	Replicaset  ResourceName = "replicasets"
+	ReplicaSet  ResourceName = "replicasets"
 	Event       ResourceName = "events"
 	Node        ResourceName = "nodes"
+	ConfigMaps  ResourceName = "configmaps"
 )
 
 // GroupVersionResources describe resource collection
@@ -33,7 +34,8 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Event:       {Group: "", Version: "v1", Resource: "events"},
 	Job:         {Group: "batch", Version: "v1", Resource: "jobs"},
 	CronJobs:    {Group: "batch", Version: "v1beta1", Resource: "cronjobs"},
-	Replicaset:  {Group: "apps", Version: "v1", Resource: "replicasets"},
+	ReplicaSet:  {Group: "apps", Version: "v1", Resource: "replicasets"},
+	ConfigMaps:  {Group: "", Version: "v1", Resource: "configmaps"},
 }
 
 var (
@@ -46,9 +48,10 @@ var (
 	ResourceInjector    = GetGVR(Injector)
 	ResourcePod         = GetGVR(Pod)
 	ResourceCronJobs    = GetGVR(CronJobs)
-	ResourceReplicaset  = GetGVR(Replicaset)
+	ResourceReplicaSet  = GetGVR(ReplicaSet)
 	ResourceEvent       = GetGVR(Event)
 	ResourceNode        = GetGVR(Node)
+	ResourceConfigMaps  = GetGVR(ConfigMaps)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {
