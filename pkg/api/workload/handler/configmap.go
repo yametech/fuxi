@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
-	v1 "k8s.io/api/apps/v1"
+	"k8s.io/api/core/v1"
 	"net/http"
 )
 
-// Get ReplicaSet
-func (w *WorkloadsAPI) GetReplicaSet(g *gin.Context) {
+// Get ConfigMaps
+func (w *WorkloadsAPI) GetConfigMaps(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.replicaSet.Get(dyn.ResourceReplicaSet, namespace, name)
+	item, err := w.configMaps.Get(dyn.ResourceConfigMaps, namespace, name)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
@@ -21,16 +21,16 @@ func (w *WorkloadsAPI) GetReplicaSet(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List ReplicaSet
-func (w *WorkloadsAPI) ListReplicaSet(g *gin.Context) {
-	list, _ := w.replicaSet.List(dyn.ResourceReplicaSet, "", "", 0, 10000, nil)
-	replicaSetList := &v1.ReplicaSet{}
+// List ConfigMaps
+func (w *WorkloadsAPI) ListConfigMaps(g *gin.Context) {
+	list, _ := w.configMaps.List(dyn.ResourceConfigMaps, "", "", 0, 100, nil)
+	configMapList := &v1.ConfigMapList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
 		return
 	}
-	_ = json.Unmarshal(marshalData, replicaSetList)
-	g.JSON(http.StatusOK, replicaSetList)
+	_ = json.Unmarshal(marshalData, configMapList)
+	g.JSON(http.StatusOK, configMapList)
 }
