@@ -128,6 +128,12 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
 	}
 
+	// ResourceQuotaList
+	{
+		group.GET("/api/v1/resourcequotas", ResourceQuotaList)
+		group.GET("/api/v1/namespaces/:namespace/resourcequotas/:name", ResourceQuotaGet)
+	}
+
 	// swag
 	{
 		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
