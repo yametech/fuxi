@@ -5,6 +5,8 @@ import (
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	kubeerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 	"reflect"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -94,14 +96,21 @@ func (ops *Ops) TaskList(namespace string) ([]Task, error) {
 		return nil, errors.New("namespace cannot be empty")
 	}
 
-	taskOpt := metav1.ListOptions{LabelSelector: namespace}
-	ts, err := ops.client.Tasks(namespace).List(taskOpt)
+	var strVals []string
+	strVals = append(strVals, namespace)
+	key := "namespace"
+	rq := labels.Requirement{key, selection.Equals, strVals}
+	lable := labels.NewSelector().Add(rq)
+	ts, err := ops.informer.Tekton().V1alpha1().Tasks().
+		Lister().
+		Tasks(namespace).List(lable)
+
 	if err != nil {
 		return nil, err
 	}
 
 	var tasks []Task
-	for _, t := range ts.Items {
+	for _, t := range ts {
 		tasks = append(tasks, Task{
 			Name:      t.Name,
 			Namespace: t.Namespace,
