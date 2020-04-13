@@ -23,6 +23,7 @@ const (
 	ResourceQuota ResourceName = "resourcequotas"
 	Service       ResourceName = "services"
 	Ingress       ResourceName = "ingresses"
+	NetworkPolicy ResourceName = "networkpolicies"
 )
 
 // GroupVersionResources describe resource collection
@@ -44,6 +45,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	ResourceQuota: {Group: "", Version: "v1", Resource: "resourcequotas"},
 	Service:       {Group: "", Version: "v1", Resource: "services"},
 	Ingress:       {Group: "networking.k8s.io", Version: "v1beta1", Resource: "ingresses"},
+	NetworkPolicy: {Group: "networking.k8s.io", Version: "v1", Resource: "networkpolicies"},
 }
 
 var (
@@ -64,6 +66,7 @@ var (
 	ResourceResourceQuota = GetGVR(ResourceQuota)
 	ResourceService       = GetGVR(Service)
 	ResourceIngress       = GetGVR(Ingress)
+	ResourceNetworkPolicy = GetGVR(NetworkPolicy)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {

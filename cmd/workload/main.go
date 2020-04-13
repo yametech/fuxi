@@ -146,6 +146,12 @@ func main() {
 		group.GET("/apis/networking.k8s.io/v1beta1/namespaces/:namespace/ingresses/:name", IngressGet)
 	}
 
+	// NetworkPolicy
+	{
+		group.GET("/apis/networking.k8s.io/v1/networkpolicies", NetworkPolicyList)
+		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
+	}
+
 	// swag
 	{
 		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
