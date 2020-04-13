@@ -19,6 +19,7 @@ type WorkloadsAPI struct {
 	secret        *workloadservice.Secrets
 	resourceQuota *workloadservice.ResourceQuota
 	service       *workloadservice.Service
+	ingress       *workloadservice.Ingress
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -36,5 +37,6 @@ func NewWorkladAPI() *WorkloadsAPI {
 		secret:        workloadservice.NewSecrets(),
 		resourceQuota: workloadservice.NewResourceQuota(),
 		service:       workloadservice.NewService(),
+		ingress:       workloadservice.NewIngress(),
 	}
 }
