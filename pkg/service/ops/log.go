@@ -183,7 +183,6 @@ func (ops *Ops)GetTaskRealLog(name, namespace string,logs chan []string) error {
 }
 
 
-
 func (ops *Ops) ReadLivePipelineLogs(name, namespace string,tasks []string) (<-chan Log, <-chan error, error) {
 	pr, err := ops.client.
 		PipelineRuns(namespace).Get(name, metav1.GetOptions{})

@@ -12,8 +12,10 @@ import (
 	"github.com/yametech/fuxi/pkg/logging"
 	pri "github.com/yametech/fuxi/pkg/preinstall"
 	"github.com/yametech/fuxi/pkg/service/ops"
+	"k8s.io/sample-controller/pkg/signals"
 	"github.com/yametech/fuxi/pkg/tekton"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
+	"time"
 )
 
 const (
@@ -47,15 +49,24 @@ func main() {
 		client.Retries(3),
 	)
 
+
+	resyncDur := time.Second * 30
+	op := ops.NewOps(resyncDur)
+	stopCh := signals.SetupSignalHandler()
+	op.Start(stopCh)
+
 	ops := handler.OpsController{
-		Service: ops.NewOps(),
+		Service: op,
 	}
+
 	// ops
 	{
 		group.GET("/v1/log", ops.GetRealLog)
 		//group.GET("/v1/repos", ops.ListRepos)
 		//group.GET("/v1/branchs", ops.ListBranchs)
 	}
+
+
 
 	service.Handle("/", router)
 	if err := service.Run(); err != nil {

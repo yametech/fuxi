@@ -2,9 +2,13 @@ package ops
 
 import (
 	pipelineClient "github.com/tektoncd/pipeline/pkg/client/clientset/versioned/typed/pipeline/v1alpha1"
+	informers "github.com/tektoncd/pipeline/pkg/client/informers/externalversions"
 	"github.com/yametech/fuxi/pkg/db"
 	"github.com/yametech/fuxi/pkg/gits"
 	"github.com/yametech/fuxi/pkg/tekton"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
+	"time"
 )
 
 type OpsService interface {
@@ -20,14 +24,22 @@ type OpsService interface {
 type Ops struct {
 	client pipelineClient.TektonV1alpha1Interface
 	log *Logger
+	informer informers.SharedInformerFactory
 }
 
-func NewOps() *Ops {
+func NewOps(defaultResync time.Duration) *Ops {
 	return &Ops{
 		client: tekton.TektonClient.TektonV1alpha1(),
 		log:new(Logger),
+		informer:informers.NewSharedInformerFactory(tekton.TektonClient, defaultResync),
 	}
 }
+
+
+func (ops *Ops)Start(stopCh <-chan struct{}) {
+	ops.informer.Start(stopCh)
+}
+
 
 var _ OpsService = (*Ops)(nil)
 

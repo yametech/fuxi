@@ -54,6 +54,8 @@ func (t *Tracker) Monitor(allowed []string) <-chan []Run {
 		informers.WithNamespace(t.Ns),
 		informers.WithTweakListOptions(pipelinerunOpts(t.Name)))
 
+	//pipelineInfomer :=factory.Tekton().V1alpha1().PipelineRuns()
+	//pipelineInfomer.Lister().List()
 	informer := factory.Tekton().V1alpha1().PipelineRuns().Informer()
 
 	stopC := make(chan struct{})
@@ -63,6 +65,7 @@ func (t *Tracker) Monitor(allowed []string) <-chan []Run {
 		<-stopC
 		close(trC)
 	}()
+
 
 	eventHandler := func(obj interface{}) {
 		pr, ok := obj.(*v1alpha1.PipelineRun)
@@ -83,6 +86,7 @@ func (t *Tracker) Monitor(allowed []string) <-chan []Run {
 			UpdateFunc: func(_, newObj interface{}) { eventHandler(newObj) },
 		},
 	)
+
 
 	factory.Start(stopC)
 	factory.WaitForCacheSync(stopC)

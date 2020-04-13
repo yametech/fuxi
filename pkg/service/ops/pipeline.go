@@ -7,6 +7,8 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 	"reflect"
 )
 
@@ -50,6 +52,7 @@ func toPipeline(name string,
 		Status: v1alpha1.PipelineStatus{},
 	}
 }
+
 
 func (ops *Ops) CreateOrUpdatePipeline(pipeLine Pipeline) error {
 
@@ -97,14 +100,23 @@ func (ops *Ops) CreateOrUpdatePipeline(pipeLine Pipeline) error {
 //PipelineList Get all  Pipeline resources with the namespace/labels
 func (ops *Ops) PipelineList(namespace string) ([]Pipeline, error) {
 
-	pipeLineOpt := metav1.ListOptions{LabelSelector: namespace}
-	ps, err := ops.client.Pipelines(namespace).List(pipeLineOpt)
+	var strVals []string
+	strVals = append(strVals,namespace)
+	key := "namespace"
+	rq := labels.Requirement{key,selection.Equals,strVals}
+	lable := labels.NewSelector().Add(rq)
+
+	ps, err :=ops.informer.Tekton().V1alpha1().
+		Pipelines().
+		Lister().
+		Pipelines("").List(lable)
+
 	if err != nil {
 		return nil, err
 	}
 
 	var pipelines []Pipeline
-	for _, p := range ps.Items {
+	for _, p := range ps {
 		pipelines = append(pipelines, Pipeline{
 			Name:       p.Name,
 			Namespace:  p.Namespace,
