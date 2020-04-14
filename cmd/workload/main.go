@@ -158,6 +158,12 @@ func main() {
 		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
 	}
 
+	// CustomResourceDefinition
+	{
+		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
+		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions/:name", CustomResourceDefinitionGet)
+	}
+
 	// Swag
 	{
 		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
