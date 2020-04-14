@@ -13,9 +13,9 @@ func (o *OpsController) CreateOrUpdatePipelineResource(c *gin.Context) {
 
 	var rs ops.Resource
 	if err := c.ShouldBindJSON(&rs); err != nil {
-		logging.Log.Error("---------->CreateOrUpdatePipelineResource bind json error: " + err.Error())
+		logging.Log.Error("create or update pipeline resource bind json error: " + err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "CreateOrUpdatePipelineResource  error:" + err.Error(),
+			"msg":  "create or update pipeline resource  error:" + err.Error(),
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
@@ -23,7 +23,7 @@ func (o *OpsController) CreateOrUpdatePipelineResource(c *gin.Context) {
 	}
 
 	if err := o.Service.CreateOrUpdatePipelineResource(rs); err != nil {
-		logging.Log.Error("---------->CreateOrUpdatePipelineResource error: " + err.Error())
+		logging.Log.Error("create or update pipeline resource error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "create or update pipeline resource" + err.Error(),
 			"code": http.StatusInternalServerError,
@@ -42,18 +42,27 @@ func (o *OpsController) CreateOrUpdatePipelineResource(c *gin.Context) {
 func (o *OpsController) PipelineResourceList(c *gin.Context) {
 
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	pipelineResources, err := o.Service.PipelineResourceList(namespace)
 	if err != nil {
-		logging.Log.Error("---------->PipelineResourceList error: " + err.Error())
+		logging.Log.Error("get pipeline resource list error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "get  pipeline resources  error:" + err.Error(),
+			"msg":  "get pipeline resource list  error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"msg":  "get pipeline resources success",
+		"msg":  "get pipeline resource list success",
 		"code": http.StatusCreated,
 		"data": pipelineResources,
 	})
@@ -66,19 +75,29 @@ func (o *OpsController) PipelineResourceDelete(c *gin.Context) {
 	if userName == "" {
 		return
 	}
+
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	err := o.Service.PipelineResourceDelete(userName, namespace)
 	if err != nil {
-		logging.Log.Error("---------->PipelineResourceDelete error: " + err.Error())
+		logging.Log.Error("pipeline resource delete error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "delete pipeline resource error:" + err.Error(),
+			"msg":  "pipeline resource delete error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg":  "delete pipeline resource success",
+		"msg":  "pipeline resource delete success",
 		"code": http.StatusOK,
 		"data": "",
 	})
@@ -91,10 +110,20 @@ func (o *OpsController) GetPipelineResource(c *gin.Context) {
 	if userName == "" {
 		return
 	}
+
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	task, err := o.Service.GetPipelineResource(userName, namespace)
 	if err != nil {
-		logging.Log.Error("---------->GetPipelineResource error:" + err.Error())
+		logging.Log.Error("get pipeline resource error:" + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "get pipeline resource error:" + err.Error(),
 			"code": http.StatusInternalServerError,

@@ -35,12 +35,21 @@ func (o *OpsController) ListRepos(c *gin.Context) {
 	}
 
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "list repos error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	repos, err := o.Service.ListRepos(userName, namespace)
 	if err != nil {
-		logging.Log.Error("---------->ListRepos error:" + err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
+		logging.Log.Error("ListRepos error:" + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "get repos failed",
-			"code": http.StatusBadRequest,
+			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
@@ -60,13 +69,22 @@ func (o *OpsController) ListBranchs(c *gin.Context) {
 	}
 
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "list branchs error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	branchs, err := o.Service.ListBranchs(userName, namespace)
 
 	if err != nil {
-		logging.Log.Error("---------->ListBranchs error:" + err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
+		logging.Log.Error("ListBranchs error:" + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "get branch error" + err.Error(),
-			"code": http.StatusBadRequest,
+			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}

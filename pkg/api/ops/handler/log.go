@@ -8,7 +8,6 @@ import (
 	"net/http"
 )
 
-
 //GetTaskRunLog get task run log
 func (o *OpsController) GetTaskRunLog(c *gin.Context) {
 	userName := o.getUserName(c)
@@ -20,16 +19,16 @@ func (o *OpsController) GetTaskRunLog(c *gin.Context) {
 	taskRunLog, err := o.Service.GetTaskRunLog(userName, namespace)
 
 	if err != nil {
-		logging.Log.Error("---------->GetTaskRunLog error: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{
-			"msg":  "get taskRunLog error" + err.Error(),
+		logging.Log.Error("get task run log error: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "get task run log error" + err.Error(),
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg":  "get taskRunLog success",
+		"msg":  "get task run log success",
 		"code": http.StatusOK,
 		"data": taskRunLog,
 	})
@@ -46,37 +45,35 @@ func (o *OpsController) GetPipelineRunLog(c *gin.Context) {
 	pipelineRunLogs, err := o.Service.GetPipelineRunLog(userName, namespace)
 
 	if err != nil {
-		logging.Log.Error("---------->GetPipelineRunLog error:", err.Error())
-		c.JSON(http.StatusPartialContent, gin.H{
-			"msg":  "get pipelineRunLogs error" + err.Error(),
-			"code": http.StatusBadRequest,
+		logging.Log.Error("get pipeline run log error:", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "get pipeline run logs error" + err.Error(),
+			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg":  "get pipelineRunLogs success",
+		"msg":  "get pipeline run logs success",
 		"code": http.StatusOK,
 		"data": pipelineRunLogs,
 	})
 }
 
-
 var upGrader = websocket.Upgrader{
-	CheckOrigin: func (r *http.Request) bool {
+	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
 
-
-func(o *OpsController) GetRealLog(ctx *gin.Context){
+func (o *OpsController) GetRealLog(ctx *gin.Context) {
 
 	namespace := ctx.Param("namespace")
 	name := ctx.Param("name")
 
 	if namespace == "" && name == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get GetRealLog error: namespace or name cannot be empty",
+			"msg":  "get real log error: namespace or name cannot be empty",
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
@@ -86,7 +83,7 @@ func(o *OpsController) GetRealLog(ctx *gin.Context){
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "get GetRealLog error: " + err.Error(),
+			"msg":  "get real log error: " + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
@@ -95,18 +92,16 @@ func(o *OpsController) GetRealLog(ctx *gin.Context){
 
 	defer ws.Close()
 
-
 	mt, _, err := ws.ReadMessage()
 	if err != nil {
 		return
 	}
 
-
-	logC,errC,err := o.Service.ReadLivePipelineLogs(namespace, name,nil)
+	logC, errC, err := o.Service.ReadLivePipelineLogs(namespace, name, nil)
 	if err != nil {
 
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "get GetRealLog error: " + err.Error(),
+			"msg":  "get real log error: " + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
@@ -125,10 +120,10 @@ func(o *OpsController) GetRealLog(ctx *gin.Context){
 				//fmt.Fprintf(s.Out, "\n")
 				continue
 			}
-			j,err := json.Marshal(l)
+			j, err := json.Marshal(l)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"msg":  "get GetRealLog error: " + err.Error(),
+					"msg":  "get real log error: " + err.Error(),
 					"code": http.StatusInternalServerError,
 					"data": "",
 				})
@@ -151,6 +146,4 @@ func(o *OpsController) GetRealLog(ctx *gin.Context){
 		}
 	}
 
-
 }
-
