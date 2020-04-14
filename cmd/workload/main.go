@@ -89,6 +89,12 @@ func main() {
 		group.GET("/api/v1/persistentvolumes/:name", PersistentVolumeGet)
 	}
 
+	// PersistentVolumeClaims
+	{
+		group.GET("/api/v1/persistentvolumeclaims", PersistentVolumeClaimsList)
+		group.GET("/api/v1/namespaces/:namespace/persistentvolumeclaims/:name", PersistentVolumeClaimsGet)
+	}
+
 	// Event
 	{
 		group.GET("/api/v1/events", EventList)

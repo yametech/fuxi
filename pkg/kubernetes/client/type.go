@@ -27,6 +27,7 @@ const (
 	HorizontalPodAutoscaler  ResourceName = "horizontalpodautoscalers"
 	CustomResourceDefinition ResourceName = "customresourcedefinitions"
 	PersistentVolume         ResourceName = "persistentvolumes"
+	PersistentVolumeClaims   ResourceName = "persistentvolumeclaims"
 	StorageClass             ResourceName = "storageclasses"
 )
 
@@ -53,6 +54,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	HorizontalPodAutoscaler:  {Group: "autoscaling", Version: "v2beta1", Resource: "horizontalpodautoscalers"},
 	CustomResourceDefinition: {Group: "apiextensions.k8s.io", Version: "v1beta1", Resource: "customresourcedefinitions"},
 	PersistentVolume:         {Group: "", Version: "v1", Resource: "persistentvolumes"},
+	PersistentVolumeClaims:   {Group: "", Version: "v1", Resource: "persistentvolumeclaims"},
 	StorageClass:             {Group: "storage.k8s.io", Version: "v1beta1", Resource: "storageclasses"},
 }
 
@@ -78,6 +80,7 @@ var (
 	ResourceHorizontalPodAutoscaler  = GetGVR(HorizontalPodAutoscaler)
 	ResourceCustomResourceDefinition = GetGVR(CustomResourceDefinition)
 	ResourcePersistentVolume         = GetGVR(PersistentVolume)
+	ResourcePersistentVolumeClaims   = GetGVR(PersistentVolumeClaims)
 	ResourceStorageClass             = GetGVR(StorageClass)
 )
 
