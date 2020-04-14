@@ -17,7 +17,7 @@ func ConfigMapsList(g *gin.Context) { workloadsAPI.ListConfigMaps(g) }
 // ConfigMap doc
 // @Summary workload configMaps get
 // @Description workload service for get a configMaps detail
-// @Tags ConfigMap
+// @Tags ConfigMaps
 // @Accept mpfd
 // @Produce json
 // @Param namespace query string true "namespace"
