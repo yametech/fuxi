@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
-	autoscalingv1 "k8s.io/api/autoscaling/v1"
+	autoscalingv2beta1 "k8s.io/api/autoscaling/v2beta1"
 	"net/http"
 )
 
@@ -24,7 +24,7 @@ func (w *WorkloadsAPI) GetHorizontalPodAutoscaler(g *gin.Context) {
 // List HorizontalPodAutoscaler
 func (w *WorkloadsAPI) ListHorizontalPodAutoscaler(g *gin.Context) {
 	list, _ := w.horizontalPodAutoscaler.List(dyn.ResourceHorizontalPodAutoscaler, "", "", 0, 10000, nil)
-	horizontalPodAutoscalerList := &autoscalingv1.HorizontalPodAutoscalerList{}
+	horizontalPodAutoscalerList := &autoscalingv2beta1.HorizontalPodAutoscalerList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,

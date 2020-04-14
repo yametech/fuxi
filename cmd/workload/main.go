@@ -154,8 +154,8 @@ func main() {
 
 	// HorizontalPodAutoscaler
 	{
-		group.GET("/apis/autoscaling/v1/horizontalpodautoscalers", HorizontalPodAutoscalerList)
-		group.GET("/apis/autoscaling/v1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
+		group.GET("/apis/autoscaling/v2beta1/horizontalpodautoscalers", HorizontalPodAutoscalerList)
+		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
 	}
 
 	// Swag

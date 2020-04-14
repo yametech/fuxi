@@ -11,7 +11,7 @@ import "github.com/gin-gonic/gin"
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/autoscaling/v1/horizontalpodautoscalers [get]
+// @Router /workload/apis/autoscaling/v2beta1/horizontalpodautoscalers [get]
 func HorizontalPodAutoscalerList(g *gin.Context) { workloadsAPI.ListHorizontalPodAutoscaler(g) }
 
 // HorizontalPodAutoscaler doc
@@ -24,5 +24,5 @@ func HorizontalPodAutoscalerList(g *gin.Context) { workloadsAPI.ListHorizontalPo
 // @Param name query string true "name"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/autoscaling/v1/namespaces/{namespace}/horizontalpodautoscalers/{name} [get]
+// @Router /workload/apis/autoscaling/v2beta1/namespaces/{namespace}/horizontalpodautoscalers/{name} [get]
 func HorizontalPodAutoscalerGet(g *gin.Context) { workloadsAPI.GetHorizontalPodAutoscaler(g) }
