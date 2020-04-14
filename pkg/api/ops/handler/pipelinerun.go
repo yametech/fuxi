@@ -12,9 +12,9 @@ func (o *OpsController) CreateOrUpdatePipelineRun(c *gin.Context) {
 
 	var pr ops.PipelineRun
 	if err := c.ShouldBindJSON(&pr); err != nil {
-		logging.Log.Error("---------->CreateOrUpdatePipelineRun bind json error", err.Error())
+		logging.Log.Error("create or update pipelinerun bind json error:", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "CreateOrUpdatePipelineRun  error:" + err.Error(),
+			"msg":  "create or update pipelinerun  error:" + err.Error(),
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
@@ -22,16 +22,16 @@ func (o *OpsController) CreateOrUpdatePipelineRun(c *gin.Context) {
 	}
 
 	if err := o.Service.CreateOrUpdatePipelineRun(&pr); err != nil {
-		logging.Log.Error("---------->CreateOrUpdatePipelineRun error", err.Error())
+		logging.Log.Error("create or update pipelinerun error:", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "create or update pipelinerun" + err.Error(),
+			"msg":  "create or update pipelinerun error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"msg":  "create or update pipeline run success",
+		"msg":  "create or update pipelinerun success",
 		"code": http.StatusCreated,
 		"data": "",
 	})
@@ -47,16 +47,16 @@ func (o *OpsController) GetLatestPipelineRunList(c *gin.Context) {
 	prs, err := o.Service.GetLatestPipelineRunList(namespace, paramsMap)
 
 	if err != nil {
-		logging.Log.Error("---------->PipelineRunList error", err.Error())
+		logging.Log.Error("get latest pipelinerun list error:", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "get latest pipeline run list error:" + err.Error(),
+			"msg":  "get latest pipelinerun list error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg":  "get task run list success",
+		"msg":  "get pipelinerun list success",
 		"code": http.StatusOK,
 		"data": prs,
 	})
@@ -65,9 +65,18 @@ func (o *OpsController) GetLatestPipelineRunList(c *gin.Context) {
 //GetPipelineRunHistoryList gets pipeline run list
 func (o *OpsController) GetPipelineRunHistoryList(c *gin.Context) {
 
-	//name: "ABC-1" will replace "ABC"
 	name := c.Param("name")
 	namespace := c.Param("namespace")
+	if namespace == "" && name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get real log error: namespace or name cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
+	//name: "ABC-1" will replace "ABC"
 	paramsMap := make(map[string]string)
 	paramsMap["name"] = name
 	paramsMap["namespace"] = namespace
@@ -75,16 +84,16 @@ func (o *OpsController) GetPipelineRunHistoryList(c *gin.Context) {
 	prs, err := o.Service.GetPipelineRunList(namespace, paramsMap)
 
 	if err != nil {
-		logging.Log.Error("---------->GetPipelineRunHistoryList error", err.Error())
+		logging.Log.Error("get pipelinerun history list error:", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "get  pipeline run history list error:" + err.Error(),
+			"msg":  "get  pipelinerun history list error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg":  "get  pipeline run history list success",
+		"msg":  "get  pipelinerun history list success",
 		"code": http.StatusOK,
 		"data": prs,
 	})
@@ -97,19 +106,29 @@ func (o *OpsController) PipelineRunDelete(c *gin.Context) {
 	if userName == "" {
 		return
 	}
+
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	err := o.Service.PipelineRunDelete(userName, namespace)
 	if err != nil {
-		logging.Log.Error("---------->PipelineRunDelete error: " + err.Error())
+		logging.Log.Error("pipelinerun delete error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "delete pipeline run error:" + err.Error(),
+			"msg":  "pipelinerun delete error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusNoContent, gin.H{
-		"msg":  "delete pipeline run success",
+		"msg":  "pipelinerun delete success",
 		"code": http.StatusNoContent,
 		"data": "",
 	})
@@ -122,19 +141,29 @@ func (o *OpsController) GetPipelineRun(c *gin.Context) {
 	if userName == "" {
 		return
 	}
+
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	p, err := o.Service.GetPipelineRun(userName, namespace)
 	if err != nil {
-		logging.Log.Error("---------->GetPipelineRun error: " + err.Error())
+		logging.Log.Error("get pipelinerun error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "get pipeline run error:" + err.Error(),
+			"msg":  "get pipelinerun error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg":  "get pipeline run success",
+		"msg":  "get pipelinerun success",
 		"code": http.StatusOK,
 		"data": p,
 	})
@@ -147,24 +176,33 @@ func (o *OpsController) ReRunPipeline(c *gin.Context) {
 	if userName == "" {
 		return
 	}
+
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	err := o.Service.ReRunPipeline(userName, namespace)
 	if err != nil {
-		logging.Log.Error("---------->ReRunPipeline error: " + err.Error())
+		logging.Log.Error("rerun pipeline error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "ReRun Pipeline run  error:" + err.Error(),
+			"msg":  "rerun pipelinerun  error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg":  "rerun  pipeline run success",
+		"msg":  "rerun  pipelinerun success",
 		"code": http.StatusOK,
 		"data": "",
 	})
 }
-
 
 //CancelPipelineRun cancel a pipeline run
 func (o *OpsController) CancelPipelineRun(c *gin.Context) {
@@ -173,10 +211,20 @@ func (o *OpsController) CancelPipelineRun(c *gin.Context) {
 	if userName == "" {
 		return
 	}
+
 	namespace := c.Param("namespace")
+	if namespace == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
 	err := o.Service.CancelPipelineRun(userName, namespace)
 	if err != nil {
-		logging.Log.Error("---------->cancel pipelinerun error: " + err.Error())
+		logging.Log.Error("cancel pipelinerun error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "cancel pipelinerun error:" + err.Error(),
 			"code": http.StatusInternalServerError,
