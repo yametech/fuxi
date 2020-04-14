@@ -153,7 +153,7 @@ func main() {
 	}
 
 	// #batch
-	// # v1beta1
+	// #v1beta1
 
 	// CronJob
 	{
@@ -185,6 +185,13 @@ func main() {
 	{
 		group.GET("/apis/networking.k8s.io/v1/networkpolicies", NetworkPolicyList)
 		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
+	}
+
+	// #storage.k8s.io
+	// #v1
+	{
+		group.GET("/apis/storage.k8s.io/v1beta1/storageclasses", StorageClassList)
+		group.GET("/apis/storage.k8s.io/v1beta1/storageclasses/:name", StorageClassGet)
 	}
 
 	// #autoscaling
