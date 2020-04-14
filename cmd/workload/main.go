@@ -162,6 +162,7 @@ func main() {
 	{
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions/:name", CustomResourceDefinitionGet)
+		group.GET("/apis/crd/:group/:version/:resource", GeneralCustomResourceDefinitionList)
 	}
 
 	// Swag
