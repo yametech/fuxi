@@ -29,6 +29,7 @@ const (
 	PersistentVolume         ResourceName = "persistentvolumes"
 	PersistentVolumeClaims   ResourceName = "persistentvolumeclaims"
 	StorageClass             ResourceName = "storageclasses"
+	ServiceAccount           ResourceName = "serviceaccounts"
 )
 
 // GroupVersionResources describe resource collection
@@ -56,6 +57,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	PersistentVolume:         {Group: "", Version: "v1", Resource: "persistentvolumes"},
 	PersistentVolumeClaims:   {Group: "", Version: "v1", Resource: "persistentvolumeclaims"},
 	StorageClass:             {Group: "storage.k8s.io", Version: "v1beta1", Resource: "storageclasses"},
+	ServiceAccount:           {Group: "", Version: "v1", Resource: "serviceaccounts"},
 }
 
 var (
@@ -82,6 +84,7 @@ var (
 	ResourcePersistentVolume         = GetGVR(PersistentVolume)
 	ResourcePersistentVolumeClaims   = GetGVR(PersistentVolumeClaims)
 	ResourceStorageClass             = GetGVR(StorageClass)
+	ResourceServiceAccount           = GetGVR(ServiceAccount)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {

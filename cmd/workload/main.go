@@ -77,12 +77,6 @@ func main() {
 		group.GET("/api/v1/nodes/:node", NodeGet)
 	}
 
-	// ReplicaSet
-	{
-		group.GET("/apis/apps/v1/replicasets", ReplicaSetList)
-		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets/:name", ReplicaSetGet)
-	}
-
 	// PersistentVolume
 	{
 		group.GET("/api/v1/persistentvolumes", PersistentVolumeList)
@@ -113,6 +107,12 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
 	}
 
+	// ServiceAccount
+	{
+		group.GET("/api/v1/serviceaccounts", ServiceAccountList)
+		group.GET("/api/v1/namespaces/:namespace/serviceaccounts/:name", ServiceAccountGet)
+	}
+
 	// ConfigMaps
 	{
 		group.GET("/api/v1/configmaps", ConfigMapsList)
@@ -132,6 +132,12 @@ func main() {
 	{
 		group.GET("/apis/apps/v1/deployments", DeploymentList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
+	}
+
+	// ReplicaSet
+	{
+		group.GET("/apis/apps/v1/replicasets", ReplicaSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets/:name", ReplicaSetGet)
 	}
 
 	// StatefulSet
