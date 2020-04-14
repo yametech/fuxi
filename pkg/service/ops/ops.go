@@ -6,8 +6,6 @@ import (
 	"github.com/yametech/fuxi/pkg/db"
 	"github.com/yametech/fuxi/pkg/gits"
 	"github.com/yametech/fuxi/pkg/tekton"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/selection"
 	"time"
 )
 
