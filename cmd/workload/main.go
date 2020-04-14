@@ -77,12 +77,6 @@ func main() {
 		group.GET("/api/v1/nodes/:node", NodeGet)
 	}
 
-	// ReplicaSet
-	{
-		group.GET("/apis/apps/v1/replicasets", ReplicaSetList)
-		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets/:name", ReplicaSetGet)
-	}
-
 	// PersistentVolume
 	{
 		group.GET("/api/v1/persistentvolumes", PersistentVolumeList)
@@ -113,6 +107,12 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
 	}
 
+	// ServiceAccount
+	{
+		group.GET("/api/v1/serviceaccounts", ServiceAccountList)
+		group.GET("/api/v1/namespaces/:namespace/serviceaccounts/:name", ServiceAccountGet)
+	}
+
 	// ConfigMaps
 	{
 		group.GET("/api/v1/configmaps", ConfigMapsList)
@@ -134,6 +134,12 @@ func main() {
 		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
 	}
 
+	// ReplicaSet
+	{
+		group.GET("/apis/apps/v1/replicasets", ReplicaSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets/:name", ReplicaSetGet)
+	}
+
 	// StatefulSet
 	{
 		group.GET("/apis/apps/v1/statefulsets", StatefulSetList)
@@ -147,7 +153,7 @@ func main() {
 	}
 
 	// #batch
-	// # v1beta1
+	// #v1beta1
 
 	// CronJob
 	{
@@ -181,6 +187,13 @@ func main() {
 		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
 	}
 
+	// #storage.k8s.io
+	// #v1
+	{
+		group.GET("/apis/storage.k8s.io/v1beta1/storageclasses", StorageClassList)
+		group.GET("/apis/storage.k8s.io/v1beta1/storageclasses/:name", StorageClassGet)
+	}
+
 	// #autoscaling
 	// #v2beta1
 
@@ -188,6 +201,21 @@ func main() {
 	{
 		group.GET("/apis/autoscaling/v2beta1/horizontalpodautoscalers", HorizontalPodAutoscalerList)
 		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
+	}
+
+	// #rbac.authorization.k8s.io
+	// #v1
+
+	// Role
+	{
+		group.GET("/apis/rbac.authorization.k8s.io/v1/roles", RoleList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/roles/:name", RoleGet)
+	}
+
+	// RoleBinding
+	{
+		group.GET("/apis/rbac.authorization.k8s.io/v1/rolebindings", RoleBindingList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/rolebindings/:name", RoleBindingGet)
 	}
 
 	// #apiextensions.k8s.io/v1beta1

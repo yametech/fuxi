@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-// Get ResourceQuota
-func (w *WorkloadsAPI) GetResourceQuota(g *gin.Context) {
+// Get ServiceAccount
+func (w *WorkloadsAPI) GetServiceAccount(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.resourceQuota.Get(dyn.ResourceResourceQuota, namespace, name)
+	item, err := w.serviceAccount.Get(dyn.ResourceServiceAccount, namespace, name)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
@@ -21,16 +21,16 @@ func (w *WorkloadsAPI) GetResourceQuota(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List ResourceQuota
-func (w *WorkloadsAPI) ListResourceQuota(g *gin.Context) {
-	list, _ := w.resourceQuota.List(dyn.ResourceResourceQuota, "", "", 0, 10000, nil)
-	resourceQuotaList := &v1.ResourceQuotaList{}
+// List ServiceAccount
+func (w *WorkloadsAPI) ListServiceAccount(g *gin.Context) {
+	list, _ := w.serviceAccount.List(dyn.ResourceServiceAccount, "", "", 0, 10000, nil)
+	serviceAccountList := &v1.ServiceAccountList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
 		return
 	}
-	_ = json.Unmarshal(marshalData, resourceQuotaList)
-	g.JSON(http.StatusOK, resourceQuotaList)
+	_ = json.Unmarshal(marshalData, serviceAccountList)
+	g.JSON(http.StatusOK, serviceAccountList)
 }
