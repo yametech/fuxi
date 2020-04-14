@@ -60,6 +60,9 @@ var service, router, group, workloadsAPI = initNeed()
 
 func main() {
 
+	// #api
+	// #v1
+
 	// Pod
 	{
 		group.GET("/shell/pod", gin.WrapH(handler.CreateAttachHandler("/workload/shell/pod")))
@@ -68,46 +71,10 @@ func main() {
 		group.GET("/api/v1/namespace/:namespace/pod/:name", PodGet)
 	}
 
-	// Event
-	{
-		group.GET("/api/v1/events", EventList)
-		group.GET("/api/v1/namespace/:namespace/event/:name", EventGet)
-	}
-
 	// Node
 	{
 		group.GET("/api/v1/nodes", NodeList)
 		group.GET("/api/v1/nodes/:node", NodeGet)
-	}
-
-	// Deployment
-	{
-		group.GET("/apis/apps/v1/deployments", DeploymentList)
-		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
-	}
-
-	// CronJob
-	{
-		group.GET("/apis/batch/v1beta1/cronjobs", CronJobList)
-		group.GET("/apis/batch/v1beta1/namespaces/:namespace/cronjobs/:name", CronJobGet)
-	}
-
-	// StatefulSet
-	{
-		group.GET("/apis/apps/v1/statefulsets", StatefulSetList)
-		group.GET("/apis/apps/v1/namespaces/:namespace/statefulsets/:name", StatefulSetGet)
-	}
-
-	// DaemonSet
-	{
-		group.GET("/apis/apps/v1/daemonsets", DaemonSetList)
-		group.GET("/apis/apps/v1/namespaces/:namespace/daemonsets/:name", DaemonSetGet)
-	}
-
-	// Job
-	{
-		group.GET("/apis/batch/v1/jobs", JobList) //TODO fix route
-		group.GET("/apis/batch/v1/namespaces/:namespace/jobs/:name", JobGet)
 	}
 
 	// ReplicaSet
@@ -116,16 +83,16 @@ func main() {
 		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets/:name", ReplicaSetGet)
 	}
 
-	// ConfigMaps
+	// PersistentVolume
 	{
-		group.GET("/api/v1/configmaps", ConfigMapsList)
-		group.GET("/api/v1/namespaces/:namespace/configmaps/:name", ConfigMapsGet)
+		group.GET("/api/v1/persistentvolumes", PersistentVolumeList)
+		group.GET("/api/v1/persistentvolumes/:name", PersistentVolumeGet)
 	}
 
-	// Secret
+	// Event
 	{
-		group.GET("/api/v1/secrets", SecretList)
-		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
+		group.GET("/api/v1/events", EventList)
+		group.GET("/api/v1/namespace/:namespace/event/:name", EventGet)
 	}
 
 	// ResourceQuota
@@ -140,11 +107,67 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
 	}
 
+	// ConfigMaps
+	{
+		group.GET("/api/v1/configmaps", ConfigMapsList)
+		group.GET("/api/v1/namespaces/:namespace/configmaps/:name", ConfigMapsGet)
+	}
+
+	// Secret
+	{
+		group.GET("/api/v1/secrets", SecretList)
+		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
+	}
+
+	// #apis
+	// #apps v1
+
+	// Deployment
+	{
+		group.GET("/apis/apps/v1/deployments", DeploymentList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
+	}
+
+	// StatefulSet
+	{
+		group.GET("/apis/apps/v1/statefulsets", StatefulSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/statefulsets/:name", StatefulSetGet)
+	}
+
+	// DaemonSet
+	{
+		group.GET("/apis/apps/v1/daemonsets", DaemonSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/daemonsets/:name", DaemonSetGet)
+	}
+
+	// #batch
+	// # v1beta1
+
+	// CronJob
+	{
+		group.GET("/apis/batch/v1beta1/cronjobs", CronJobList)
+		group.GET("/apis/batch/v1beta1/namespaces/:namespace/cronjobs/:name", CronJobGet)
+	}
+
+	// #v1
+
+	// Job
+	{
+		group.GET("/apis/batch/v1/jobs", JobList) //TODO fix route
+		group.GET("/apis/batch/v1/namespaces/:namespace/jobs/:name", JobGet)
+	}
+
+	// #extensions
+	// #v1beta1
+
 	// Ingress
 	{
 		group.GET("/apis/extensions/v1beta1/ingresses", IngressList)
 		group.GET("/apis/extensions/v1beta1/namespaces/:namespace/ingresses/:name", IngressGet)
 	}
+
+	// #networking.k8s.io
+	// #v1
 
 	// NetworkPolicy
 	{
@@ -152,11 +175,17 @@ func main() {
 		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
 	}
 
+	// #autoscaling
+	// #v2beta1
+
 	// HorizontalPodAutoscaler
 	{
 		group.GET("/apis/autoscaling/v2beta1/horizontalpodautoscalers", HorizontalPodAutoscalerList)
 		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
 	}
+
+	// #apiextensions.k8s.io/v1beta1
+	// #v1beta1
 
 	// CustomResourceDefinition
 	{

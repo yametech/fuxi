@@ -23,6 +23,7 @@ type WorkloadsAPI struct {
 	networkPolicy            *workloadservice.NetworkPolicy
 	horizontalPodAutoscaler  *workloadservice.HorizontalPodAutoscaler
 	customResourceDefinition *workloadservice.CustomResourceDefinition
+	persistentVolume         *workloadservice.PersistentVolume
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -44,5 +45,6 @@ func NewWorkladAPI() *WorkloadsAPI {
 		networkPolicy:            workloadservice.NewNetworkPolicy(),
 		horizontalPodAutoscaler:  workloadservice.NewHorizontalPodAutoscaler(),
 		customResourceDefinition: workloadservice.NewCustomResourceDefinition(),
+		persistentVolume:         workloadservice.NewPersistentVolume(),
 	}
 }
