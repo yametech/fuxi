@@ -109,8 +109,12 @@ func (ops *Ops) PipelineResourceList(namespace string) ([]Resource, error) {
 	var strVals []string
 	strVals = append(strVals, namespace)
 	key := "namespace"
-	rq := labels.Requirement{key, selection.Equals, strVals}
-	lable := labels.NewSelector().Add(rq)
+	rq, err := labels.NewRequirement(key, selection.Equals, strVals)
+	if err != nil {
+		return nil, err
+	}
+
+	lable := labels.NewSelector().Add(*rq)
 	rs, err := ops.informer.Tekton().V1alpha1().PipelineResources().
 		Lister().
 		PipelineResources(namespace).List(lable)

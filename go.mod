@@ -121,6 +121,7 @@ require (
 	k8s.io/gengo v0.0.0-20191010091904-7fa3014cb28f
 	k8s.io/klog v1.0.0
 	k8s.io/kube-openapi v0.0.0-20191107075043-30be4d16710a
+	k8s.io/sample-controller v0.0.0-20190326030654-b8f621986e45
 	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706
 	sigs.k8s.io/controller-runtime v0.4.0
 )

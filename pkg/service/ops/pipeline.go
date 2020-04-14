@@ -102,8 +102,13 @@ func (ops *Ops) PipelineList(namespace string) ([]Pipeline, error) {
 	var strVals []string
 	strVals = append(strVals, namespace)
 	key := "namespace"
-	rq := labels.Requirement{key, selection.Equals, strVals}
-	lable := labels.NewSelector().Add(rq)
+
+	rq, err := labels.NewRequirement(key, selection.Equals, strVals)
+	if err != nil {
+		return nil, err
+	}
+
+	lable := labels.NewSelector().Add(*rq)
 
 	ps, err := ops.informer.Tekton().V1alpha1().
 		Pipelines().
