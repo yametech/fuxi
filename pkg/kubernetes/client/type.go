@@ -30,6 +30,7 @@ const (
 	PersistentVolumeClaims   ResourceName = "persistentvolumeclaims"
 	StorageClass             ResourceName = "storageclasses"
 	ServiceAccount           ResourceName = "serviceaccounts"
+	Role                     ResourceName = "roles"
 	RoleBinding              ResourceName = "rolebindings"
 )
 
@@ -59,6 +60,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	PersistentVolumeClaims:   {Group: "", Version: "v1", Resource: "persistentvolumeclaims"},
 	StorageClass:             {Group: "storage.k8s.io", Version: "v1beta1", Resource: "storageclasses"},
 	ServiceAccount:           {Group: "", Version: "v1", Resource: "serviceaccounts"},
+	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
 	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
 }
 
@@ -87,6 +89,7 @@ var (
 	ResourcePersistentVolumeClaims   = GetGVR(PersistentVolumeClaims)
 	ResourceStorageClass             = GetGVR(StorageClass)
 	ResourceServiceAccount           = GetGVR(ServiceAccount)
+	ResourceRole                     = GetGVR(Role)
 	ResourceRoleBinding              = GetGVR(RoleBinding)
 )
 

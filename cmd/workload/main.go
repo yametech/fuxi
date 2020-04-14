@@ -206,6 +206,12 @@ func main() {
 	// #rbac.authorization.k8s.io
 	// #v1
 
+	// Role
+	{
+		group.GET("/apis/rbac.authorization.k8s.io/v1/roles", RoleList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/roles/:name", RoleGet)
+	}
+
 	// RoleBinding
 	{
 		group.GET("/apis/rbac.authorization.k8s.io/v1/rolebindings", RoleBindingList)

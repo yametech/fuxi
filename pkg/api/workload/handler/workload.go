@@ -27,6 +27,7 @@ type WorkloadsAPI struct {
 	persistentVolumeClaims   *workloadservice.PersistentVolumeClaims
 	storageClass             *workloadservice.StorageClass
 	serviceAccount           *workloadservice.ServiceAccount
+	role                     *workloadservice.Role
 	roleBinding              *workloadservice.RoleBinding
 }
 
@@ -53,6 +54,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		persistentVolumeClaims:   workloadservice.NewPersistentVolumeClaims(),
 		storageClass:             workloadservice.NewStorageClass(),
 		serviceAccount:           workloadservice.NewServiceAccount(),
+		role:                     workloadservice.NewRole(),
 		roleBinding:              workloadservice.NewRoleBinding(),
 	}
 }
