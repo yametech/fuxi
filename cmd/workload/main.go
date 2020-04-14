@@ -13,8 +13,6 @@ import (
 	"github.com/yametech/fuxi/pkg/preinstall"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
-	"net/http"
-
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
@@ -154,6 +152,12 @@ func main() {
 		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
 	}
 
+	// HorizontalPodAutoscaler
+	{
+		group.GET("/apis/autoscaling/v1/horizontalpodautoscalers", HorizontalPodAutoscalerList)
+		group.GET("/apis/autoscaling/v1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
+	}
+
 	// Swag
 	{
 		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
@@ -161,7 +165,6 @@ func main() {
 		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	}
 
-	
 	service.Handle("/", router)
 
 	// Run service
