@@ -196,6 +196,15 @@ func main() {
 		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
 	}
 
+	// #rbac.authorization.k8s.io
+	// #v1
+
+	// RoleBinding
+	{
+		group.GET("/apis/rbac.authorization.k8s.io/v1/rolebindings", RoleBindingList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/rolebindings/:name", RoleBindingGet)
+	}
+
 	// #apiextensions.k8s.io/v1beta1
 	// #v1beta1
 
