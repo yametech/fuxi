@@ -24,6 +24,7 @@ type WorkloadsAPI struct {
 	horizontalPodAutoscaler  *workloadservice.HorizontalPodAutoscaler
 	customResourceDefinition *workloadservice.CustomResourceDefinition
 	persistentVolume         *workloadservice.PersistentVolume
+	storageClass             *workloadservice.StorageClass
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -46,5 +47,6 @@ func NewWorkladAPI() *WorkloadsAPI {
 		horizontalPodAutoscaler:  workloadservice.NewHorizontalPodAutoscaler(),
 		customResourceDefinition: workloadservice.NewCustomResourceDefinition(),
 		persistentVolume:         workloadservice.NewPersistentVolume(),
+		storageClass:             workloadservice.NewStorageClass(),
 	}
 }
