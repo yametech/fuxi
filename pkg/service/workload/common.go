@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	watch "k8s.io/apimachinery/pkg/watch"
 )
 
 // Resource query conditions
@@ -33,7 +34,7 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 type ResourceQuery interface {
 	List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64, selector labels.Selector) (*unstructured.UnstructuredList, error)
 	Get(resource schema.GroupVersionResource, namespace, name string) (runtime.Object, error)
-	Watch(resource schema.GroupVersionResource, namespace string, selector labels.Selector, closed chan struct{}) (chan runtime.Object, error)
+	Watch(resource schema.GroupVersionResource, namespace string, selector labels.Selector, closed chan struct{}) (<-chan watch.Event, error)
 }
 
 // ResourceApply update resource interface
@@ -166,36 +167,22 @@ func (d *defaultImplWorkloadsResourceHandler) Watch(
 	namespace string,
 	selector labels.Selector,
 	closed chan struct{},
-) (chan runtime.Object, error) {
-	itemChan := make(chan runtime.Object)
+) (<-chan watch.Event, error) {
 	closed = make(chan struct{})
+	opts := metav1.ListOptions{}
+	if selector != nil {
+		opts.LabelSelector = selector.String()
+	}
 	recv, err := sharedK8sClient.
 		cacheInformer.
 		Client.
 		Resource(resource).
 		Namespace(namespace).
-		Watch(
-			metav1.ListOptions{
-				LabelSelector: selector.String(),
-			},
-		)
+		Watch(opts)
 	if err != nil {
 		return nil, err
 	}
-	go func() {
-		for {
-			select {
-			case <-closed:
-				return
-			case event, ok := <-recv.ResultChan():
-				if !ok {
-					return
-				}
-				itemChan <- event.Object
-			}
-		}
-	}()
-	return itemChan, nil
+	return recv.ResultChan(), nil
 }
 
 func (d *defaultImplWorkloadsResourceHandler) Apply(
