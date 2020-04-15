@@ -10,6 +10,429 @@ info:
   title: Gin swagger
   version: "1.0"
 paths:
+  /workload/api/v1/configmaps:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list configMaps
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload configMaps list
+      tags:
+      - ConfigMaps
+  /workload/api/v1/namespaces/:namespace/configmaps/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a configMaps detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload configMaps get
+      tags:
+      - ConfigMaps
+  /workload/api/v1/namespaces/:namespace/resourcequotas/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a resource quota detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload resource quota get
+      tags:
+      - ResourceQuota
+  /workload/api/v1/namespaces/:namespace/services/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a service detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload service get
+      tags:
+      - Service
+  /workload/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a persistent volume claims detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload persistent volume claims get
+      tags:
+      - PersistentVolumeClaims
+  /workload/api/v1/namespaces/{namespace}/pods/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a pod detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload pod get
+      tags:
+      - Pod
+  /workload/api/v1/namespaces/{namespace}/secrets/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a secret detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload secret get
+      tags:
+      - ConfigMap
+  /workload/api/v1/persistentvolumeclaims:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list network policy
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload persistent volume claims list
+      tags:
+      - PersistentVolumeClaims
+  /workload/api/v1/persistentvolumes:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list persistent volume
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload persistent volume list
+      tags:
+      - PersistentVolume
+  /workload/api/v1/persistentvolumes/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a persistent volume detail
+      parameters:
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload persistent volume get
+      tags:
+      - PersistentVolume
+  /workload/api/v1/pods:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list pod
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload pod list
+      tags:
+      - Pod
+  /workload/api/v1/resourcequotas:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list resource quota
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload resource quota list
+      tags:
+      - ResourceQuota
+  /workload/api/v1/secrets:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list secret
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload secret list
+      tags:
+      - Secret
+  /workload/api/v1/services:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list service
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload service list
+      tags:
+      - Service
+  /workload/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list custom resource definition
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload custom resource definition list
+      tags:
+      - CustomResourceDefinition
+  /workload/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a custom resource definition detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload custom resource definition get
+      tags:
+      - CustomResourceDefinition
   /workload/apis/apps/v1/daemonsets:
     get:
       consumes:
@@ -90,6 +513,61 @@ paths:
       summary: workload statefulSet list
       tags:
       - StatefulSet
+  /workload/apis/autoscaling/v2beta1/horizontalpodautoscalers:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list horizontal pod autoscaler
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload horizontal pod autoscaler list
+      tags:
+      - HorizontalPodAutoscaler
+  /workload/apis/autoscaling/v2beta1/namespaces/{namespace}/horizontalpodautoscalers/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a horizontal pod autoscaler detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload horizontal pod autoscaler get
+      tags:
+      - HorizontalPodAutoscaler
   /workload/apis/batch/v1/jobs:
     get:
       consumes:
@@ -195,11 +673,71 @@ paths:
       summary: workload deployment list
       tags:
       - Deployment
-  /workload/attach/namespace/:namespace/pod/:name/container/:container:
+  /workload/apis/crd/:group/:version/:resource:
     get:
       consumes:
       - multipart/form-data
-      description: workload service for get a pod detail
+      description: workload service for list general custom resource definition
+      parameters:
+      - description: group
+        in: query
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: query
+        name: version
+        required: true
+        type: string
+      - description: resource
+        in: query
+        name: resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload general custom resource definition list
+      tags:
+      - GeneralCustomResourceDefinition
+  /workload/apis/extensions/v1beta1/ingresses:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list ingress
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload ingress list
+      tags:
+      - Ingress
+  /workload/apis/extensions/v1beta1/namespaces/:namespace/ingresses/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a ingress detail
       parameters:
       - description: namespace
         in: query
@@ -222,9 +760,119 @@ paths:
           description: '{"msg": "Failed"}'
           schema:
             type: string
-      summary: workload pod get
+      summary: workload ingress get
       tags:
-      - Pod
+      - Ingress
+  /workload/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a network policy detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload network policy get
+      tags:
+      - NetworkPolicy
+  /workload/apis/networking.k8s.io/v1/networkpolicies:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list network policy
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload network policy list
+      tags:
+      - NetworkPolicy
+  /workload/apis/storage.k8s.io/v1beta1/storageclasses:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list storage class
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload storage class list
+      tags:
+      - StorageClass
+  /workload/apis/storage.k8s.io/v1beta1/storageclasses/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a storage class detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload storage class get
+      tags:
+      - StorageClass
   /workload/v1/:ns/cronjobs/:name/get:
     get:
       consumes:
@@ -285,61 +933,6 @@ paths:
       summary: workload cronJob get
       tags:
       - Deployment
-  /workload/v1/:ns/pod/:name/get:
-    get:
-      consumes:
-      - multipart/form-data
-      description: workload service for get a pod detail
-      parameters:
-      - description: namespace
-        in: query
-        name: namespace
-        required: true
-        type: string
-      - description: name
-        in: query
-        name: name
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg": "Success"}'
-          schema:
-            type: string
-        "400":
-          description: '{"msg": "Failed"}'
-          schema:
-            type: string
-      summary: workload pod get
-      tags:
-      - Pod
-  /workload/v1/:ns/pod/list:
-    get:
-      consumes:
-      - multipart/form-data
-      description: workload service for list pod
-      parameters:
-      - description: namespace
-        in: query
-        name: namespace
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg": "Success"}'
-          schema:
-            type: string
-        "400":
-          description: '{"msg": "Failed"}'
-          schema:
-            type: string
-      summary: workload pod list
-      tags:
-      - Pod
   /workload/v1/namespace/:namespace/daemonsets/:name:
     get:
       consumes:

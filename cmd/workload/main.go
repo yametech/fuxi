@@ -46,7 +46,7 @@ func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsA
 	router := gin.Default()
 	router.Use(gin2micro.TracerWrapper)
 
-	err = workloadservice.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sResourceHandler, client.RestConf)
+	err = workloadservice.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sClient, client.RestConf)
 	if err != nil {
 		panic(err)
 	}
