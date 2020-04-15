@@ -9,25 +9,30 @@ import (
 )
 
 //GetTaskRunLog get task run log
-func (o *OpsController) GetTaskRunLog(c *gin.Context) {
-	userName := o.getUserName(c)
-	if userName == "" {
+func (o *OpsController) GetTaskRunLog(ctx *gin.Context) {
+	namespace := ctx.Param("namespace")
+	name := ctx.Param("name")
+	if namespace == "" && name == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get real log error: namespace or name cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
 		return
 	}
 
-	namespace := c.Param("namespace")
-	taskRunLog, err := o.Service.GetTaskRunLog(userName, namespace)
+	taskRunLog, err := o.Service.GetTaskRunLog(name, namespace)
 
 	if err != nil {
 		logging.Log.Error("get task run log error: " + err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "get task run log error" + err.Error(),
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "get task run log success",
 		"code": http.StatusOK,
 		"data": taskRunLog,
