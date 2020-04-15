@@ -85,9 +85,9 @@ func main() {
 		group.GET("/v1/pipelinerun/:namespace/:name", ops.GetPipelineRun)
 		group.POST("/v1/pipelinerun/rerun/:namespace/:name", ops.ReRunPipeline)
 		group.POST("/v1/pipelinerun/cancel/:namespace/:name", ops.CancelPipelineRun)
-
-		//group.GET("/v1/repos", ops.ListRepos)
-		//group.GET("/v1/branchs", ops.ListBranchs)
+		//repos
+		group.GET("/v1/repos/:namespace", ops.ListRepos)
+		group.GET("/v1/branchs/:namespace", ops.ListBranchs)
 	}
 
 	service.Handle("/", router)
