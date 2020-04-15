@@ -26,6 +26,21 @@ func (o *OpsController) getUserName(c *gin.Context) string {
 
 }
 
+//CheckParams check params if not null
+func (o *OpsController) CheckParams(c *gin.Context) (bool, string, string) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	if namespace == "" && name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get task list error: namespace or name cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return true, "", ""
+	}
+	return false, namespace, name
+}
+
 //ListRepos return current user department all repos
 func (o *OpsController) ListRepos(c *gin.Context) {
 
