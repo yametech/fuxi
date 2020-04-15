@@ -70,22 +70,18 @@ func (o *OpsController) TaskList(c *gin.Context) {
 //DeleteTask delete a task
 func (o *OpsController) DeleteTask(c *gin.Context) {
 
-	userName := o.getUserName(c)
-	if userName == "" {
-		return
-	}
-
 	namespace := c.Param("namespace")
-	if namespace == "" {
+	name := c.Param("name")
+	if namespace == "" && name == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
+			"msg":  "get task list error: namespace or name cannot be empty",
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
 		return
 	}
 
-	err := o.Service.DeleteTask(userName, namespace)
+	err := o.Service.DeleteTask(name, namespace)
 	if err != nil {
 		logging.Log.Error("delete task error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -105,22 +101,18 @@ func (o *OpsController) DeleteTask(c *gin.Context) {
 //GetTask get the task
 func (o *OpsController) GetTask(c *gin.Context) {
 
-	userName := o.getUserName(c)
-	if userName == "" {
-		return
-	}
-
 	namespace := c.Param("namespace")
-	if namespace == "" {
+	name := c.Param("name")
+	if namespace == "" && name == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
+			"msg":  "get task list error: namespace or name cannot be empty",
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
 		return
 	}
 
-	task, err := o.Service.GetTask(userName, namespace)
+	task, err := o.Service.GetTask(name, namespace)
 	if err != nil {
 		logging.Log.Error("get task error: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{

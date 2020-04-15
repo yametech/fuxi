@@ -68,8 +68,16 @@ var upGrader = websocket.Upgrader{
 
 func (o *OpsController) GetRealLog(ctx *gin.Context) {
 
-	//namespace := ctx.Param("namespace")
-	//name := ctx.Param("name")
+	namespace := ctx.Param("namespace")
+	name := ctx.Param("name")
+	if namespace == "" && name == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get real log error: namespace or name cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
 
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
@@ -85,18 +93,6 @@ func (o *OpsController) GetRealLog(ctx *gin.Context) {
 
 	mt, _, err := ws.ReadMessage()
 	if err != nil {
-		return
-	}
-
-	namespace := "fjl"
-	name := "demo-pipeline-run-4"
-
-	if namespace == "" && name == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get real log error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
 		return
 	}
 
@@ -120,7 +116,6 @@ func (o *OpsController) GetRealLog(ctx *gin.Context) {
 			}
 
 			if l.Log == "EOFLOG" {
-				//fmt.Fprintf(s.Out, "\n")
 				continue
 			}
 			j, err := json.Marshal(l)
@@ -131,15 +126,9 @@ func (o *OpsController) GetRealLog(ctx *gin.Context) {
 					"data": "",
 				})
 			}
+
 			ws.WriteMessage(mt, j)
-			//switch lw.logType {
-			//case LogTypePipeline:
-			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s : %s] ", l.Task, l.Step)
-			//case LogTypeTask:
-			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s] ", l.Step)
-			//}
-			//
-			//fmt.Fprintf(s.Out, "%s\n", l.Log)
+
 		case e, ok := <-errC:
 			if !ok {
 				errC = nil
