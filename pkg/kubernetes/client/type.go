@@ -58,7 +58,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	CustomResourceDefinition: {Group: "apiextensions.k8s.io", Version: "v1beta1", Resource: "customresourcedefinitions"},
 	PersistentVolume:         {Group: "", Version: "v1", Resource: "persistentvolumes"},
 	PersistentVolumeClaims:   {Group: "", Version: "v1", Resource: "persistentvolumeclaims"},
-	StorageClass:             {Group: "storage.k8s.io", Version: "v1beta1", Resource: "storageclasses"},
+	StorageClass:             {Group: "storage.k8s.io", Version: "v1", Resource: "storageclasses"},
 	ServiceAccount:           {Group: "", Version: "v1", Resource: "serviceaccounts"},
 	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
 	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},

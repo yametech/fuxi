@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
-	"k8s.io/api/storage/v1beta1"
+	"k8s.io/api/storage/v1"
 	"net/http"
 )
 
@@ -23,7 +23,7 @@ func (w *WorkloadsAPI) GetStorageClass(g *gin.Context) {
 // List StorageClass
 func (w *WorkloadsAPI) ListStorageClass(g *gin.Context) {
 	list, _ := w.storageClass.List(dyn.ResourceStorageClass, "", "", 0, 0, nil)
-	storageClassList := &v1beta1.StorageClassList{}
+	storageClassList := &v1.StorageClassList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,

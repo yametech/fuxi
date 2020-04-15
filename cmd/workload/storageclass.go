@@ -11,7 +11,7 @@ import "github.com/gin-gonic/gin"
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/storage.k8s.io/v1beta1/storageclasses [get]
+// @Router /workload/apis/storage.k8s.io/v1/storageclasses [get]
 func StorageClassList(g *gin.Context) { workloadsAPI.ListStorageClass(g) }
 
 // StorageClass doc
@@ -24,5 +24,5 @@ func StorageClassList(g *gin.Context) { workloadsAPI.ListStorageClass(g) }
 // @Param name query string true "name"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/storage.k8s.io/v1beta1/storageclasses/{name} [get]
+// @Router /workload/apis/storage.k8s.io/v1/storageclasses/{name} [get]
 func StorageClassGet(g *gin.Context) { workloadsAPI.GetStorageClass(g) }

@@ -190,8 +190,8 @@ func main() {
 	// #storage.k8s.io
 	// #v1
 	{
-		group.GET("/apis/storage.k8s.io/v1beta1/storageclasses", StorageClassList)
-		group.GET("/apis/storage.k8s.io/v1beta1/storageclasses/:name", StorageClassGet)
+		group.GET("/apis/storage.k8s.io/v1/storageclasses", StorageClassList)
+		group.GET("/apis/storage.k8s.io/v1/storageclasses/:name", StorageClassGet)
 	}
 
 	// #autoscaling
