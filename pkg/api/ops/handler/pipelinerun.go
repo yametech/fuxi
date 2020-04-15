@@ -102,14 +102,8 @@ func (o *OpsController) GetPipelineRunHistoryList(c *gin.Context) {
 //PipelineRunDelete delete a pipeline run
 func (o *OpsController) PipelineRunDelete(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
@@ -133,14 +127,8 @@ func (o *OpsController) PipelineRunDelete(c *gin.Context) {
 //GetPipelineRun get pipeline run
 func (o *OpsController) GetPipelineRun(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
@@ -164,14 +152,8 @@ func (o *OpsController) GetPipelineRun(c *gin.Context) {
 //ReRunPipeline rerun a pipeline run
 func (o *OpsController) ReRunPipeline(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
@@ -195,14 +177,8 @@ func (o *OpsController) ReRunPipeline(c *gin.Context) {
 //CancelPipelineRun cancel a pipeline run
 func (o *OpsController) CancelPipelineRun(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 

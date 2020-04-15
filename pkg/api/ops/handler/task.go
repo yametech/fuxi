@@ -70,14 +70,8 @@ func (o *OpsController) TaskList(c *gin.Context) {
 //DeleteTask delete a task
 func (o *OpsController) DeleteTask(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
@@ -101,14 +95,8 @@ func (o *OpsController) DeleteTask(c *gin.Context) {
 //GetTask get the task
 func (o *OpsController) GetTask(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 

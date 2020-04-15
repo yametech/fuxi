@@ -10,14 +10,9 @@ import (
 
 //GetTaskRunLog get task run log
 func (o *OpsController) GetTaskRunLog(ctx *gin.Context) {
-	namespace := ctx.Param("namespace")
-	name := ctx.Param("name")
-	if namespace == "" && name == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get real log error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+
+	check, namespace, name := o.CheckParams(ctx)
+	if check {
 		return
 	}
 
@@ -41,13 +36,12 @@ func (o *OpsController) GetTaskRunLog(ctx *gin.Context) {
 
 //GetPipelineRunLog get pipeline run log
 func (o *OpsController) GetPipelineRunLog(c *gin.Context) {
-	userName := o.getUserName(c)
-	if userName == "" {
+
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
-
-	namespace := c.Param("namespace")
-	pipelineRunLogs, err := o.Service.GetPipelineRunLog(userName, namespace)
+	pipelineRunLogs, err := o.Service.GetPipelineRunLog(name, namespace)
 
 	if err != nil {
 		logging.Log.Error("get pipeline run log error:", err.Error())
@@ -73,14 +67,8 @@ var upGrader = websocket.Upgrader{
 
 func (o *OpsController) GetRealLog(ctx *gin.Context) {
 
-	namespace := ctx.Param("namespace")
-	name := ctx.Param("name")
-	if namespace == "" && name == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get real log error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(ctx)
+	if check {
 		return
 	}
 

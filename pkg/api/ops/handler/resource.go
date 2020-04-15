@@ -71,14 +71,8 @@ func (o *OpsController) PipelineResourceList(c *gin.Context) {
 //PipelineResourceDelete deletes a pipeline resource
 func (o *OpsController) PipelineResourceDelete(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
@@ -102,14 +96,8 @@ func (o *OpsController) PipelineResourceDelete(c *gin.Context) {
 //GetPipelineResource get pipeline resource
 func (o *OpsController) GetPipelineResource(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 

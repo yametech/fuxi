@@ -60,16 +60,11 @@ func (o *OpsController) PipelineList(c *gin.Context) {
 //PipelineDelete deletes a pipeline
 func (o *OpsController) PipelineDelete(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
+
 	err := o.Service.PipelineDelete(name, namespace)
 
 	if err != nil {
@@ -91,14 +86,8 @@ func (o *OpsController) PipelineDelete(c *gin.Context) {
 //GetPipeline get pipeline
 func (o *OpsController) GetPipeline(c *gin.Context) {
 
-	namespace := c.Param("namespace")
-	name := c.Param("name")
-	if namespace == "" && name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
