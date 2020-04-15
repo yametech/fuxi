@@ -109,7 +109,7 @@ func EtcdStringFlag() cli.StringFlag {
 		Name:   "etcd_address",
 		Usage:  "etcd address for config K/V",
 		EnvVar: "ETCD_ADDRESS",
-		Value:  "gz.nuwa.xyz:12379",
+		Value:  "fuxi.io:12379",
 	}
 }
 
