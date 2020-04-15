@@ -33,10 +33,11 @@ type Log struct {
 }
 
 type Logger struct {
-	number int
-	run    string
-	task   string
-	ns     string
+	number   int
+	run      string
+	task     string
+	ns       string
+	pipeline string
 }
 
 type PipelineRunLog []TaskRunLog
@@ -214,6 +215,8 @@ func (ops *Ops) ReadLivePipelineLogs(name, namespace string, tasks []string) (<-
 					// clone the object to keep task number and name separately
 					c := ops.clone()
 					c.setUpTask(taskNum, tr)
+					c.ns = namespace
+					c.pipeline = pr.Name
 					c.pipeLogs(logC, errC)
 				}(run, taskIndex)
 			}
@@ -260,7 +263,7 @@ func empty(status v1alpha1.PipelineRunStatus) bool {
 }
 
 func (log *Logger) pipeLogs(logC chan<- Log, errC chan<- error) {
-	tlogC, terrC, err := log.readTaskLog(log.task, log.ns)
+	tlogC, terrC, err := log.readTaskLog(log.run, log.ns)
 	if err != nil {
 		errC <- err
 		return
@@ -273,7 +276,7 @@ func (log *Logger) pipeLogs(logC chan<- Log, errC chan<- error) {
 				tlogC = nil
 				continue
 			}
-			logC <- Log{Task: l.Task, Step: l.Step, Log: l.Log}
+			logC <- Log{Task: l.Task, Step: l.Step, Log: l.Log, Pipeline: log.pipeline}
 
 		case e, ok := <-terrC:
 			if !ok {

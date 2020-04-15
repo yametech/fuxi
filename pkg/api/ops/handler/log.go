@@ -68,17 +68,8 @@ var upGrader = websocket.Upgrader{
 
 func (o *OpsController) GetRealLog(ctx *gin.Context) {
 
-	namespace := ctx.Param("namespace")
-	name := ctx.Param("name")
-
-	if namespace == "" && name == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get real log error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
-		return
-	}
+	//namespace := ctx.Param("namespace")
+	//name := ctx.Param("name")
 
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
@@ -97,7 +88,19 @@ func (o *OpsController) GetRealLog(ctx *gin.Context) {
 		return
 	}
 
-	logC, errC, err := o.Service.ReadLivePipelineLogs(namespace, name, nil)
+	namespace := "fjl"
+	name := "demo-pipeline-run-4"
+
+	if namespace == "" && name == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg":  "get real log error: namespace or name cannot be empty",
+			"code": http.StatusBadRequest,
+			"data": "",
+		})
+		return
+	}
+
+	logC, errC, err := o.Service.ReadLivePipelineLogs(name, namespace, nil)
 	if err != nil {
 
 		ctx.JSON(http.StatusInternalServerError, gin.H{

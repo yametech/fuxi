@@ -35,6 +35,7 @@ func NewOps(defaultResync time.Duration) *Ops {
 
 func (ops *Ops) Start(stopCh <-chan struct{}) {
 	ops.informer.Start(stopCh)
+	ops.informer.WaitForCacheSync(stopCh)
 }
 
 var _ OpsService = (*Ops)(nil)
