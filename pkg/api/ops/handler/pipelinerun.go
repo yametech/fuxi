@@ -102,22 +102,12 @@ func (o *OpsController) GetPipelineRunHistoryList(c *gin.Context) {
 //PipelineRunDelete delete a pipeline run
 func (o *OpsController) PipelineRunDelete(c *gin.Context) {
 
-	userName := o.getUserName(c)
-	if userName == "" {
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
-	namespace := c.Param("namespace")
-	if namespace == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
-		return
-	}
-
-	err := o.Service.PipelineRunDelete(userName, namespace)
+	err := o.Service.PipelineRunDelete(namespace, name)
 	if err != nil {
 		logging.Log.Error("pipelinerun delete error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -137,22 +127,12 @@ func (o *OpsController) PipelineRunDelete(c *gin.Context) {
 //GetPipelineRun get pipeline run
 func (o *OpsController) GetPipelineRun(c *gin.Context) {
 
-	userName := o.getUserName(c)
-	if userName == "" {
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
-	namespace := c.Param("namespace")
-	if namespace == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
-		return
-	}
-
-	p, err := o.Service.GetPipelineRun(userName, namespace)
+	p, err := o.Service.GetPipelineRun(name, namespace)
 	if err != nil {
 		logging.Log.Error("get pipelinerun error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -172,22 +152,12 @@ func (o *OpsController) GetPipelineRun(c *gin.Context) {
 //ReRunPipeline rerun a pipeline run
 func (o *OpsController) ReRunPipeline(c *gin.Context) {
 
-	userName := o.getUserName(c)
-	if userName == "" {
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
-	namespace := c.Param("namespace")
-	if namespace == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
-		return
-	}
-
-	err := o.Service.ReRunPipeline(userName, namespace)
+	err := o.Service.ReRunPipeline(name, namespace)
 	if err != nil {
 		logging.Log.Error("rerun pipeline error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -207,22 +177,12 @@ func (o *OpsController) ReRunPipeline(c *gin.Context) {
 //CancelPipelineRun cancel a pipeline run
 func (o *OpsController) CancelPipelineRun(c *gin.Context) {
 
-	userName := o.getUserName(c)
-	if userName == "" {
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
-	namespace := c.Param("namespace")
-	if namespace == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
-		return
-	}
-
-	err := o.Service.CancelPipelineRun(userName, namespace)
+	err := o.Service.CancelPipelineRun(namespace, name)
 	if err != nil {
 		logging.Log.Error("cancel pipelinerun error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{

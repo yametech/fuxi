@@ -9,25 +9,25 @@ import (
 )
 
 //GetTaskRunLog get task run log
-func (o *OpsController) GetTaskRunLog(c *gin.Context) {
-	userName := o.getUserName(c)
-	if userName == "" {
+func (o *OpsController) GetTaskRunLog(ctx *gin.Context) {
+
+	check, namespace, name := o.CheckParams(ctx)
+	if check {
 		return
 	}
 
-	namespace := c.Param("namespace")
-	taskRunLog, err := o.Service.GetTaskRunLog(userName, namespace)
+	taskRunLog, err := o.Service.GetTaskRunLog(name, namespace)
 
 	if err != nil {
 		logging.Log.Error("get task run log error: " + err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "get task run log error" + err.Error(),
 			"code": http.StatusBadRequest,
 			"data": "",
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "get task run log success",
 		"code": http.StatusOK,
 		"data": taskRunLog,
@@ -36,13 +36,12 @@ func (o *OpsController) GetTaskRunLog(c *gin.Context) {
 
 //GetPipelineRunLog get pipeline run log
 func (o *OpsController) GetPipelineRunLog(c *gin.Context) {
-	userName := o.getUserName(c)
-	if userName == "" {
+
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
-
-	namespace := c.Param("namespace")
-	pipelineRunLogs, err := o.Service.GetPipelineRunLog(userName, namespace)
+	pipelineRunLogs, err := o.Service.GetPipelineRunLog(name, namespace)
 
 	if err != nil {
 		logging.Log.Error("get pipeline run log error:", err.Error())
@@ -68,15 +67,8 @@ var upGrader = websocket.Upgrader{
 
 func (o *OpsController) GetRealLog(ctx *gin.Context) {
 
-	namespace := ctx.Param("namespace")
-	name := ctx.Param("name")
-
-	if namespace == "" && name == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get real log error: namespace or name cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
+	check, namespace, name := o.CheckParams(ctx)
+	if check {
 		return
 	}
 
@@ -97,7 +89,7 @@ func (o *OpsController) GetRealLog(ctx *gin.Context) {
 		return
 	}
 
-	logC, errC, err := o.Service.ReadLivePipelineLogs(namespace, name, nil)
+	logC, errC, err := o.Service.ReadLivePipelineLogs(name, namespace, nil)
 	if err != nil {
 
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -117,7 +109,6 @@ func (o *OpsController) GetRealLog(ctx *gin.Context) {
 			}
 
 			if l.Log == "EOFLOG" {
-				//fmt.Fprintf(s.Out, "\n")
 				continue
 			}
 			j, err := json.Marshal(l)
@@ -128,15 +119,9 @@ func (o *OpsController) GetRealLog(ctx *gin.Context) {
 					"data": "",
 				})
 			}
+
 			ws.WriteMessage(mt, j)
-			//switch lw.logType {
-			//case LogTypePipeline:
-			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s : %s] ", l.Task, l.Step)
-			//case LogTypeTask:
-			//	lw.fmt.Rainbow.Fprintf(l.Step, s.Out, "[%s] ", l.Step)
-			//}
-			//
-			//fmt.Fprintf(s.Out, "%s\n", l.Log)
+
 		case e, ok := <-errC:
 			if !ok {
 				errC = nil

@@ -60,9 +60,35 @@ func main() {
 
 	// ops
 	{
-		group.GET("/v1/log", ops.GetRealLog)
-		//group.GET("/v1/repos", ops.ListRepos)
-		//group.GET("/v1/branchs", ops.ListBranchs)
+		//log
+		group.GET("/v1/log/:namespace/:pipelinename", ops.GetRealLog)
+		group.GET("/v1/log/:namespace/:taskrunname", ops.GetTaskRunLog)
+		//pipeline
+		group.POST("/v1/pipeline", ops.CreateOrUpdatePipeline)
+		group.GET("/v1/pipelines/:namespace", ops.PipelineList)
+		group.GET("/v1/pipeline/:namespace/:name", ops.GetPipeline)
+		group.DELETE("/v1/pipeline/:namespace", ops.PipelineDelete)
+		//task
+		group.POST("/v1/task/", ops.CreateOrUpdateTask)
+		group.GET("/v1/tasks/:namespace", ops.TaskList)
+		group.GET("/v1/task/:namespace/:name", ops.GetTask)
+		group.DELETE("/v1/task/:namespace/:name", ops.DeleteTask)
+		//resource
+		group.POST("/v1/resource/", ops.CreateOrUpdatePipelineResource)
+		group.GET("/v1/resources/:namespace", ops.PipelineResourceList)
+		group.GET("/v1/resource/:namespace/:name", ops.GetPipelineResource)
+		group.DELETE("/v1/resource/:namespace/:name", ops.DeleteTask)
+		//pipelinerun
+		group.POST("/v1/pipelinerun", ops.CreateOrUpdatePipelineRun)
+		group.GET("/v1/pipelineruns/latest/:namespace", ops.GetLatestPipelineRunList)
+		group.GET("/v1/pipelineruns/history/:namespace/:name", ops.GetPipelineRunHistoryList)
+		group.DELETE("/v1/pipelinerun/:namespace/:name", ops.PipelineRunDelete)
+		group.GET("/v1/pipelinerun/:namespace/:name", ops.GetPipelineRun)
+		group.POST("/v1/pipelinerun/rerun/:namespace/:name", ops.ReRunPipeline)
+		group.POST("/v1/pipelinerun/cancel/:namespace/:name", ops.CancelPipelineRun)
+		//repos
+		group.GET("/v1/repos/:namespace", ops.ListRepos)
+		group.GET("/v1/branchs/:namespace", ops.ListBranchs)
 	}
 
 	service.Handle("/", router)
