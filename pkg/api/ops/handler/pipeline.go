@@ -22,9 +22,9 @@ func (o *OpsController) CreateOrUpdatePipeline(c *gin.Context) {
 	}
 
 	if err := o.Service.CreateOrUpdatePipeline(pipeline); err != nil {
-		logging.Log.Error("CreateOrUpdatePipeline error: " + err.Error())
+		logging.Log.Error("create or update pipeline error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg":  "create or update pipeline" + err.Error(),
+			"msg":  "create or update pipeline error:" + err.Error(),
 			"code": http.StatusInternalServerError,
 			"data": "",
 		})
@@ -59,20 +59,13 @@ func (o *OpsController) PipelineList(c *gin.Context) {
 
 //PipelineDelete deletes a pipeline
 func (o *OpsController) PipelineDelete(c *gin.Context) {
-	userName := o.getUserName(c)
-	if userName == "" {
+
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
-	namespace := c.Param("namespace")
-	if namespace == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
-		return
-	}
-	err := o.Service.PipelineDelete(userName, namespace)
+
+	err := o.Service.PipelineDelete(name, namespace)
 
 	if err != nil {
 		logging.Log.Error("pipeline delete error", err.Error())
@@ -93,22 +86,12 @@ func (o *OpsController) PipelineDelete(c *gin.Context) {
 //GetPipeline get pipeline
 func (o *OpsController) GetPipeline(c *gin.Context) {
 
-	userName := o.getUserName(c)
-	if userName == "" {
+	check, namespace, name := o.CheckParams(c)
+	if check {
 		return
 	}
 
-	namespace := c.Param("namespace")
-	if namespace == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg":  "get task list error: namespace cannot be empty",
-			"code": http.StatusBadRequest,
-			"data": "",
-		})
-		return
-	}
-
-	p, err := o.Service.GetPipeline(userName, namespace)
+	p, err := o.Service.GetPipeline(name, namespace)
 	if err != nil {
 		logging.Log.Error("get pipeline error", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
