@@ -51,7 +51,7 @@ vet:
 	go vet ./...
 
 build:
-		go build  ./cmd/ops
+	go build  ./cmd/ops
 
 clean:
 	rm -rf bin/*
