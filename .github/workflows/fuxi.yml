@@ -40,4 +40,4 @@ jobs:
       # - name: Run make lint
       #   run: make check
       - name: Run make build
-        run: make build
+        run: go build  ./cmd/ops
