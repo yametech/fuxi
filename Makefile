@@ -51,11 +51,7 @@ vet:
 	go vet ./...
 
 build:
-#		go build   ./cmd/base
-#		go build   ./cmd/gateway
 		go build  ./cmd/ops
-		# crd manager
-#		go build   ./cmd/manager
 
 clean:
 	rm -rf bin/*
