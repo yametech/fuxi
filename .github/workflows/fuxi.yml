@@ -42,4 +42,4 @@ jobs:
       - name: ls
         run: ls /home/runner/work/fuxi/cmd/ops
       - name: Run make build
-          run: go build  ../cmd/ops
+        run: go build  ../cmd/ops
