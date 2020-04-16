@@ -50,9 +50,12 @@ fmt:
 vet:
 	go vet ./...
 
-build:
-	chmod +x ./scripts/build.sh
-	sh ./scripts/build.sh
+building:
+    go build   ./cmd/base
+    go build   ./cmd/gateway
+    go build  ./cmd/ops
+    # crd manager
+    go build   ./cmd/manager
 
 clean:
 	rm -rf bin/*
