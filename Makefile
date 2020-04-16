@@ -50,12 +50,12 @@ fmt:
 vet:
 	go vet ./...
 
-building:
-    go build   ./cmd/base
-    go build   ./cmd/gateway
-    go build  ./cmd/ops
-    # crd manager
-    go build   ./cmd/manager
+build:
+		go build   ./cmd/base
+		go build   ./cmd/gateway
+		go build  ./cmd/ops
+		# crd manager
+		go build   ./cmd/manager
 
 clean:
 	rm -rf bin/*
