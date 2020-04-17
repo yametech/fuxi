@@ -1,3 +1,5 @@
+export GO111MODULE=on
+
 dir=`pwd`
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 
@@ -51,7 +53,7 @@ vet:
 	go vet ./...
 
 dep:
-	go get -v -t -d ./...
+	go mod vendor
 
 build: dep
 	go build  ./cmd/ops
