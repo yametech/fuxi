@@ -15,7 +15,7 @@ jobs:
     name: Build ${{ matrix.target_os }}
     runs-on: ${{ matrix.os }}
     env:
-      GOVER: 1.13.0
+      GOVER: 1.14.0
       GOOS: ${{ matrix.target_os }}
       GOPROXY: https://proxy.golang.org
       GO111MODULE: on
@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: Set up Go ${{ env.GOVER }}
         uses: actions/setup-go@v1
+        with:
+          go-version: 1.14
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install golangci-lint
