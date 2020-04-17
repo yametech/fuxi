@@ -35,6 +35,6 @@ jobs:
 #      - name: Install golangci-lint
 #          run: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "${{ env.GOROOT }}/bin" v1.21.0
       - name: build
-        run:  cd ${GOPATH}/src/github.com/yametech/fuxi/ && go build  ./cmd/ops
+        run:  go build ./cmd/ops/
       - name: make
         run:  make build
