@@ -50,7 +50,10 @@ fmt:
 vet:
 	go vet ./...
 
-build:
+dep:
+	go mod vendor
+
+build: dep
 	go build  ./cmd/ops
 
 clean:
