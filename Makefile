@@ -55,9 +55,9 @@ vet:
 dep:
 	go mod vendor
 
-build: dep
-	go build  ./cmd/ops
-
+build: dep check
+	chmod +x ./scripts/build.sh
+	sh ./scripts/build.sh
 clean:
 	rm -rf bin/*
 
