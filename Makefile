@@ -51,6 +51,7 @@ vet:
 	go vet ./...
 
 build:
+	cd ${GOPATH}/src/github.com/yametech/fuxi/
 	go build  ./cmd/ops
 
 clean:
