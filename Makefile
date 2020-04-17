@@ -56,8 +56,7 @@ dep:
 	go mod vendor
 
 build: dep
-	chmod +x ./scripts/build.sh
-	sh ./scripts/build.sh
+	go build ./cmd/...
 clean:
 	rm -rf bin/*
 
