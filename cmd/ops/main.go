@@ -55,7 +55,7 @@ func main() {
 	op.Start(stopCh)
 
 	ops := handler.OpsController{
-		Service: op,a
+		Service: op,
 	}
 
 	// ops
