@@ -51,7 +51,7 @@ vet:
 	go vet ./...
 
 dep:
-	go mod vendor
+	go get -v -t -d ./...
 
 build: dep
 	go build  ./cmd/ops
