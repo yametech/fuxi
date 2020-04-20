@@ -13,6 +13,8 @@ import (
 	"github.com/yametech/fuxi/pkg/preinstall"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
+	"net/http"
+
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
@@ -51,12 +53,24 @@ func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsA
 		panic(err)
 	}
 
-	handler.CreateSharedSessionManager()
+	handler.CreateSharedSessionManager(client.K8sClient, client.RestConf)
 
 	return service, router, router.Group("/workload"), handler.NewWorkladAPI()
 }
 
 var service, router, group, workloadsAPI = initNeed()
+
+func WrapH(h http.Handler) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		origin := c.Request.Header.Get("Origin")
+
+		c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization")
+
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
 
 func main() {
 
@@ -65,7 +79,8 @@ func main() {
 
 	// Pod
 	{
-		group.GET("/shell/pod", gin.WrapH(handler.CreateAttachHandler("/workload/shell/pod")))
+		serveHttp := WrapH(handler.CreateAttachHandler("/workload/shell/pod"))
+		router.GET("/workload/shell/pod/*path", serveHttp)
 		group.GET("/attach/namespace/:namespace/pod/:name/container/:container", PodAttach)
 		group.GET("/api/v1/pods", PodList)
 		group.GET("/api/v1/namespace/:namespace/pod/:name", PodGet)
@@ -228,12 +243,28 @@ func main() {
 		group.GET("/apis/crd/:group/:version/:resource", GeneralCustomResourceDefinitionList)
 	}
 
+	//// Namespace
+	//{
+	//	group.GET("/api/v1/namespaces", NamespaceList)
+	//	group.GET("/api/v1/namespaces/:namespace", NamespaceGet)
+	//}
+
 	// Swag
 	{
 		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
 		/// Release production environment can be turned on
 		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	}
+
+	//// Metrics
+	//{
+	//	//group.POST("/metrics", workloadsAPI.Metrics)
+	//}
+	//
+	//// watch the group resource
+	//{
+	//	group.GET("/watch", watchData)
+	//}
 
 	service.Handle("/", router)
 
