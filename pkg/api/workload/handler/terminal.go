@@ -23,13 +23,14 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
+	"k8s.io/client-go/kubernetes"
 	"log"
 	"math/rand"
 	"net/http"
 	"sync"
 
 	"github.com/yametech/fuxi/pkg/api/workload/template"
-	"github.com/yametech/fuxi/pkg/k8s/client"
 	"gopkg.in/igm/sockjs-go.v2/sockjs"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -60,11 +61,11 @@ const (
 var sharedSessionManager *sessionManager
 
 // CreateSharedSessionManager none
-func CreateSharedSessionManager() {
+func CreateSharedSessionManager(clientSet *kubernetes.Clientset, restCfg *rest.Config) {
 	if sharedSessionManager == nil {
 		sharedSessionManager = &sessionManager{
-			client:   client.K8sClient.RESTClient(),
-			cfg:      client.RestConf,
+			client:   clientSet.CoreV1().RESTClient(),
+			restCfg:  restCfg,
 			channels: make(map[string]*SessionChannel),
 			lock:     sync.RWMutex{},
 		}
@@ -75,23 +76,23 @@ func CreateSharedSessionManager() {
 // sessionManager manager external client connect to kubernetes pod terminal session
 type sessionManager struct {
 	client   rest.Interface
-	cfg      *rest.Config
+	restCfg  *rest.Config
 	channels map[string]*SessionChannel
 	lock     sync.RWMutex
 }
 
-func (sm *sessionManager) get(sessionID string) *SessionChannel {
+func (sm *sessionManager) get(sessionId string) (*SessionChannel, bool) {
 	sm.lock.RLock()
 	defer sm.lock.RUnlock()
-	v, _ := sm.channels[sessionID]
-	return v
+	v, exists := sm.channels[sessionId]
+	return v, exists
 
 }
 
-func (sm *sessionManager) set(sessionID string, channel *SessionChannel) {
+func (sm *sessionManager) set(sessionId string, channel *SessionChannel) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
-	sm.channels[sessionID] = channel
+	sm.channels[sessionId] = channel
 }
 
 // close shuts down the SockJS connection and sends the status code and reason to the client
@@ -108,47 +109,64 @@ func (sm *sessionManager) close(sessionID string, status uint32, reason string) 
 	delete(sm.channels, sessionID)
 }
 
+// PtyHandler is what remotecommand expects from a pty
+type PtyHandler interface {
+	io.Reader
+	io.Writer
+	remotecommand.TerminalSizeQueue
+}
+
 // process executed cmd in the container specified in request and connects it up with the  SessionChannel (a session)
-func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, sess *SessionChannel) error {
-	beautifyCmd := []string{
+func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, sess PtyHandler) error {
+	command := []string{
 		"/bin/sh",
 		"-c",
 		`TERM=xterm-256color; export TERM; [ -x /bin/bash ] && ([ -x /usr/bin/script ] && /usr/bin/script -q -c "/bin/bash" /dev/null || exec /bin/bash) || exec /bin/sh`,
 	}
-	beautifyCmd = append(beautifyCmd, cmd...)
-
-	podExecOpt := &v1.PodExecOptions{
-		Container: request.Container,
-		Command:   beautifyCmd,
-		Stdin:     true,
-		Stdout:    true,
-		Stderr:    true,
-		TTY:       true,
-	}
-	req := sm.client.Post().Resource("pods").
+	command = append(command, cmd...)
+	req := sm.client.Post().
+		Resource("pods").
 		Name(request.Name).
 		Namespace(request.Namespace).
-		SubResource("exec").
-		VersionedParams(podExecOpt, scheme.ParameterCodec)
-
-	exec, err := remotecommand.NewSPDYExecutor(sm.cfg, "POST", req.URL())
+		SubResource("exec")
+	option := &v1.PodExecOptions{
+		Command: command,
+		Stdin:   true,
+		Stdout:  true,
+		Stderr:  true,
+		TTY:     true,
+	}
+	if request.Container != "" {
+		option.Container = request.Container
+	}
+	req.VersionedParams(
+		option,
+		scheme.ParameterCodec,
+	)
+	exec, err := remotecommand.NewSPDYExecutor(sm.restCfg, "POST", req.URL())
 	if err != nil {
 		return err
 	}
-	return exec.Stream(remotecommand.StreamOptions{
-		Stdin:             sess,
-		Stdout:            sess,
-		Stderr:            sess,
-		TerminalSizeQueue: sess,
-		Tty:               true,
-	})
+	err = exec.Stream(
+		remotecommand.StreamOptions{
+			Stdin:             sess,
+			Stdout:            sess,
+			Stderr:            sess,
+			TerminalSizeQueue: sess,
+			Tty:               true,
+		})
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // SessionChannel a http connect
 // upgrade to websocket session bind a session channel to backend kubernetes API server with SPDY
 type SessionChannel struct {
 	id            string
-	bound         chan error
+	bound         chan struct{}
 	sockJSSession sockjs.Session
 	sizeChan      chan remotecommand.TerminalSize
 	doneChan      chan struct{}
@@ -156,7 +174,7 @@ type SessionChannel struct {
 
 // TerminalMessage is the messaging protocol between ShellController and TerminalSession.
 type TerminalMessage struct {
-	Data, sessionID string
+	Data, SessionID string
 	Rows, Cols      uint16
 	Op              OP
 }
@@ -238,30 +256,42 @@ func HandleTerminalSession(session sockjs.Session) {
 		log.Printf("recv buffer error: %s", err)
 		return
 	}
+	if buf == "4eyJXaWR0aCI6MTIwLCJIZWlnaHQiOjgwfQ==" {
+		buf, err = session.Recv()
+		if err != nil {
+			log.Printf("recv buffer error: %s", err)
+			return
+		}
+	}
+
 	msg := &TerminalMessage{}
 	if err = json.Unmarshal([]byte(buf), &msg); err != nil {
-		log.Printf("handleTerminalSession: can't un marshal (%v): %s", err, buf)
+		log.Printf("handleTerminalSession: can't un marshal (%v): %s", buf, err)
 		return
 	}
 	if msg.Op != BIND {
 		log.Printf("handleTerminalSession: expected 'bind' message, got: %s", buf)
 		return
 	}
-	terminalSession := sharedSessionManager.get(msg.sessionID)
+	terminalSession, exist := sharedSessionManager.get(msg.SessionID)
+	if !exist {
+		log.Printf("sharedSessionManager: can't find session '%s'", msg.SessionID)
+		return
+	}
 	if terminalSession.id == "" {
-		log.Printf("handleTerminalSession: can't find session '%s'", msg.sessionID)
+		log.Printf("handleTerminalSession: can't find session '%s'", msg.SessionID)
 		return
 	}
 	terminalSession.sockJSSession = session
-	sharedSessionManager.set(msg.sessionID, terminalSession)
-	terminalSession.bound <- nil
+	sharedSessionManager.set(msg.SessionID, terminalSession)
+	terminalSession.bound <- struct{}{}
 }
 
-// GenTerminalsessionID generates a random session ID string. The format is not really interesting.
+// GenerateTerminalSessionId generates a random session ID string. The format is not really interesting.
 // This ID is used to identify the session when the client opens the SockJS connection.
 // Not the same as the SockJS session id! We can't use that as that is generated
 // on the client side and we don't have it yet at this point.
-func GenTerminalsessionID() (string, error) {
+func GenerateTerminalSessionId() (string, error) {
 	bytes := make([]byte, 16)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
@@ -283,32 +313,37 @@ func isValidShell(validShells []string, shell string) bool {
 
 // WaitForTerminal is called from pod attach api as a goroutine
 // Waits for the SockJS connection to be opened by the client the session to be bound in handleTerminalSession
-func WaitForTerminal(request *template.AttachPodRequest, sessionID string) {
+func WaitForTerminal(request *template.AttachPodRequest, sessionId string) {
 	if request.Shell == "" {
 		request.Shell = "sh"
 	}
+	session, exist := sharedSessionManager.get(sessionId)
+	if !exist {
+		//
+	}
 	select {
-	case <-sharedSessionManager.get(sessionID).bound:
-		defer close(sharedSessionManager.get(sessionID).bound)
+	case <-session.bound:
+		defer close(session.bound)
 		var err error
 		validShells := []string{"bash", "sh", "powershell", "cmd"}
 
 		if isValidShell(validShells, request.Shell) {
 			cmd := []string{request.Shell}
-			err = sharedSessionManager.process(request, cmd, sharedSessionManager.get(sessionID))
+			err = sharedSessionManager.process(request, cmd, session)
+			log.Printf("process spdy connect error: %s", err)
 		} else {
 			// No shell given or it was not valid: try some shells until one succeeds or all fail
 			for _, testShell := range validShells {
 				cmd := []string{testShell}
-				if err = sharedSessionManager.process(request, cmd, sharedSessionManager.get(sessionID)); err == nil {
+				if err = sharedSessionManager.process(request, cmd, session); err == nil {
 					break
 				}
 			}
 		}
 		if err != nil {
-			sharedSessionManager.close(sessionID, 2, err.Error())
+			sharedSessionManager.close(sessionId, 2, err.Error())
 			return
 		}
-		sharedSessionManager.close(sessionID, 1, "process exited")
+		sharedSessionManager.close(sessionId, 1, "process exited")
 	}
 }

@@ -44,13 +44,14 @@ func (w *WorkloadsAPI) AttachPod(g *gin.Context) {
 	attachPodRequest.Name = g.Param("name")
 	attachPodRequest.Container = g.Param("container")
 
-	sessionID, _ := GenTerminalsessionID()
-	sharedSessionManager.set(sessionID, &SessionChannel{
-		id:       sessionID,
-		bound:    make(chan error),
-		sizeChan: make(chan remotecommand.TerminalSize),
-	})
+	sessionId, _ := GenerateTerminalSessionId()
+	sharedSessionManager.set(sessionId,
+		&SessionChannel{
+			id:       sessionId,
+			bound:    make(chan struct{}),
+			sizeChan: make(chan remotecommand.TerminalSize),
+		})
 
-	go WaitForTerminal(attachPodRequest, sessionID)
-	g.JSON(http.StatusOK, gin.H{"op": BIND, "sessionId": sessionID})
+	go WaitForTerminal(attachPodRequest, sessionId)
+	g.JSON(http.StatusOK, gin.H{"op": BIND, "sessionId": sessionId})
 }
