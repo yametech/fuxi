@@ -140,7 +140,7 @@ replace (
 	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20191004115701-31ade1b30762 // 1.15.6
 	k8s.io/apiserver => k8s.io/apiserver v0.0.0-20191016112112-5190913f932d
 	k8s.io/cli-runtime => k8s.io/cli-runtime v0.0.0-20191016114015-74ad18325ed5
-	k8s.io/client-go => k8s.io/client-go v0.0.0-20191114101336-8cba805ad12d // 1.15.6
+	k8s.io/client-go => k8s.io/client-go v12.0.0+incompatible // 1.15.6
 	k8s.io/cloud-provider => k8s.io/cloud-provider v0.0.0-20191016115326-20453efc2458
 	k8s.io/cluster-bootstrap => k8s.io/cluster-bootstrap v0.0.0-20191016115129-c07a134afb42
 	k8s.io/code-generator => k8s.io/code-generator v0.17.0
