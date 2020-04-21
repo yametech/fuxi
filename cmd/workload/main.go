@@ -73,10 +73,8 @@ func WrapH(h http.Handler) gin.HandlerFunc {
 }
 
 func main() {
-
 	// #api
 	// #v1
-
 	// Pod
 	{
 		serveHttp := WrapH(handler.CreateAttachHandler("/workload/shell/pod"))
@@ -256,15 +254,15 @@ func main() {
 		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	}
 
-	//// Metrics
-	//{
-	//	//group.POST("/metrics", workloadsAPI.Metrics)
-	//}
-	//
-	//// watch the group resource
-	//{
-	//	group.GET("/watch", watchData)
-	//}
+	// Metrics
+	{
+		group.POST("/metrics", workloadsAPI.Metrics)
+	}
+
+	// watch the group resource
+	{
+		group.GET("/watch", WatchStream)
+	}
 
 	service.Handle("/", router)
 
