@@ -260,9 +260,9 @@ func main() {
 	}
 
 	// watch the group resource
-	{
-		group.GET("/watch", WatchStream)
-	}
+	//{
+	//	group.GET("/watch", WatchStream)
+	//}
 
 	service.Handle("/", router)
 
