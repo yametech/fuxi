@@ -9,9 +9,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	"log"
-	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 )
 
 type Event struct {
@@ -81,65 +81,50 @@ func trimPrefixSuffixSpace(slice []string) []string {
 	return slice
 }
 
-func listenByApis(event *workloadservice.Event, g *gin.Context, eventChan chan Event) (closedSet []chan struct{}, err error) {
+func listenByApis(event *workloadservice.Event, g *gin.Context, eventChan chan Event) {
+	defer close(eventChan)
 	apis := g.QueryArray("api")
+	wg := sync.WaitGroup{}
+	wg.Add(len(apis))
 	for _, api := range apis {
 		gvr, ns, rv, err := parseForApiUrl(api)
 		if err != nil {
-			return closedSet, err
+			log.Printf("parser api url error %s", api)
+			return
 		}
-		closed := make(chan struct{})
-		k8sWatchChan, err := event.Watch(*gvr, ns, rv, 60, nil, closed)
+		k8sWatchChan, err := event.Watch(*gvr, ns, rv, 60, nil)
 		if err != nil {
 			log.Printf("watch for gvr: %s stream error: %s for api request %s \r\n", gvr, err, api)
 			continue
 		}
-		go func(ce chan Event) {
+		go func() {
+			defer wg.Done()
 			for item := range k8sWatchChan {
 				eventChan <- Event{Type: item.Type, Object: item.Object}
 			}
-		}(eventChan)
-		closedSet = append(closedSet, closed)
+		}()
 	}
-	return closedSet, nil
+	wg.Wait()
 }
 
 // watchStream watch api request resource group and the version
 // after server timeout then close send closed event to client side server watcher close
 func (w *WorkloadsAPI) WatchStream(g *gin.Context) {
 	eventChan := make(chan Event, 32)
-	closedSet, err := listenByApis(w.event, g, eventChan)
-	shutdown := func() {
-		for _, closed := range closedSet {
-			closed <- struct{}{}
-		}
-	}
-	if err != nil {
-		shutdown()
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    err.Error(),
-				status: "Request bad parameter"},
-		)
-		return
-	}
-
-	defer shutdown()
+	go listenByApis(w.event, g, eventChan)
 
 	g.Stream(func(w io.Writer) bool {
-		select {
-		case event, ok := <-eventChan:
-			if !ok {
-				g.SSEvent(
-					"STREAM_END",
-					&Event{Url: g.Request.URL.String(), Status: 410},
-				)
-				return false
+		event, ok := <-eventChan
+		if !ok {
+			streamEndEvent := Event{
+				Type:   watch.EventType("STREAM_END"),
+				Url:    g.Request.URL.String(),
+				Status: 410,
 			}
-			g.SSEvent("", event)
+			g.SSEvent("", streamEndEvent)
+			return false
 		}
+		g.SSEvent("", event)
 		return true
 	})
 }

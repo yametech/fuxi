@@ -34,7 +34,7 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 type ResourceQuery interface {
 	List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64, selector interface{}) (*unstructured.UnstructuredList, error)
 	Get(resource schema.GroupVersionResource, namespace, name string) (runtime.Object, error)
-	Watch(resource schema.GroupVersionResource, namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector, closed chan struct{}) (<-chan watch.Event, error)
+	Watch(resource schema.GroupVersionResource, namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector) (<-chan watch.Event, error)
 }
 
 // ResourceApply update resource interface
@@ -177,9 +177,7 @@ func (d *defaultImplWorkloadsResourceHandler) Watch(
 	resourceVersion string,
 	timeoutSeconds int64,
 	selector labels.Selector,
-	closed chan struct{},
 ) (<-chan watch.Event, error) {
-	closed = make(chan struct{})
 	opts := metav1.ListOptions{}
 	if selector != nil {
 		opts.LabelSelector = selector.String()
