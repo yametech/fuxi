@@ -27,14 +27,15 @@ func (p *Pod) Logs(
 ) error {
 	req := sharedK8sClient.
 		clientSetV1.
+		CoreV1().
 		RESTClient().
 		Get().
 		Namespace(namespace).
 		Name(name).
 		Resource("pods").
 		SubResource("log").
-		Param("follow", strconv.FormatBool(follow)).
 		Param("container", container).
+		Param("follow", strconv.FormatBool(follow)).
 		Param("previous", strconv.FormatBool(previous)).
 		Param("timestamps", strconv.FormatBool(timestamps))
 
@@ -50,6 +51,7 @@ func (p *Pod) Logs(
 	if tailLines != 0 {
 		req.Param("tailLines", strconv.FormatInt(tailLines, 10))
 	}
+	//fmt.Fprintf(os.Stdout,)
 	readCloser, err := req.Stream()
 	if err != nil {
 		return err

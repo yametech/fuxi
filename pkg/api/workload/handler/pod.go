@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/workload/template"
@@ -9,6 +10,20 @@ import (
 	"k8s.io/client-go/tools/remotecommand"
 	"net/http"
 )
+
+func (w *WorkloadsAPI) LogPod(g *gin.Context) {
+	namespace := g.Param("namespace")
+	name := g.Param("name")
+	container := g.Query("container")
+	//timestamps := g.Query("timestamps")
+	//tailLines := g.Query("tailLines")
+	//sinceTime := g.Query("sinceTime")
+	buf := bytes.NewBufferString("")
+	//date := time.Date(1970, 1, 0, 0, 0, 0, 0, &time.Location{})
+	w.pod.Logs(namespace, name, container, false, false, true, 2000,
+		nil, 1024000, 1000, buf)
+	g.JSON(http.StatusOK, buf.String())
+}
 
 // Get Pod
 func (w *WorkloadsAPI) GetPod(g *gin.Context) {

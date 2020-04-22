@@ -29,6 +29,8 @@ type WorkloadsAPI struct {
 	serviceAccount           *workloadservice.ServiceAccount
 	role                     *workloadservice.Role
 	roleBinding              *workloadservice.RoleBinding
+	namespace                *workloadservice.Namespace
+	metrics                  *workloadservice.Metrics
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -56,5 +58,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		serviceAccount:           workloadservice.NewServiceAccount(),
 		role:                     workloadservice.NewRole(),
 		roleBinding:              workloadservice.NewRoleBinding(),
+		namespace:                workloadservice.NewNamespace(),
+		metrics:                  workloadservice.NewMetrics(),
 	}
 }

@@ -27,4 +27,6 @@ func PodList(g *gin.Context) { workloadsAPI.ListPod(g) }
 // @Router /workload/api/v1/namespaces/{namespace}/pods/{name} [get]
 func PodGet(g *gin.Context) { workloadsAPI.GetPod(g) }
 
+func PodLog(g *gin.Context) { workloadsAPI.LogPod(g) }
+
 func PodAttach(g *gin.Context) { workloadsAPI.AttachPod(g) }
