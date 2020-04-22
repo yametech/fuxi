@@ -8,33 +8,32 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-type Subnet interface{
+type Subnet interface {
 	CreateSubnet(sn SubNet) error
 	SubNetDelete(name string) error
 	SubNetUpdate(sn SubNet) error
-    SubNetList() ([]*SubNet,error)
-	GetSubNet(name string)(*SubNet,error)
+	SubNetList() ([]*SubNet, error)
+	GetSubNet(name string) (*SubNet, error)
 }
-
 
 type SubNet struct {
 	//Namespace string
-	Name string
-	IsDefault bool
-	Protocol string
-	Namespaces []string
-	CIDRBlock string
-	ExcludeIps []string
-	Gateway string
-	GatewayType string
-	GatewayNode string
-	NatOutgoing bool
-	Private bool
-	AllowSubnets [] string
+	Name         string
+	IsDefault    bool
+	Protocol     string
+	Namespaces   []string
+	CIDRBlock    string
+	ExcludeIps   []string
+	Gateway      string
+	GatewayType  string
+	GatewayNode  string
+	NatOutgoing  bool
+	Private      bool
+	AllowSubnets []string
 }
 
 //CreateSubnet one cluster only one default subnet if Default set to true
-func (ns *NSService)CreateSubnet(sn SubNet) error {
+func (ns *NSService) CreateSubnet(sn SubNet) error {
 
 	_, err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Create(&ovnv1.Subnet{
 		ObjectMeta: v1.ObjectMeta{Name: sn.Name},
@@ -61,9 +60,9 @@ func (ns *NSService)CreateSubnet(sn SubNet) error {
 }
 
 //SubNetDelete delete a subnet
-func  (ns *NSService)SubNetDelete(name string) error {
+func (ns *NSService) SubNetDelete(name string) error {
 
-	err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Delete(name,&metav1.DeleteOptions{})
+	err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		return err
 	}
@@ -71,9 +70,9 @@ func  (ns *NSService)SubNetDelete(name string) error {
 }
 
 //SubNetUpdate update a subnet config
-func  (ns *NSService)SubNetUpdate(sn SubNet) error {
+func (ns *NSService) SubNetUpdate(sn SubNet) error {
 
-	_, err :=ovnclient.KubeOvnClient.KubeovnV1().Subnets().Update(
+	_, err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Update(
 		&ovnv1.Subnet{
 			ObjectMeta: v1.ObjectMeta{Name: sn.Name},
 			Spec: ovnv1.SubnetSpec{
@@ -97,16 +96,16 @@ func  (ns *NSService)SubNetUpdate(sn SubNet) error {
 }
 
 //SubNetList select all subnets
-func  (ns *NSService)SubNetList() ([]*SubNet,error) {
+func (ns *NSService) SubNetList() ([]*SubNet, error) {
 
-	ret,err:=ns.informer.Kubeovn().V1().Subnets().Lister().List(labels.NewSelector())
+	ret, err := ns.informer.Kubeovn().V1().Subnets().Lister().List(labels.NewSelector())
 	if err != nil {
 		return nil, err
 	}
 	var sbs []*SubNet
 	for _, subnet := range ret {
-		sbs = append(sbs,&SubNet{
-			Name:        subnet.Name,
+		sbs = append(sbs, &SubNet{
+			Name:         subnet.Name,
 			IsDefault:    subnet.Spec.Default,
 			Protocol:     subnet.Spec.Protocol,
 			Namespaces:   subnet.Spec.Namespaces,
@@ -124,14 +123,14 @@ func  (ns *NSService)SubNetList() ([]*SubNet,error) {
 }
 
 //GetSubNet get subnet
-func  (ns *NSService)GetSubNet(name string)(*SubNet,error){
-	subnet, err :=ovnclient.KubeOvnClient.KubeovnV1().Subnets().Get(name,metav1.GetOptions{})
+func (ns *NSService) GetSubNet(name string) (*SubNet, error) {
+	subnet, err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Get(name, metav1.GetOptions{})
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	return &SubNet{
-		Name:        subnet.Name,
+		Name:         subnet.Name,
 		IsDefault:    subnet.Spec.Default,
 		Protocol:     subnet.Spec.Protocol,
 		Namespaces:   subnet.Spec.Namespaces,
@@ -143,8 +142,5 @@ func  (ns *NSService)GetSubNet(name string)(*SubNet,error){
 		NatOutgoing:  subnet.Spec.NatOutgoing,
 		Private:      subnet.Spec.Private,
 		AllowSubnets: subnet.Spec.AllowSubnets,
-	},nil
+	}, nil
 }
-
-
-

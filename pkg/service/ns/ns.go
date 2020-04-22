@@ -6,14 +6,12 @@ import (
 	"time"
 )
 
-
 type NS interface {
 	Subnet
 }
 type NSService struct {
 	informer informers.SharedInformerFactory
 }
-
 
 func NewNS(defaultResync time.Duration) *NSService {
 	return &NSService{

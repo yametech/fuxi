@@ -11,9 +11,8 @@ type NSController struct {
 	Service ns.NS
 }
 
-
 //CreateSubNet create a subnet in ovn controller
-func (n *NSController)CreateSubNet(c *gin.Context)  {
+func (n *NSController) CreateSubNet(c *gin.Context) {
 	var subnet ns.SubNet
 	if err := c.ShouldBindJSON(&subnet); err != nil {
 		logging.Log.Error("create subnet bind json error: " + err.Error())
@@ -25,7 +24,7 @@ func (n *NSController)CreateSubNet(c *gin.Context)  {
 		return
 	}
 
-	if err :=n.Service.CreateSubnet(subnet); err != nil {
+	if err := n.Service.CreateSubnet(subnet); err != nil {
 		logging.Log.Error("create subnet error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "create subnet error:" + err.Error(),
@@ -43,7 +42,7 @@ func (n *NSController)CreateSubNet(c *gin.Context)  {
 }
 
 //UpdateSubNet update a subnet in ovn controller
-func (n *NSController) UpdateSubNet(c *gin.Context)  {
+func (n *NSController) UpdateSubNet(c *gin.Context) {
 	var subnet ns.SubNet
 	if err := c.ShouldBindJSON(&subnet); err != nil {
 		logging.Log.Error("update subnet bind json error: " + err.Error())
@@ -55,7 +54,7 @@ func (n *NSController) UpdateSubNet(c *gin.Context)  {
 		return
 	}
 
-	if err :=n.Service.CreateSubnet(subnet); err != nil {
+	if err := n.Service.CreateSubnet(subnet); err != nil {
 		logging.Log.Error("update subnet error: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg":  "update subnet error:" + err.Error(),
