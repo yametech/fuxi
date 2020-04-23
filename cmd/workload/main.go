@@ -255,6 +255,12 @@ func main() {
 		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	}
 
+	// /workload/stack
+	{
+		group.POST("/stack", func(g *gin.Context) {
+			log.Infof("/workload/stack %v\r\n", g)
+		})
+	}
 	// Metrics
 	//{
 	//	group.POST("/metrics", workloadsAPI.Metrics)

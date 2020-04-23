@@ -7,6 +7,7 @@ require (
 	code.gitea.io/sdk/gitea v0.0.0-20191013013401-e41e9ea72caa
 	contrib.go.opencensus.io/exporter/prometheus v0.1.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.12.4 // indirect
+	github.com/360yun/sockjs-go v0.0.0-20190620042557-e70edfda8e57
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/Shopify/sarama v1.24.1
 	github.com/abbot/go-http-auth v0.4.1-0.20181019201920-860ed7f246ff // indirect
@@ -56,7 +57,7 @@ require (
 	github.com/hashicorp/vault/api v1.0.4 // indirect
 	github.com/hudl/fargo v1.3.0 // indirect
 	github.com/igm/pubsub v1.0.0 // indirect
-	github.com/igm/sockjs-go v2.0.1+incompatible // indirect
+	github.com/igm/sockjs-go v2.0.1+incompatible
 	github.com/jcmturner/gofork v1.0.0 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
@@ -107,7 +108,7 @@ require (
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0 // indirect
 	gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a // indirect
 	gopkg.in/gcfg.v1 v1.2.3 // indirect
-	gopkg.in/igm/sockjs-go.v2 v2.0.1
+	gopkg.in/igm/sockjs-go.v2 v2.0.1 // indirect
 	gopkg.in/jcmturner/gokrb5.v7 v7.3.0 // indirect
 	gopkg.in/ldap.v3 v3.1.0 // indirect
 	gopkg.in/redis.v3 v3.6.4 // indirect
