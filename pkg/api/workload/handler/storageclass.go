@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetStorageClass(g *gin.Context) {
 
 // List StorageClass
 func (w *WorkloadsAPI) ListStorageClass(g *gin.Context) {
-	list, _ := w.storageClass.List(dyn.ResourceStorageClass, "", "", 0, 0, nil)
+	list, _ := w.storageClass.List(dyn.ResourceStorageClass, "", "", 0, 1000, nil)
 	storageClassList := &v1.StorageClassList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
