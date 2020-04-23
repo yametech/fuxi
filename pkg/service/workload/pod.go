@@ -20,7 +20,8 @@ func NewPod() *Pod {
 func (p *Pod) Logs(
 	namespace, name, container string,
 	follow bool, previous bool, timestamps bool,
-	sinceSeconds int64, sinceTime *time.Time,
+	sinceSeconds int64,
+	sinceTime *time.Time,
 	limitBytes int64,
 	tailLines int64,
 	out io.Writer,
@@ -51,12 +52,10 @@ func (p *Pod) Logs(
 	if tailLines != 0 {
 		req.Param("tailLines", strconv.FormatInt(tailLines, 10))
 	}
-	//fmt.Fprintf(os.Stdout,)
 	readCloser, err := req.Stream()
 	if err != nil {
 		return err
 	}
-
 	defer readCloser.Close()
 	_, err = io.Copy(out, readCloser)
 
