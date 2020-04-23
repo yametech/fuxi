@@ -49,10 +49,10 @@ const (
 	BIND = iota // 0
 	// STDIN   fe->be     Data           Keystrokes/paste buffer
 	STDIN
-	// RESIZE  fe->be     Rows, Cols     New terminal size
-	RESIZE
 	// STDOUT  be->fe     Data           Output from the process
 	STDOUT
+	// RESIZE  fe->be     Rows, Cols     New terminal size
+	RESIZE
 	// TOAST   be->fe     Data           OOB message to be shown to the user
 	TOAST
 )
@@ -103,7 +103,6 @@ func (sm *sessionManager) close(sessionID string, status uint32, reason string) 
 	defer sm.lock.Unlock()
 	err := sm.channels[sessionID].sockJSSession.Close(status, reason)
 	if err != nil {
-		log.Print(err)
 		return
 	}
 	delete(sm.channels, sessionID)
@@ -118,11 +117,7 @@ type PtyHandler interface {
 
 // process executed cmd in the container specified in request and connects it up with the  SessionChannel (a session)
 func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, sess PtyHandler) error {
-	command := []string{
-		"/bin/sh",
-		"-c",
-		`TERM=xterm-256color; export TERM; [ -x /bin/bash ] && ([ -x /usr/bin/script ] && /usr/bin/script -q -c "/bin/bash" /dev/null || exec /bin/bash) || exec /bin/sh`,
-	}
+	command := []string{"/bin/sh", "-c"}
 	command = append(command, cmd...)
 	req := sm.client.Post().
 		Resource("pods").
@@ -224,13 +219,29 @@ func (s *SessionChannel) Toast(p string) error {
 
 // Read impl io.Reader
 func (s *SessionChannel) Read(p []byte) (n int, err error) {
+	//retry:
+	//	m, err := s.sockJSSession.Recv()
+	//	if err != nil {
+	//		return copy(p, END_OF_TRANSMISSION), err
+	//	}
+	//
+	//	op, err := base64.RawStdEncoding.DecodeString(m)
+	//	if err != nil {
+	//		goto retry
+	//	}
+	//	if len(op) < 1 {
+	//		goto retry
+	//	}
+	//	switch op[0] {
+	//	case '(':
+	//		goto retry
+	//	case ')':
+	//		goto retry
+	//	}
 	m, err := s.sockJSSession.Recv()
-	if err != nil {
-		return copy(p, END_OF_TRANSMISSION), err
-	}
-
 	var msg TerminalMessage
 	if err := json.Unmarshal([]byte(m), &msg); err != nil {
+		//goto retry
 		return copy(p, END_OF_TRANSMISSION), err
 	}
 
@@ -251,17 +262,11 @@ func CreateAttachHandler(path string) http.Handler {
 }
 
 func HandleTerminalSession(session sockjs.Session) {
+	_, _ = session.Recv()
 	buf, err := session.Recv()
 	if err != nil {
 		log.Printf("recv buffer error: %s", err)
 		return
-	}
-	if buf == "4eyJXaWR0aCI6MTIwLCJIZWlnaHQiOjgwfQ==" {
-		buf, err = session.Recv()
-		if err != nil {
-			log.Printf("recv buffer error: %s", err)
-			return
-		}
 	}
 
 	msg := &TerminalMessage{}
@@ -321,29 +326,28 @@ func WaitForTerminal(request *template.AttachPodRequest, sessionId string) {
 	if !exist {
 		//
 	}
-	select {
-	case <-session.bound:
-		defer close(session.bound)
-		var err error
-		validShells := []string{"bash", "sh", "powershell", "cmd"}
+	<-session.bound
 
-		if isValidShell(validShells, request.Shell) {
-			cmd := []string{request.Shell}
-			err = sharedSessionManager.process(request, cmd, session)
-			log.Printf("process spdy connect error: %s", err)
-		} else {
-			// No shell given or it was not valid: try some shells until one succeeds or all fail
-			for _, testShell := range validShells {
-				cmd := []string{testShell}
-				if err = sharedSessionManager.process(request, cmd, session); err == nil {
-					break
-				}
+	defer close(session.bound)
+	var err error
+	validShells := []string{"sh", "csh", "bash"}
+
+	if isValidShell(validShells, request.Shell) {
+		cmd := []string{request.Shell}
+		err = sharedSessionManager.process(request, cmd, session)
+	} else {
+		// No shell given or it was not valid: try some shells until one succeeds or all fail
+		for _, testShell := range validShells {
+			cmd := []string{testShell}
+			if err = sharedSessionManager.process(request, cmd, session); err == nil {
+				break
 			}
 		}
-		if err != nil {
-			sharedSessionManager.close(sessionId, 2, err.Error())
-			return
-		}
-		sharedSessionManager.close(sessionId, 1, "process exited")
 	}
+	if err != nil {
+		sharedSessionManager.close(sessionId, 2, err.Error())
+		return
+	}
+	sharedSessionManager.close(sessionId, 1, "process exited")
+
 }
