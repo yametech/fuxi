@@ -9,19 +9,57 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/remotecommand"
 	"net/http"
+	"time"
 )
+
+//GET /workload/api/v1/namespaces/:namespace/pods/:name/log?container=controller&timestamps=true&tailLines=1000&sinceTime=2020-04-23T02%3A13%3A16.273Z
+type logRequest struct {
+	Container  string    `form:"container" json:"container"`
+	Timestamps bool      `form:"timestamps" json:"timestamps"`
+	SinceTime  time.Time `form:"sinceTime" json:"sinceTime"`
+	TailLines  int64     `form:"tailLines" json:"tailLines"`
+}
 
 func (w *WorkloadsAPI) LogPod(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	container := g.Query("container")
-	//timestamps := g.Query("timestamps")
-	//tailLines := g.Query("tailLines")
-	//sinceTime := g.Query("sinceTime")
+	lq := &logRequest{}
+	if err := g.Bind(lq); err != nil || namespace == "" || name == "" {
+		g.JSON(http.StatusBadRequest,
+			gin.H{
+				code:   http.StatusBadRequest,
+				data:   "",
+				msg:    err.Error(),
+				status: "Request bad parameter"},
+		)
+		return
+	}
+
 	buf := bytes.NewBufferString("")
-	//date := time.Date(1970, 1, 0, 0, 0, 0, 0, &time.Location{})
-	w.pod.Logs(namespace, name, container, false, false, true, 2000,
-		nil, 1024000, 1000, buf)
+	err := w.pod.Logs(
+		namespace,
+		name,
+		lq.Container,
+		false,
+		false,
+		lq.Timestamps,
+		0,
+		&lq.SinceTime,
+		0,
+		lq.TailLines,
+		buf,
+	)
+	if err != nil {
+		g.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				code:   http.StatusBadRequest,
+				data:   "",
+				msg:    err.Error(),
+				status: "Request bad parameter"},
+		)
+	}
+
 	g.JSON(http.StatusOK, buf.String())
 }
 
@@ -32,7 +70,12 @@ func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 	item, err := w.pod.Get(dyn.ResourcePod, namespace, name)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+			gin.H{
+				code:   http.StatusBadRequest,
+				data:   "",
+				msg:    err.Error(),
+				status: "Request bad parameter"},
+		)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -45,7 +88,12 @@ func (w *WorkloadsAPI) ListPod(g *gin.Context) {
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+			gin.H{
+				code:   http.StatusBadRequest,
+				data:   "",
+				msg:    err.Error(),
+				status: "Request bad parameter"},
+		)
 		return
 	}
 	_ = json.Unmarshal(marshalData, podList)
