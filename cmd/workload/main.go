@@ -73,17 +73,16 @@ func WrapH(h http.Handler) gin.HandlerFunc {
 }
 
 func main() {
-
 	// #api
 	// #v1
-
 	// Pod
 	{
 		serveHttp := WrapH(handler.CreateAttachHandler("/workload/shell/pod"))
 		router.GET("/workload/shell/pod/*path", serveHttp)
 		group.GET("/attach/namespace/:namespace/pod/:name/container/:container", PodAttach)
 		group.GET("/api/v1/pods", PodList)
-		group.GET("/api/v1/namespace/:namespace/pod/:name", PodGet)
+		group.GET("/api/v1/namespaces/:namespace/pods/:name", PodGet)
+		group.GET("/api/v1/namespaces/:namespace/pods/:name/log", PodLog)
 	}
 
 	// Node
@@ -243,11 +242,11 @@ func main() {
 		group.GET("/apis/crd/:group/:version/:resource", GeneralCustomResourceDefinitionList)
 	}
 
-	//// Namespace
-	//{
-	//	group.GET("/api/v1/namespaces", NamespaceList)
-	//	group.GET("/api/v1/namespaces/:namespace", NamespaceGet)
-	//}
+	// Namespace
+	{
+		group.GET("/api/v1/namespaces", NamespaceList)
+		group.GET("/api/v1/namespaces/:namespace", NamespaceGet)
+	}
 
 	// Swag
 	{
@@ -256,15 +255,29 @@ func main() {
 		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	}
 
-	//// Metrics
+	// Metrics
 	//{
-	//	//group.POST("/metrics", workloadsAPI.Metrics)
+	//	group.POST("/metrics", workloadsAPI.Metrics)
 	//}
-	//
-	//// watch the group resource
-	//{
-	//	group.GET("/watch", watchData)
-	//}
+
+	{
+		group.GET("/config", func(g *gin.Context) {
+			g.JSON(http.StatusOK, gin.H{
+				"lensVersion":       "1.0",
+				"lensTheme":         "",
+				"userName":          "admin",
+				"token":             "",
+				"allowedNamespaces": "[]",
+				"isClusterAdmin":    true,
+				"chartEnable":       true,
+				"kubectlAccess":     true,
+			})
+		})
+	}
+	// watch the group resource
+	{
+		group.GET("/watch", WatchStream)
+	}
 
 	service.Handle("/", router)
 

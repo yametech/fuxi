@@ -1,46 +1,17 @@
-//package main
-
-//
-//import (
-//	"github.com/micro/go-micro/util/log"
-//
-//	"github.com/micro/go-micro"
-//	"github.com/yametech/fuxi/cmd/ns/client"
-//)
-//
-//func main() {
-//	// New Service
-//	service := micro.NewService(
-//		micro.Name("go.micro.api.ns"),
-//		micro.Version("latest"),
-//	)
-//
-//	// Initialise service
-//	service.Init(
-//		// create wrap for the Ns srv client
-//		micro.WrapHandler(client.NsWrapper(service)),
-//	)
-//	//
-//	//// Register Handler
-//	//ns.RegisterNsHandler(service.Server(), new(handler.Ns))
-//
-//	// Run service
-//	if err := service.Run(); err != nil {
-//		log.Fatal(err)
-//	}
-//}
-
 package main
 
 import (
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/gin-gonic/gin"
-	"github.com/micro/go-micro/client"
+	"k8s.io/sample-controller/pkg/signals"
+
 	"github.com/micro/go-micro/util/log"
 	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	"github.com/yametech/fuxi/pkg/api/namespace/handler"
 	pri "github.com/yametech/fuxi/pkg/preinstall"
+	"github.com/yametech/fuxi/pkg/service/ns"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
+	"time"
 )
 
 const (
@@ -62,20 +33,29 @@ func main() {
 	router.Use(gin2micro.TracerWrapper)
 
 	group := router.Group("/ns")
-	hystrix.DefaultTimeout = 5000
-	sClient := hystrixplugin.NewClientWrapper()(service.Options().Service.Client())
-	sClient.Init(
-		client.Retries(3),
-	)
-
-	ns := handler.New(sClient)
+	//hystrix.DefaultTimeout = 5000
+	//sClient := hystrixplugin.NewClientWrapper()(service.Options().Service.Client())
+	//sClient.Init(
+	//	client.Retries(3),
+	//)
+	//
+	//ns := handler.New(sClient)
 	// ns
+	resyncDury := time.Second * 30
+	op := ns.NewNS(resyncDury)
+	stopCh := signals.SetupSignalHandler()
+	op.Start(stopCh)
+
+	ns := handler.NSController{
+		Service: op,
+	}
 	{
 
-		group.POST("/v1/namespace", ns.CreateNamespace)
-		group.DELETE("/v1/namespace", ns.DeleteNamespace)
-		group.GET("/v1/namespacelist", ns.NamespaceList)
-		group.PUT("/v1/namespaceedit", ns.EditNamespace)
+		group.POST("/v1/namespace", ns.CreateSubNet)
+		group.DELETE("/v1/namespace/:name", ns.DeleteSubNet)
+		group.GET("/v1/namespace/:name", ns.GetSubNet)
+		group.PUT("/v1/namespace", ns.UpdateSubNet)
+		group.GET("/v1/namespaces", ns.SubNetList)
 	}
 
 	service.Handle("/", router)

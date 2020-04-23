@@ -32,6 +32,7 @@ const (
 	ServiceAccount           ResourceName = "serviceaccounts"
 	Role                     ResourceName = "roles"
 	RoleBinding              ResourceName = "rolebindings"
+	Namespace                ResourceName = "namesapces"
 )
 
 // GroupVersionResources describe resource collection
@@ -52,6 +53,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Secrets:                  {Group: "", Version: "v1", Resource: "secrets"},
 	ResourceQuota:            {Group: "", Version: "v1", Resource: "resourcequotas"},
 	Service:                  {Group: "", Version: "v1", Resource: "services"},
+	Namespace:                {Group: "", Version: "v1", Resource: "namespaces"},
 	Ingress:                  {Group: "extensions", Version: "v1beta1", Resource: "ingresses"},
 	NetworkPolicy:            {Group: "networking.k8s.io", Version: "v1", Resource: "networkpolicies"},
 	HorizontalPodAutoscaler:  {Group: "autoscaling", Version: "v2beta1", Resource: "horizontalpodautoscalers"},
@@ -91,6 +93,7 @@ var (
 	ResourceServiceAccount           = GetGVR(ServiceAccount)
 	ResourceRole                     = GetGVR(Role)
 	ResourceRoleBinding              = GetGVR(RoleBinding)
+	ResourceNamespace                = GetGVR(Namespace)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {

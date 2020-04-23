@@ -32,9 +32,9 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 
 // ResourceQuery query resource interface
 type ResourceQuery interface {
-	List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64, selector labels.Selector) (*unstructured.UnstructuredList, error)
+	List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64, selector interface{}) (*unstructured.UnstructuredList, error)
 	Get(resource schema.GroupVersionResource, namespace, name string) (runtime.Object, error)
-	Watch(resource schema.GroupVersionResource, namespace string, selector labels.Selector, closed chan struct{}) (<-chan watch.Event, error)
+	Watch(resource schema.GroupVersionResource, namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector) (<-chan watch.Event, error)
 }
 
 // ResourceApply update resource interface
@@ -117,12 +117,24 @@ func (d *defaultImplWorkloadsResourceHandler) List(
 	flag string,
 	pos,
 	size int64,
-	selector labels.Selector,
-) (items *unstructured.UnstructuredList, err error) {
+	selector interface{},
+) (*unstructured.UnstructuredList, error) {
+	var err error
+	var items *unstructured.UnstructuredList
 	opts := metav1.ListOptions{}
-	if selector != nil {
-		opts.LabelSelector = selector.String()
+
+	if selector == nil || selector == "" {
+		selector = labels.Everything()
 	}
+	switch selector.(type) {
+	case labels.Selector:
+		opts.LabelSelector = selector.(labels.Selector).String()
+	case string:
+		if selector != "" {
+			opts.LabelSelector = selector.(string)
+		}
+	}
+
 	if flag != "" {
 		opts.Continue = flag
 	}
@@ -137,9 +149,6 @@ func (d *defaultImplWorkloadsResourceHandler) List(
 		List(opts)
 	if err != nil {
 		return nil, err
-	}
-	if opts.Limit <= int64(len(items.Items)) {
-		items.Items = items.Items[pos : pos+size]
 	}
 
 	return items, nil
@@ -165,13 +174,19 @@ func (d *defaultImplWorkloadsResourceHandler) Get(
 func (d *defaultImplWorkloadsResourceHandler) Watch(
 	resource schema.GroupVersionResource,
 	namespace string,
+	resourceVersion string,
+	timeoutSeconds int64,
 	selector labels.Selector,
-	closed chan struct{},
 ) (<-chan watch.Event, error) {
-	closed = make(chan struct{})
 	opts := metav1.ListOptions{}
 	if selector != nil {
 		opts.LabelSelector = selector.String()
+	}
+	if timeoutSeconds > 0 {
+		opts.TimeoutSeconds = &timeoutSeconds
+	}
+	if resourceVersion != "" {
+		opts.ResourceVersion = resourceVersion
 	}
 	recv, err := sharedK8sClient.
 		cacheInformer.
