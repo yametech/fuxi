@@ -30,8 +30,8 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/igm/sockjs-go/sockjs"
 	"github.com/yametech/fuxi/pkg/api/workload/template"
-	"gopkg.in/igm/sockjs-go.v2/sockjs"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -48,13 +48,17 @@ const (
 	// BIND    fe->be     sessionID      Id sent back from TerminalResponse
 	BIND = iota // 0
 	// STDIN   fe->be     Data           Keystrokes/paste buffer
-	STDIN
+	STDIN // 1
 	// STDOUT  be->fe     Data           Output from the process
-	STDOUT
+	STDOUT // 2
 	// RESIZE  fe->be     Rows, Cols     New terminal size
-	RESIZE
+	RESIZE // 3
 	// TOAST   be->fe     Data           OOB message to be shown to the user
-	TOAST
+	TOAST // 4
+	// INEXIT
+	INEXIT // 5
+	// OUTEXIT
+	OUTEXIT // 6
 )
 
 // Global import the package init the session manager
@@ -66,22 +70,21 @@ func CreateSharedSessionManager(clientSet *kubernetes.Clientset, restCfg *rest.C
 		sharedSessionManager = &sessionManager{
 			client:   clientSet.CoreV1().RESTClient(),
 			restCfg:  restCfg,
-			channels: make(map[string]*SessionChannel),
+			channels: make(map[string]*sessionChannels),
 			lock:     sync.RWMutex{},
 		}
 	}
-	return
 }
 
 // sessionManager manager external client connect to kubernetes pod terminal session
 type sessionManager struct {
 	client   rest.Interface
 	restCfg  *rest.Config
-	channels map[string]*SessionChannel
+	channels map[string]*sessionChannels
 	lock     sync.RWMutex
 }
 
-func (sm *sessionManager) get(sessionId string) (*SessionChannel, bool) {
+func (sm *sessionManager) get(sessionId string) (*sessionChannels, bool) {
 	sm.lock.RLock()
 	defer sm.lock.RUnlock()
 	v, exists := sm.channels[sessionId]
@@ -89,7 +92,7 @@ func (sm *sessionManager) get(sessionId string) (*SessionChannel, bool) {
 
 }
 
-func (sm *sessionManager) set(sessionId string, channel *SessionChannel) {
+func (sm *sessionManager) set(sessionId string, channel *sessionChannels) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 	sm.channels[sessionId] = channel
@@ -101,7 +104,7 @@ func (sm *sessionManager) set(sessionId string, channel *SessionChannel) {
 func (sm *sessionManager) close(sessionID string, status uint32, reason string) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
-	err := sm.channels[sessionID].sockJSSession.Close(status, reason)
+	err := sm.channels[sessionID].session.Close(status, reason)
 	if err != nil {
 		return
 	}
@@ -115,17 +118,17 @@ type PtyHandler interface {
 	remotecommand.TerminalSizeQueue
 }
 
-// process executed cmd in the container specified in request and connects it up with the  SessionChannel (a session)
-func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, sess PtyHandler) error {
-	command := []string{"/bin/sh", "-c"}
-	command = append(command, cmd...)
+// process executed cmd in the container specified in request and connects it up with the  sessionChannels (a session)
+func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, pty PtyHandler) error {
+	base := []string{"/bin/sh", "-c"}
+	base = append(base, cmd...)
 	req := sm.client.Post().
 		Resource("pods").
 		Name(request.Name).
 		Namespace(request.Namespace).
 		SubResource("exec")
 	option := &v1.PodExecOptions{
-		Command: command,
+		Command: base,
 		Stdin:   true,
 		Stdout:  true,
 		Stderr:  true,
@@ -144,10 +147,10 @@ func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []stri
 	}
 	err = exec.Stream(
 		remotecommand.StreamOptions{
-			Stdin:             sess,
-			Stdout:            sess,
-			Stderr:            sess,
-			TerminalSizeQueue: sess,
+			Stdin:             pty,
+			Stdout:            pty,
+			Stderr:            pty,
+			TerminalSizeQueue: pty,
 			Tty:               true,
 		})
 
@@ -157,25 +160,26 @@ func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []stri
 	return nil
 }
 
-// SessionChannel a http connect
+// sessionChannels a http connect
 // upgrade to websocket session bind a session channel to backend kubernetes API server with SPDY
-type SessionChannel struct {
-	id            string
-	bound         chan struct{}
-	sockJSSession sockjs.Session
-	sizeChan      chan remotecommand.TerminalSize
-	doneChan      chan struct{}
+type sessionChannels struct {
+	id       string
+	bound    chan struct{}
+	session  sockjs.Session
+	sizeChan chan remotecommand.TerminalSize
+	doneChan chan struct{}
+	data     chan []byte
 }
 
-// TerminalMessage is the messaging protocol between ShellController and TerminalSession.
-type TerminalMessage struct {
+// message is the messaging protocol between ShellController and TerminalSession.
+type message struct {
 	Data, SessionID string
 	Rows, Cols      uint16
 	Op              OP
 }
 
-// Next impl sizeChan remotecommand.TerminalSize
-func (s *SessionChannel) Next() *remotecommand.TerminalSize {
+// Next impl sizeChan remote command.TerminalSize
+func (s *sessionChannels) Next() *remotecommand.TerminalSize {
 	select {
 	case size := <-s.sizeChan:
 		return &size
@@ -185,71 +189,64 @@ func (s *SessionChannel) Next() *remotecommand.TerminalSize {
 }
 
 // Write impl io.Writer
-func (s *SessionChannel) Write(p []byte) (int, error) {
-	msg, err := json.Marshal(TerminalMessage{
-		Op:   STDOUT,
-		Data: string(p),
-	})
+func (s *sessionChannels) Write(p []byte) (int, error) {
+	msg, err := json.Marshal(
+		message{
+			Op:   STDOUT,
+			Data: string(p),
+		})
 	if err != nil {
 		return 0, err
 	}
-
-	if err = s.sockJSSession.Send(string(msg)); err != nil {
+	log.Printf("send to client msg %s \r\n", string(msg))
+	if err = s.session.Send(string(msg)); err != nil {
 		return 0, err
 	}
-	return len(data), nil
+
+	return len(p), nil
 }
 
 // Toast can be used to send the user any OOB messages
 // hterm puts these in the center of the terminal
-func (s *SessionChannel) Toast(p string) error {
-	msg, err := json.Marshal(TerminalMessage{
-		Op:   TOAST,
-		Data: p,
-	})
+func (s *sessionChannels) Toast(p string) error {
+	msg, err := json.Marshal(
+		message{
+			Op:   TOAST,
+			Data: p,
+		})
 	if err != nil {
 		return err
 	}
-
-	if err = s.sockJSSession.Send(string(msg)); err != nil {
+	if err = s.session.Send(string(msg)); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 // Read impl io.Reader
-func (s *SessionChannel) Read(p []byte) (n int, err error) {
-	//retry:
-	//	m, err := s.sockJSSession.Recv()
-	//	if err != nil {
-	//		return copy(p, END_OF_TRANSMISSION), err
-	//	}
-	//
-	//	op, err := base64.RawStdEncoding.DecodeString(m)
-	//	if err != nil {
-	//		goto retry
-	//	}
-	//	if len(op) < 1 {
-	//		goto retry
-	//	}
-	//	switch op[0] {
-	//	case '(':
-	//		goto retry
-	//	case ')':
-	//		goto retry
-	//	}
-	m, err := s.sockJSSession.Recv()
-	var msg TerminalMessage
-	if err := json.Unmarshal([]byte(m), &msg); err != nil {
-		//goto retry
+func (s *sessionChannels) Read(p []byte) (n int, err error) {
+	m, err := s.session.Recv()
+	if err != nil {
+		return 0, err
+	}
+	var msg message
+	err = json.Unmarshal([]byte(m), &msg)
+	if err != nil {
 		return copy(p, END_OF_TRANSMISSION), err
 	}
+	log.Printf("recv from client msg op = %d data = %s \r\n", msg.Op, msg.Data)
 
 	switch msg.Op {
 	case STDIN:
 		return copy(p, msg.Data), nil
+	case INEXIT: // exit from client event
+		return 0, fmt.Errorf("client exit")
 	case RESIZE:
-		s.sizeChan <- remotecommand.TerminalSize{Width: msg.Cols, Height: msg.Rows}
+		s.sizeChan <- remotecommand.TerminalSize{
+			Width:  msg.Cols,
+			Height: msg.Rows,
+		}
 		return 0, nil
 	default:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("unknown message type '%d'", msg.Op)
@@ -265,11 +262,10 @@ func HandleTerminalSession(session sockjs.Session) {
 	_, _ = session.Recv()
 	buf, err := session.Recv()
 	if err != nil {
-		log.Printf("recv buffer error: %s", err)
 		return
 	}
 
-	msg := &TerminalMessage{}
+	msg := &message{}
 	if err = json.Unmarshal([]byte(buf), &msg); err != nil {
 		log.Printf("handleTerminalSession: can't un marshal (%v): %s", buf, err)
 		return
@@ -280,23 +276,30 @@ func HandleTerminalSession(session sockjs.Session) {
 	}
 	terminalSession, exist := sharedSessionManager.get(msg.SessionID)
 	if !exist {
-		log.Printf("sharedSessionManager: can't find session '%s'", msg.SessionID)
+		bs, _ := json.Marshal(
+			message{
+				Op:   OUTEXIT,
+				Data: "connection session expired, please close and reconnect",
+			})
+		if err := session.Send(string(bs)); err != nil {
+			log.Printf("send session message to client error \r\n")
+		}
 		return
 	}
 	if terminalSession.id == "" {
 		log.Printf("handleTerminalSession: can't find session '%s'", msg.SessionID)
 		return
 	}
-	terminalSession.sockJSSession = session
+	terminalSession.session = session
 	sharedSessionManager.set(msg.SessionID, terminalSession)
 	terminalSession.bound <- struct{}{}
 }
 
-// GenerateTerminalSessionId generates a random session ID string. The format is not really interesting.
+// generateTerminalSessionId generates a random session ID string. The format is not really interesting.
 // This ID is used to identify the session when the client opens the SockJS connection.
 // Not the same as the SockJS session id! We can't use that as that is generated
 // on the client side and we don't have it yet at this point.
-func GenerateTerminalSessionId() (string, error) {
+func generateTerminalSessionId() (string, error) {
 	bytes := make([]byte, 16)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
@@ -316,21 +319,18 @@ func isValidShell(validShells []string, shell string) bool {
 	return false
 }
 
-// WaitForTerminal is called from pod attach api as a goroutine
+// waitForTerminal is called from pod attach api as a goroutine
 // Waits for the SockJS connection to be opened by the client the session to be bound in handleTerminalSession
-func WaitForTerminal(request *template.AttachPodRequest, sessionId string) {
-	if request.Shell == "" {
-		request.Shell = "sh"
-	}
+func waitForTerminal(request *template.AttachPodRequest, sessionId string) {
 	session, exist := sharedSessionManager.get(sessionId)
 	if !exist {
-		//
+		return
 	}
 	<-session.bound
 
 	defer close(session.bound)
 	var err error
-	validShells := []string{"sh", "csh", "bash"}
+	validShells := []string{"bash", "sh", "csh"}
 
 	if isValidShell(validShells, request.Shell) {
 		cmd := []string{request.Shell}
