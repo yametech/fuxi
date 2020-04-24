@@ -210,7 +210,6 @@ func main() {
 
 	// #autoscaling
 	// #v2beta1
-
 	// HorizontalPodAutoscaler
 	{
 		group.GET("/apis/autoscaling/v2beta1/horizontalpodautoscalers", HorizontalPodAutoscalerList)
@@ -219,7 +218,6 @@ func main() {
 
 	// #rbac.authorization.k8s.io
 	// #v1
-
 	// Role
 	{
 		group.GET("/apis/rbac.authorization.k8s.io/v1/roles", RoleList)
@@ -238,8 +236,9 @@ func main() {
 	// CustomResourceDefinition
 	{
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
-		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions/:name", CustomResourceDefinitionGet)
 		group.GET("/apis/crd/:group/:version/:resource", GeneralCustomResourceDefinitionList)
+		// example /apis/crd/:group/:version/:resource/namespaces/:namespace/
+		group.GET("/apis/crd/:group/:version/:resource/namespaces/:namespace/:resource/:name", CustomResourceDefinitionGet)
 	}
 
 	// Namespace
@@ -262,9 +261,9 @@ func main() {
 		})
 	}
 	// Metrics
-	//{
-	//	group.POST("/metrics", workloadsAPI.Metrics)
-	//}
+	{
+		group.POST("/metrics", workloadsAPI.Metrics2)
+	}
 
 	{
 		group.GET("/config", func(g *gin.Context) {

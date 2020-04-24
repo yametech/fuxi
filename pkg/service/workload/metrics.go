@@ -1,7 +1,10 @@
 package workload
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"strings"
 	"time"
 )
@@ -32,6 +35,35 @@ func (m *Metrics) PostMetrics(arguments string) (map[string]string, error) {
 		result[lines[0]] = lines[1]
 	}
 	return result, nil
+}
+
+func (m *Metrics) PostProxyToPrometheus(params map[string]string, body string, result io.Writer) error {
+	req := sharedK8sClient.clientSetV1.CoreV1().RESTClient().Get().
+		Namespace("lens-metrics").
+		Resource("services").
+		Name("prometheus:80").
+		SubResource("proxy").
+		// The server URL path, without leading "/" goes here...
+		Suffix("api/v1/query_range")
+
+	for k, v := range params {
+		req.Param(k, v)
+	}
+	req.Body(body)
+
+	raw, err := req.DoRaw()
+
+	fmt.Printf("recv from proxy end %s\r\n", raw)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	_, err = io.Copy(result, bytes.NewBuffer(raw))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *Metrics) GetMetrics(pods *PodMetricsList) error {
