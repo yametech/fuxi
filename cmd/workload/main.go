@@ -238,7 +238,7 @@ func main() {
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
 		group.GET("/apis/crd/:group/:version/:resource", GeneralCustomResourceDefinitionList)
 		// example /apis/crd/:group/:version/:resource/namespaces/:namespace/
-		group.GET("/apis/crd/:group/:version/:resource/namespaces/:namespace/:resource/:name", CustomResourceDefinitionGet)
+		//group.GET("/apis/:group/:version/:resource/namespaces/:namespace/:resource/:name", CustomResourceDefinitionGet)
 	}
 
 	// Namespace
@@ -256,13 +256,11 @@ func main() {
 
 	// /workload/stack
 	{
-		group.POST("/stack", func(g *gin.Context) {
-			log.Infof("/workload/stack %v\r\n", g)
-		})
+		group.POST("/stack", workloadsAPI.ApplyDeployment)
 	}
 	// Metrics
 	{
-		group.POST("/metrics", workloadsAPI.Metrics2)
+		group.POST("/metrics", workloadsAPI.Metrics)
 	}
 
 	{

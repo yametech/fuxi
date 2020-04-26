@@ -26,9 +26,14 @@ spec:
         io.kompose.service: mysql
     spec:
       containers:
-      - image: mysql:latest
+      - image: mysql:5.7
         imagePullPolicy: ""
         name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: Abc12345
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "1"
         ports:
         - containerPort: 3306
         resources: {}

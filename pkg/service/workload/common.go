@@ -1,7 +1,9 @@
 package workload
 
 import (
+	"github.com/juju/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"reflect"
 	"sort"
 
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
@@ -39,7 +41,7 @@ type ResourceQuery interface {
 
 // ResourceApply update resource interface
 type ResourceApply interface {
-	Apply(resource schema.GroupVersionResource, obj *unstructured.Unstructured) error
+	Apply(resource schema.GroupVersionResource, namespace, name string, obj *unstructured.Unstructured) error
 	Delete(resource schema.GroupVersionResource, namespace, name string) error
 }
 
@@ -202,17 +204,41 @@ func (d *defaultImplWorkloadsResourceHandler) Watch(
 
 func (d *defaultImplWorkloadsResourceHandler) Apply(
 	resource schema.GroupVersionResource,
+	namespace string,
+	name string,
 	obj *unstructured.Unstructured,
 ) error {
-	_, err := sharedK8sClient.
+	getObj, getErr := sharedK8sClient.
 		cacheInformer.
 		Client.
 		Resource(resource).
-		Update(obj, metav1.UpdateOptions{})
-	if err != nil {
-		return err
+		Namespace(namespace).
+		Get(name, metav1.GetOptions{})
+	if errors.IsNotFound(getErr) {
+		var createErr error
+		obj, createErr = sharedK8sClient.
+			cacheInformer.
+			Client.
+			Resource(resource).
+			Create(obj, metav1.CreateOptions{})
+		return createErr
 	}
-	return nil
+	if getErr != nil {
+		return getErr
+	}
+	if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
+		// ? why not work
+		return nil
+	}
+	var updateErr error
+	obj, updateErr = sharedK8sClient.
+		cacheInformer.
+		Client.
+		Resource(resource).
+		Namespace(namespace).
+		Update(obj, metav1.UpdateOptions{})
+
+	return updateErr
 }
 
 func (d *defaultImplWorkloadsResourceHandler) Delete(
