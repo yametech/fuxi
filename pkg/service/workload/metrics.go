@@ -1,11 +1,7 @@
 package workload
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
-	"io"
-	"strings"
 	"time"
 )
 
@@ -15,55 +11,52 @@ func NewMetrics() *Metrics {
 	return &Metrics{}
 }
 
-func (m *Metrics) PostMetrics(arguments string) (map[string]string, error) {
-	//url := fmt.Sprintf("/metrics?%s", arguments)
-	data, err := sharedK8sClient.
-		clientSetV1.
-		RESTClient().
-		Post().
-		AbsPath("metrics").
-		DoRaw()
-	if err != nil {
-		return nil, err
-	}
-	result := make(map[string]string)
-	for _, line := range strings.Split(string(data), "\n") {
-		lines := strings.Split(line, " ")
-		if len(lines) < 2 || len(lines) >= 3 {
-			continue
-		}
-		result[lines[0]] = lines[1]
-	}
-	return result, nil
+type MetricsContent struct {
+	Status string `json:"status"`
+	Data   struct {
+		ResultType string `json:"resultType"`
+		Result     []struct {
+			Metric struct {
+			} `json:"metric"`
+			Values [][]interface{} `json:"values"`
+		} `json:"result"`
+	} `json:"data"`
 }
 
-func (m *Metrics) PostProxyToPrometheus(params map[string]string, body string, result io.Writer) error {
-	req := sharedK8sClient.clientSetV1.CoreV1().RESTClient().Get().
-		Namespace("lens-metrics").
-		Resource("services").
-		Name("prometheus:80").
-		SubResource("proxy").
-		// The server URL path, without leading "/" goes here...
-		Suffix("api/v1/query_range")
+func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[string]MetricsContent, error) {
+	var bodyMap map[string]string
+	var resultMap = make(map[string]MetricsContent)
+	err := json.Unmarshal(body, &bodyMap)
+	_ = err
 
-	for k, v := range params {
-		req.Param(k, v)
+	for bodyKey, bodyValue := range bodyMap {
+		req := sharedK8sClient.clientSetV1.
+			CoreV1().
+			RESTClient().
+			Get().
+			Namespace("lens-metrics").
+			Resource("services").
+			Name("prometheus:80").
+			SubResource("proxy").
+			Suffix("api/v1/query_range")
+		for k, v := range params {
+			req.Param(k, v)
+		}
+		req.Param("query", bodyValue)
+
+		raw, err := req.DoRaw()
+		if err != nil {
+			return nil, err
+		}
+		metricsContext := MetricsContent{}
+		err = json.Unmarshal(raw, &metricsContext)
+		if err != nil {
+			panic(err)
+		}
+		resultMap[bodyKey] = metricsContext
 	}
-	req.Body(body)
 
-	raw, err := req.DoRaw()
-
-	fmt.Printf("recv from proxy end %s\r\n", raw)
-
-	if err != nil {
-		panic(err.Error())
-	}
-	_, err = io.Copy(result, bytes.NewBuffer(raw))
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return resultMap, nil
 }
 
 func (m *Metrics) GetMetrics(pods *PodMetricsList) error {
@@ -71,12 +64,12 @@ func (m *Metrics) GetMetrics(pods *PodMetricsList) error {
 		clientSetV1.
 		RESTClient().
 		Get().
-		AbsPath("apis/metrics.k8s.io/v1beta1/pods").DoRaw()
+		AbsPath("apis/metrics.k8s.io/v1beta1/pods").
+		DoRaw()
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(data, &pods)
-	return err
+	return json.Unmarshal(data, &pods)
 }
 
 type PodMetricsList struct {
