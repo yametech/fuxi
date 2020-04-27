@@ -2,6 +2,7 @@ package workload
 
 import (
 	"encoding/json"
+	"time"
 )
 
 type Metrics struct{}
@@ -10,7 +11,7 @@ func NewMetrics() *Metrics {
 	return &Metrics{}
 }
 
-type MetricsContext struct {
+type MetricsContent struct {
 	Status string `json:"status"`
 	Data   struct {
 		ResultType string `json:"resultType"`
@@ -22,24 +23,9 @@ type MetricsContext struct {
 	} `json:"data"`
 }
 
-type MetricsReport struct {
-	MemoryUsage    string `json:"memoryUsage"`
-	MemoryRequests string `json:"memoryRequests"`
-	MemoryLimits   string `json:"memoryLimits"`
-	MemoryCapacity string `json:"memoryCapacity"`
-	CPUUsage       string `json:"cpuUsage"`
-	CPURequests    string `json:"cpuRequests"`
-	CPULimits      string `json:"cpuLimits"`
-	CPUCapacity    string `json:"cpuCapacity"`
-	PodUsage       string `json:"podUsage"`
-	PodCapacity    string `json:"podCapacity"`
-	FsSize         string `json:"fsSize"`
-	FsUsage        string `json:"fsUsage"`
-}
-
-func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[string]MetricsContext, error) {
+func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[string]MetricsContent, error) {
 	var bodyMap map[string]string
-	var resultMap = make(map[string]MetricsContext)
+	var resultMap = make(map[string]MetricsContent)
 	err := json.Unmarshal(body, &bodyMap)
 	_ = err
 
@@ -62,7 +48,7 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 		if err != nil {
 			return nil, err
 		}
-		metricsContext := MetricsContext{}
+		metricsContext := MetricsContent{}
 		err = json.Unmarshal(raw, &metricsContext)
 		if err != nil {
 			panic(err)
@@ -71,4 +57,42 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 	}
 
 	return resultMap, nil
+}
+
+func (m *Metrics) GetMetrics(pods *PodMetricsList) error {
+	data, err := sharedK8sClient.
+		clientSetV1.
+		RESTClient().
+		Get().
+		AbsPath("apis/metrics.k8s.io/v1beta1/pods").
+		DoRaw()
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, &pods)
+}
+
+type PodMetricsList struct {
+	Kind       string `json:"kind"`
+	APIVersion string `json:"apiVersion"`
+	Metadata   struct {
+		SelfLink string `json:"selfLink"`
+	} `json:"metadata"`
+	Items []struct {
+		Metadata struct {
+			Name              string    `json:"name"`
+			Namespace         string    `json:"namespace"`
+			SelfLink          string    `json:"selfLink"`
+			CreationTimestamp time.Time `json:"creationTimestamp"`
+		} `json:"metadata"`
+		Timestamp  time.Time `json:"timestamp"`
+		Window     string    `json:"window"`
+		Containers []struct {
+			Name  string `json:"name"`
+			Usage struct {
+				CPU    string `json:"cpu"`
+				Memory string `json:"memory"`
+			} `json:"usage"`
+		} `json:"containers"`
+	} `json:"items"`
 }
