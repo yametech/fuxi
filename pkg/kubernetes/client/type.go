@@ -10,6 +10,7 @@ const (
 	Deployment               ResourceName = "deployment"
 	Stone                    ResourceName = "stone"
 	StatefulSet              ResourceName = "statefulset"
+	StatefulSet1             ResourceName = "statefulset1"
 	DaemonSet                ResourceName = "daemonsets"
 	Injector                 ResourceName = "injector"
 	Pod                      ResourceName = "pod"
@@ -40,6 +41,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Water:                    {Group: "nuwa.nip.io", Version: "v1", Resource: "waters"},
 	Deployment:               {Group: "apps", Version: "v1", Resource: "deployments"},
 	Stone:                    {Group: "nuwa.nip.io", Version: "v1", Resource: "stones"},
+	StatefulSet1:             {Group: "nuwa.nip.io", Version: "v1", Resource: "statefulsets"},
 	StatefulSet:              {Group: "apps", Version: "v1", Resource: "statefulsets"},
 	DaemonSet:                {Group: "apps", Version: "v1", Resource: "daemonsets"},
 	Injector:                 {Group: "nuwa.nip.io", Version: "v1", Resource: "injectors"},
@@ -72,6 +74,7 @@ var (
 	ResourceDeployment               = GetGVR(Deployment)
 	ResourceStone                    = GetGVR(Stone)
 	ResourceStatefulSet              = GetGVR(StatefulSet)
+	ResourceStatefulSet1              = GetGVR(StatefulSet1)
 	ResourceDaemonSet                = GetGVR(DaemonSet)
 	ResourceInjector                 = GetGVR(Injector)
 	ResourcePod                      = GetGVR(Pod)

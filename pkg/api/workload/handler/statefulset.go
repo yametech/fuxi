@@ -12,6 +12,7 @@ import (
 func (w *WorkloadsAPI) GetStatefulSet(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
+
 	item, err := w.statefulSet.Get(dyn.ResourceStatefulSet, namespace, name)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,

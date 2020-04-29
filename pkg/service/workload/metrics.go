@@ -2,7 +2,8 @@ package workload
 
 import (
 	"encoding/json"
-	"time"
+	"fmt"
+	metrics "k8s.io/metrics/pkg/apis/metrics"
 )
 
 type Metrics struct{}
@@ -59,12 +60,13 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 	return resultMap, nil
 }
 
-func (m *Metrics) GetMetrics(pods *PodMetricsList) error {
+func (m *Metrics) GetPodMetrics(namespace, name string, pods *metrics.PodMetrics) error {
+	uri := fmt.Sprintf("apis/metrics.k8s.io/v1beta1/%s/%s/pods", namespace, name)
 	data, err := sharedK8sClient.
 		clientSetV1.
 		RESTClient().
 		Get().
-		AbsPath("apis/metrics.k8s.io/v1beta1/pods").
+		AbsPath(uri).
 		DoRaw()
 	if err != nil {
 		return err
@@ -72,27 +74,32 @@ func (m *Metrics) GetMetrics(pods *PodMetricsList) error {
 	return json.Unmarshal(data, &pods)
 }
 
-type PodMetricsList struct {
-	Kind       string `json:"kind"`
-	APIVersion string `json:"apiVersion"`
-	Metadata   struct {
-		SelfLink string `json:"selfLink"`
-	} `json:"metadata"`
-	Items []struct {
-		Metadata struct {
-			Name              string    `json:"name"`
-			Namespace         string    `json:"namespace"`
-			SelfLink          string    `json:"selfLink"`
-			CreationTimestamp time.Time `json:"creationTimestamp"`
-		} `json:"metadata"`
-		Timestamp  time.Time `json:"timestamp"`
-		Window     string    `json:"window"`
-		Containers []struct {
-			Name  string `json:"name"`
-			Usage struct {
-				CPU    string `json:"cpu"`
-				Memory string `json:"memory"`
-			} `json:"usage"`
-		} `json:"containers"`
-	} `json:"items"`
+func (m *Metrics) GetPodMetricsList(namespace string, pods *metrics.PodMetricsList) error {
+	uri := "apis/metrics.k8s.io/v1beta1/pods"
+	if namespace != "" {
+		uri = fmt.Sprintf("apis/metrics.k8s.io/v1beta1/namespaces/%s/pods", namespace)
+	}
+	data, err := sharedK8sClient.
+		clientSetV1.
+		RESTClient().
+		Get().
+		AbsPath(uri).
+		DoRaw()
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, &pods)
+}
+
+func (m *Metrics) GetNodeMetricsList(nodes *metrics.NodeMetricsList) error {
+	data, err := sharedK8sClient.
+		clientSetV1.
+		RESTClient().
+		Get().
+		AbsPath("apis/metrics.k8s.io/v1beta1/nodes").
+		DoRaw()
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, &nodes)
 }

@@ -247,20 +247,20 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace", NamespaceGet)
 	}
 
-	// Swag
+	// // post  workload/stack
 	{
-		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
-		/// Release production environment can be turned on
-		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
-	}
-
-	// /workload/stack
-	{
-		group.POST("/stack", workloadsAPI.ApplyDeployment)
+		group.POST("/stack", workloadsAPI.Apply)
+		group.DELETE("/api/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
+		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 	}
 	// Metrics
 	{
 		group.POST("/metrics", workloadsAPI.Metrics)
+		group.GET("/apis/metrics.k8s.io/v1beta1/nodes", workloadsAPI.NodeMetrics)
+
+		// GET /workload/apis/metrics.k8s.io/v1beta1/namespaces/rook-ceph/pods
+		group.GET("/apis/metrics.k8s.io/v1beta1/pods", workloadsAPI.PodMetricsList)
+		group.GET("/apis/metrics.k8s.io/v1beta1/namespaces/:namespace/pods", workloadsAPI.PodMetricsList)
 	}
 
 	{
@@ -280,6 +280,13 @@ func main() {
 	// watch the group resource
 	{
 		group.GET("/watch", WatchStream)
+	}
+
+	// Swag
+	{
+		/// Then, if you set envioment variable DEV_OPEN_SWAGGER to anything, /swagger/*any will respond 404, just like when route unspecified.
+		/// Release production environment can be turned on
+		group.GET("/swagger/*any", swag.DisablingWrapHandler(file.Handler, "DEV_OPEN_SWAGGER"))
 	}
 
 	service.Handle("/", router)
