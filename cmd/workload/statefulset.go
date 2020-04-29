@@ -24,5 +24,5 @@ func StatefulSetList(g *gin.Context) { workloadsAPI.ListStatefulSet(g) }
 // @Param name query string true "name"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/apps/v1/namespaces/:namespace/statefulsets/:name [get]
+// @Router /workload/apis/:group/:version/namespaces/:namespace/statefulsets/:name [get]
 func StatefulSetGet(g *gin.Context) { workloadsAPI.GetStatefulSet(g) }

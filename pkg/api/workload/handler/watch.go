@@ -81,7 +81,7 @@ func trimPrefixSuffixSpace(slice []string) []string {
 	return slice
 }
 
-func listenByApis(event *workloadservice.Event, g *gin.Context, eventChan chan Event) {
+func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan Event, closed chan struct{}) {
 	defer close(eventChan)
 	apis := g.QueryArray("api")
 	wg := sync.WaitGroup{}
@@ -99,8 +99,21 @@ func listenByApis(event *workloadservice.Event, g *gin.Context, eventChan chan E
 		}
 		go func() {
 			defer wg.Done()
-			for item := range k8sWatchChan {
-				eventChan <- Event{Type: item.Type, Object: item.Object}
+			for {
+				select {
+				case _, ok := <-closed:
+					if !ok {
+						return
+					}
+				case item, ok := <-k8sWatchChan:
+					if !ok {
+						return
+					}
+					eventChan <- Event{
+						Type:   item.Type,
+						Object: item.Object,
+					}
+				}
 			}
 		}()
 	}
@@ -111,20 +124,27 @@ func listenByApis(event *workloadservice.Event, g *gin.Context, eventChan chan E
 // after server timeout then close send closed event to client side server watcher close
 func (w *WorkloadsAPI) WatchStream(g *gin.Context) {
 	eventChan := make(chan Event, 32)
-	go listenByApis(w.event, g, eventChan)
+	closed := make(chan struct{})
+	go listenByApis(w.generic, g, eventChan, closed)
 
+	streamEndEvent := Event{
+		Type:   watch.EventType("STREAM_END"),
+		Url:    g.Request.URL.String(),
+		Status: 410,
+	}
 	g.Stream(func(w io.Writer) bool {
-		event, ok := <-eventChan
-		if !ok {
-			streamEndEvent := Event{
-				Type:   watch.EventType("STREAM_END"),
-				Url:    g.Request.URL.String(),
-				Status: 410,
-			}
+		select {
+		case <-g.Writer.CloseNotify():
+			close(closed)
 			g.SSEvent("", streamEndEvent)
 			return false
+		case event, ok := <-eventChan:
+			if !ok {
+				g.SSEvent("", streamEndEvent)
+				return false
+			}
+			g.SSEvent("", event)
 		}
-		g.SSEvent("", event)
 		return true
 	})
 }

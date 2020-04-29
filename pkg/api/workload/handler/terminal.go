@@ -198,7 +198,6 @@ func (s *sessionChannels) Write(p []byte) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	log.Printf("send to client msg %s \r\n", string(msg))
 	if err = s.session.Send(string(msg)); err != nil {
 		return 0, err
 	}
