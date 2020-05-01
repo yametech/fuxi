@@ -11,8 +11,15 @@ import (
 
 // Get CustomResourceDefinition
 func (w *WorkloadsAPI) GetCustomResourceDefinition(g *gin.Context) {
-	name := g.Param("name")
-	item, err := w.customResourceDefinition.Get(dyn.ResourceCustomResourceDefinition, "", name)
+	// crd param
+	group := g.Param("group")
+	version := g.Param("version")
+	resource := g.Param("resource")
+	//  import general GroupVersionResource
+	groupVersionResource := schema.GroupVersionResource{Group: group, Version: version, Resource: resource}
+	namespace := g.Query("namespace")
+	name := g.Query("name")
+	item, err := w.customResourceDefinition.Get(groupVersionResource, namespace, name)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
 			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
@@ -37,7 +44,6 @@ func (w *WorkloadsAPI) ListCustomResourceDefinition(g *gin.Context) {
 
 // List General CustomResourceDefinition
 func (w *WorkloadsAPI) ListGeneralCustomResourceDefinition(g *gin.Context) {
-
 	// crd param
 	group := g.Param("group")
 	version := g.Param("version")

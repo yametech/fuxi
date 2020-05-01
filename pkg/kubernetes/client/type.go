@@ -74,7 +74,7 @@ var (
 	ResourceDeployment               = GetGVR(Deployment)
 	ResourceStone                    = GetGVR(Stone)
 	ResourceStatefulSet              = GetGVR(StatefulSet)
-	ResourceStatefulSet1              = GetGVR(StatefulSet1)
+	ResourceStatefulSet1             = GetGVR(StatefulSet1)
 	ResourceDaemonSet                = GetGVR(DaemonSet)
 	ResourceInjector                 = GetGVR(Injector)
 	ResourcePod                      = GetGVR(Pod)

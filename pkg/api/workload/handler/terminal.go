@@ -234,7 +234,6 @@ func (s *sessionChannels) Read(p []byte) (n int, err error) {
 	if err != nil {
 		return copy(p, END_OF_TRANSMISSION), err
 	}
-	log.Printf("recv from client msg op = %d data = %s \r\n", msg.Op, msg.Data)
 
 	switch msg.Op {
 	case STDIN:

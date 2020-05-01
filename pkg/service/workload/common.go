@@ -1,17 +1,16 @@
 package workload
 
 import (
-	"github.com/juju/errors"
-	"k8s.io/apimachinery/pkg/runtime"
-	"reflect"
-	"sort"
-
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
+	"reflect"
+	"sort"
 )
 
 // Resource query conditions
@@ -41,7 +40,7 @@ type ResourceQuery interface {
 
 // ResourceApply update resource interface
 type ResourceApply interface {
-	Apply(resource schema.GroupVersionResource, namespace, name string, obj *unstructured.Unstructured) error
+	Apply(resource schema.GroupVersionResource, namespace, name string, obj *unstructured.Unstructured) (*unstructured.Unstructured, error)
 	Delete(resource schema.GroupVersionResource, namespace, name string) error
 }
 
@@ -207,7 +206,7 @@ func (d *defaultImplWorkloadsResourceHandler) Apply(
 	namespace string,
 	name string,
 	obj *unstructured.Unstructured,
-) error {
+) (*unstructured.Unstructured, error) {
 	getObj, getErr := sharedK8sClient.
 		cacheInformer.
 		Client.
@@ -215,30 +214,28 @@ func (d *defaultImplWorkloadsResourceHandler) Apply(
 		Namespace(namespace).
 		Get(name, metav1.GetOptions{})
 	if errors.IsNotFound(getErr) {
-		var createErr error
-		obj, createErr = sharedK8sClient.
+		newObj, createErr := sharedK8sClient.
 			cacheInformer.
 			Client.
 			Resource(resource).
 			Create(obj, metav1.CreateOptions{})
-		return createErr
+		return newObj, createErr
 	}
 	if getErr != nil {
-		return getErr
+		return nil, getErr
 	}
 	if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
 		// ? why not work
-		return nil
+		return nil, nil
 	}
-	var updateErr error
-	obj, updateErr = sharedK8sClient.
+	newObj, updateErr := sharedK8sClient.
 		cacheInformer.
 		Client.
 		Resource(resource).
 		Namespace(namespace).
 		Update(obj, metav1.UpdateOptions{})
 
-	return updateErr
+	return newObj, updateErr
 }
 
 func (d *defaultImplWorkloadsResourceHandler) Delete(
