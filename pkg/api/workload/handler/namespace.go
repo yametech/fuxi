@@ -24,6 +24,7 @@ func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 			})
 		return
 	}
+
 	rawData, err := g.GetRawData()
 	if version != "v1" {
 		g.JSON(http.StatusBadRequest,
@@ -35,6 +36,7 @@ func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 			})
 		return
 	}
+
 	obj := corev1.Namespace{}
 	err = json.Unmarshal(rawData, &obj)
 	if err != nil {
@@ -48,6 +50,7 @@ func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 			})
 		return
 	}
+
 	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
 	if err != nil {
 		g.JSON(
@@ -60,6 +63,7 @@ func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 			})
 		return
 	}
+
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
@@ -97,6 +101,7 @@ func (w *WorkloadsAPI) DeleteNamespace(g *gin.Context) {
 			})
 		return
 	}
+
 	namespaceName := g.Param("namespace")
 	err := w.namespace.Delete(dyn.ResourceNamespace, "", namespaceName)
 	if err != nil {
@@ -109,6 +114,7 @@ func (w *WorkloadsAPI) DeleteNamespace(g *gin.Context) {
 			})
 		return
 	}
+
 	g.JSON(http.StatusOK, "")
 }
 
@@ -118,22 +124,45 @@ func (w *WorkloadsAPI) GetNamespace(g *gin.Context) {
 	item, err := w.namespace.Get(dyn.ResourceNamespace, "", namespaceName)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+			gin.H{
+				code:   http.StatusBadRequest,
+				data:   "",
+				msg:    err.Error(),
+				status: "Request bad parameter",
+			})
 		return
 	}
+
 	g.JSON(http.StatusOK, item)
 }
 
 // List Namespaces
 func (w *WorkloadsAPI) ListNamespace(g *gin.Context) {
-	list, _ := w.namespace.List(dyn.ResourceNamespace, "", "", 0, 10000, nil)
+	list, err := w.namespace.List(dyn.ResourceNamespace, "", "", 0, 0, nil)
+	if err != nil {
+		g.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				code:   http.StatusInternalServerError,
+				data:   "",
+				msg:    err.Error(),
+				status: "namespace query error",
+			})
+		return
+	}
+
 	namespaceList := &corev1.NamespaceList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
-		return
+			gin.H{
+				code:   http.StatusBadRequest,
+				data:   "",
+				msg:    err.Error(),
+				status: "Request bad parameter",
+			})
 	}
+
 	_ = json.Unmarshal(marshalData, namespaceList)
 	g.JSON(http.StatusOK, namespaceList)
 }
