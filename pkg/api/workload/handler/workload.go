@@ -90,9 +90,10 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 		return
 	}
 
-	if group != "apps" {
+	if group == "api" {
 		group = ""
 	}
+
 	gvr := schema.GroupVersionResource{Group: group, Version: version, Resource: resource}
 	if err := w.generic.Delete(gvr, namespace, name); err != nil {
 		g.JSON(
@@ -128,12 +129,30 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	namespace := metadata["namespace"].(string)
 	name := metadata["name"].(string)
 	apiVersion := formData["apiVersion"].(string)
+	//
 	apiVersions := strings.Split(apiVersion, "/")
 
 	kind := formData["kind"].(string)
 	kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "s")
-	gvr := schema.GroupVersionResource{Group: apiVersions[0], Version: apiVersions[1], Resource: kind}
-	err := w.generic.Apply(gvr, namespace, name, unstructuredData)
+
+	var gvr schema.GroupVersionResource
+	if len(apiVersions) > 1 {
+		gvr = schema.GroupVersionResource{Group: apiVersions[0], Version: apiVersions[1], Resource: kind}
+	} else if len(apiVersions) == 1 {
+		gvr = schema.GroupVersionResource{Group: "", Version: apiVersions[0], Resource: kind}
+	} else {
+		g.JSON(http.StatusInternalServerError,
+			gin.H{
+				code:   http.StatusInternalServerError,
+				data:   formData,
+				msg:    "",
+				status: "apply form data cannot parse error",
+			},
+		)
+		return
+	}
+
+	newObj, err := w.generic.Apply(gvr, namespace, name, unstructuredData)
 	if err != nil {
 		g.JSON(http.StatusInternalServerError,
 			gin.H{
@@ -147,6 +166,6 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	}
 
 	g.JSON(http.StatusOK, []unstructured.Unstructured{
-		*unstructuredData,
+		*newObj,
 	})
 }

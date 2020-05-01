@@ -250,9 +250,14 @@ func main() {
 	// // post  workload/stack
 	{
 		group.POST("/stack", workloadsAPI.Apply)
+		// namesapces
+		group.POST("/api/:version/namespaces", NamespaceCreate)
+		group.DELETE("/api/:version/namespaces/:namespace", NamespaceDelete)
+
 		group.DELETE("/api/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 	}
+
 	// Metrics
 	{
 		group.POST("/metrics", workloadsAPI.Metrics)
