@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
+	"k8s.io/client-go/util/retry"
 	"reflect"
 	"sort"
 )
@@ -206,50 +207,61 @@ func (d *defaultImplWorkloadsResourceHandler) Apply(
 	namespace string,
 	name string,
 	obj *unstructured.Unstructured,
-) (*unstructured.Unstructured, error) {
-	getObj, getErr := sharedK8sClient.
-		cacheInformer.
-		Client.
-		Resource(resource).
-		Namespace(namespace).
-		Get(name, metav1.GetOptions{})
-	if errors.IsNotFound(getErr) {
-		newObj, createErr := sharedK8sClient.
+) (result *unstructured.Unstructured, retryErr error) {
+	retryErr = retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		getObj, getErr := sharedK8sClient.
 			cacheInformer.
 			Client.
 			Resource(resource).
-			Create(obj, metav1.CreateOptions{})
-		return newObj, createErr
-	}
-	if getErr != nil {
-		return nil, getErr
-	}
-	if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
-		// ? why not work
-		return nil, nil
-	}
-	newObj, updateErr := sharedK8sClient.
-		cacheInformer.
-		Client.
-		Resource(resource).
-		Namespace(namespace).
-		Update(obj, metav1.UpdateOptions{})
+			Namespace(namespace).
+			Get(name, metav1.GetOptions{})
+		if errors.IsNotFound(getErr) {
+			newObj, createErr := sharedK8sClient.
+				cacheInformer.
+				Client.
+				Resource(resource).
+				Namespace(namespace).
+				Create(obj, metav1.CreateOptions{})
+			result = newObj
+			return createErr
+		}
 
-	return newObj, updateErr
+		if getErr != nil {
+			return getErr
+		}
+
+		if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
+			result = getObj
+			return nil
+		} else {
+			getObj.Object["spec"] = obj.Object["spec"]
+		}
+
+		newObj, updateErr := sharedK8sClient.
+			cacheInformer.
+			Client.
+			Resource(resource).
+			Namespace(namespace).
+			Update(getObj, metav1.UpdateOptions{})
+
+		result = newObj
+		return updateErr
+	})
+
+	return
 }
 
 func (d *defaultImplWorkloadsResourceHandler) Delete(
 	resource schema.GroupVersionResource,
 	namespace, name string,
 ) error {
-	err := sharedK8sClient.
-		cacheInformer.
-		Client.
-		Resource(resource).
-		Namespace(namespace).
-		Delete(name, &metav1.DeleteOptions{})
-	if err != nil {
-		return err
-	}
-	return nil
+	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		return sharedK8sClient.
+			cacheInformer.
+			Client.
+			Resource(resource).
+			Namespace(namespace).
+			Delete(name, &metav1.DeleteOptions{})
+	})
+	return retryErr
 }

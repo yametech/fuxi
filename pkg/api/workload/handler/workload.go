@@ -113,59 +113,44 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	var formData map[string]interface{}
 	if err := g.BindJSON(&formData); err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    err.Error(),
-				status: "Request bad parameter",
-			},
-		)
+		toRequestParamsError(g, err)
 		return
 	}
 	unstructuredData := &unstructured.Unstructured{Object: formData}
 	md, _ := formData["metadata"]
 	metadata := md.(map[string]interface{})
-	namespace := metadata["namespace"].(string)
+	namespace, ok := metadata["namespace"].(string)
+	if !ok {
+		toRequestParamsError(g, fmt.Errorf("namespace not define"))
+		return
+	}
 	name := metadata["name"].(string)
 	apiVersion := formData["apiVersion"].(string)
-	//
+	// split apiVersion version and kind
 	apiVersions := strings.Split(apiVersion, "/")
 
 	kind := formData["kind"].(string)
 	kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "s")
 
-	var gvr schema.GroupVersionResource
+	var runtimeClassGVR schema.GroupVersionResource
 	if len(apiVersions) > 1 {
-		gvr = schema.GroupVersionResource{Group: apiVersions[0], Version: apiVersions[1], Resource: kind}
+		runtimeClassGVR = schema.GroupVersionResource{Group: apiVersions[0], Version: apiVersions[1], Resource: kind}
 	} else if len(apiVersions) == 1 {
-		gvr = schema.GroupVersionResource{Group: "", Version: apiVersions[0], Resource: kind}
+		runtimeClassGVR = schema.GroupVersionResource{Group: "", Version: apiVersions[0], Resource: kind}
 	} else {
-		g.JSON(http.StatusInternalServerError,
-			gin.H{
-				code:   http.StatusInternalServerError,
-				data:   formData,
-				msg:    "",
-				status: "apply form data cannot parse error",
-			},
-		)
+		toInternalServerError(g, formData, nil)
 		return
 	}
 
-	newObj, err := w.generic.Apply(gvr, namespace, name, unstructuredData)
+	newObj, err := w.generic.Apply(runtimeClassGVR, namespace, name, unstructuredData)
 	if err != nil {
-		g.JSON(http.StatusInternalServerError,
-			gin.H{
-				code:   http.StatusInternalServerError,
-				data:   "",
-				msg:    err.Error(),
-				status: "apply error",
-			},
-		)
+		toInternalServerError(g, "", err)
 		return
 	}
 
-	g.JSON(http.StatusOK, []unstructured.Unstructured{
-		*newObj,
-	})
+	g.JSON(
+		http.StatusOK,
+		[]unstructured.Unstructured{
+			*newObj,
+		})
 }
