@@ -116,21 +116,41 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 		toRequestParamsError(g, err)
 		return
 	}
-	unstructuredData := &unstructured.Unstructured{Object: formData}
-	md, _ := formData["metadata"]
-	metadata := md.(map[string]interface{})
-	namespace, ok := metadata["namespace"].(string)
-	if !ok {
-		toRequestParamsError(g, fmt.Errorf("namespace not define"))
-		return
-	}
-	name := metadata["name"].(string)
 	apiVersion := formData["apiVersion"].(string)
 	// split apiVersion version and kind
 	apiVersions := strings.Split(apiVersion, "/")
-
-	kind := formData["kind"].(string)
+	kind, ok := formData["kind"].(string)
+	if !ok {
+		toRequestParamsError(g, fmt.Errorf("form data kind not define"))
+		return
+	}
 	kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "s")
+
+	md, ok := formData["metadata"]
+	if !ok {
+		toRequestParamsError(g, fmt.Errorf("form data metadata not define"))
+		return
+	}
+
+	metadata, ok := md.(map[string]interface{})
+	if !ok {
+		toRequestParamsError(g, fmt.Errorf("form data metadata type error"))
+		return
+	}
+
+	namespace, ok := metadata["namespace"].(string)
+	if !ok && kind != "namespaces" {
+		toRequestParamsError(g, fmt.Errorf("namespace not define"))
+		return
+	}
+
+	name, ok := metadata["name"].(string)
+	if !ok{
+		toRequestParamsError(g, fmt.Errorf("name not define"))
+		return
+	}
+
+	unstructuredData := &unstructured.Unstructured{Object: formData}
 
 	var runtimeClassGVR schema.GroupVersionResource
 	if len(apiVersions) > 1 {
