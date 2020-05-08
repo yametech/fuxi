@@ -38,6 +38,7 @@ type WorkloadsAPI struct {
 	namespace                *workloadservice.Namespace
 	metrics                  *workloadservice.Metrics
 	generic                  *workloadservice.Generic
+	formRender               *workloadservice.FormRender
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -68,6 +69,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		namespace:                workloadservice.NewNamespace(),
 		metrics:                  workloadservice.NewMetrics(),
 		generic:                  workloadservice.NewGeneric(),
+		formRender:               workloadservice.NewFormRender(),
 	}
 }
 
