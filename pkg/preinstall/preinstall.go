@@ -3,6 +3,8 @@ package preinstall
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/config"
@@ -22,7 +24,6 @@ import (
 	"github.com/yametech/fuxi/util/common"
 	k8sjson "k8s.io/apimachinery/pkg/util/json"
 	clientcmdapiV1 "k8s.io/client-go/tools/clientcmd/api/v1"
-	"time"
 )
 
 func InitDB(opt *mysql.Option) (err error) {
@@ -109,7 +110,8 @@ func EtcdStringFlag() cli.StringFlag {
 		Name:   "etcd_address",
 		Usage:  "etcd address for config K/V",
 		EnvVar: "ETCD_ADDRESS",
-		Value:  "fuxi.io:12379",
+		//Value:  "gz.nuwa.xyz:32428",
+		Value: "fuxi.io:12379",
 	}
 }
 

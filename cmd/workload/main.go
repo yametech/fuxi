@@ -2,6 +2,8 @@ package main
 
 import (
 	//"log"
+	"net/http"
+
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
@@ -13,7 +15,6 @@ import (
 	"github.com/yametech/fuxi/pkg/preinstall"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
-	"net/http"
 
 	// swagger doc
 	file "github.com/swaggo/files"
@@ -236,9 +237,7 @@ func main() {
 	// CustomResourceDefinition
 	{
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
-		group.GET("/apis/crd/:group/:version/:resource", GeneralCustomResourceDefinitionList)
-		// example /apis/crd/:group/:version/:resource/namespaces/:namespace/
-		//group.GET("/apis/:group/:version/:resource/namespaces/:namespace/:resource/:name", CustomResourceDefinitionGet)
+		group.GET("/crd/apis/:group/:version/:resource", GeneralCustomResourceDefinitionList)
 	}
 
 	// Namespace

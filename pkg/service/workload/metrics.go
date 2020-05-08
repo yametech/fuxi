@@ -3,6 +3,7 @@ package workload
 import (
 	"encoding/json"
 	"fmt"
+
 	metrics "k8s.io/metrics/pkg/apis/metrics"
 )
 
@@ -28,7 +29,9 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 	var bodyMap map[string]string
 	var resultMap = make(map[string]MetricsContent)
 	err := json.Unmarshal(body, &bodyMap)
-	_ = err
+	if err != nil {
+		return nil, err
+	}
 
 	for bodyKey, bodyValue := range bodyMap {
 		req := sharedK8sClient.clientSetV1.
@@ -40,6 +43,7 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 			Name("prometheus:80").
 			SubResource("proxy").
 			Suffix("api/v1/query_range")
+
 		for k, v := range params {
 			req.Param(k, v)
 		}
@@ -49,11 +53,13 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 		if err != nil {
 			return nil, err
 		}
+
 		metricsContext := MetricsContent{}
 		err = json.Unmarshal(raw, &metricsContext)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
+
 		resultMap[bodyKey] = metricsContext
 	}
 
