@@ -1,0 +1,7 @@
+apiVersion: fuxi.nip.io/v1
+kind: FormRender
+metadata:
+  name: example-formrender
+spec:
+  # Add fields here
+  size: 3

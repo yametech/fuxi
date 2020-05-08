@@ -78,15 +78,9 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	namespace := g.Param("namespace")
 	resource := g.Param("resource")
 	name := g.Param("name")
+
 	if version == "" || namespace == "" || resource == "" || name == "" {
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    "",
-				status: "Request bad parameter",
-			},
-		)
+		toRequestParamsError(g, fmt.Errorf("request params not define"))
 		return
 	}
 
@@ -96,15 +90,7 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 
 	gvr := schema.GroupVersionResource{Group: group, Version: version, Resource: resource}
 	if err := w.generic.Delete(gvr, namespace, name); err != nil {
-		g.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				code:   http.StatusInternalServerError,
-				data:   "",
-				msg:    err.Error(),
-				status: "delete resource internal server error",
-			},
-		)
+		toInternalServerError(g, "delete resource internal server error", err)
 		return
 	}
 	g.JSON(http.StatusOK, nil)
@@ -145,7 +131,7 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	}
 
 	name, ok := metadata["name"].(string)
-	if !ok{
+	if !ok {
 		toRequestParamsError(g, fmt.Errorf("name not define"))
 		return
 	}

@@ -36,6 +36,7 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 type ResourceQuery interface {
 	List(resource schema.GroupVersionResource, namespace, flag string, pos, size int64, selector interface{}) (*unstructured.UnstructuredList, error)
 	Get(resource schema.GroupVersionResource, namespace, name string) (runtime.Object, error)
+	RemoteGet(resource schema.GroupVersionResource, namespace, name string) (runtime.Object, error)
 	Watch(resource schema.GroupVersionResource, namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector) (<-chan watch.Event, error)
 }
 
@@ -167,6 +168,23 @@ func (d *defaultImplWorkloadsResourceHandler) Get(
 		ForResource(resource).
 		Lister().
 		ByNamespace(namespace).Get(name)
+	if err != nil {
+		return nil, err
+	}
+	return object, nil
+}
+
+func (d *defaultImplWorkloadsResourceHandler) RemoteGet(
+	resource schema.GroupVersionResource,
+	namespace,
+	name string,
+) (runtime.Object, error) {
+	object, err := sharedK8sClient.
+		cacheInformer.
+		Client.
+		Resource(resource).
+		Namespace(namespace).
+		Get(name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}

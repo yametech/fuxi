@@ -70,6 +70,7 @@ rules:
   - fuxi.nip.io
   resources:
   - '*'
+  - formrenders
   verbs:
   - create
   - delete

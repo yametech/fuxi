@@ -34,7 +34,7 @@ func newClientSet(rest *rest.Config) (*clientSet, error) {
 	//	return nil, err
 	//}
 	//go genericInformer.Informer().Run(stop)
-	//
+
 	//informer.Start(stop)
 
 	return &clientSet{
