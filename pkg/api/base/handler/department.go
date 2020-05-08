@@ -34,7 +34,7 @@ func (d *DepartmentApiService) CreateDepartment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated,
-		gin.H{"code": http.StatusCreated, "data": department, "msg": "创建成功!"})
+		gin.H{"code": http.StatusCreated, "data": department, "msg": "success!"})
 }
 
 func (d *DepartmentApiService) DeleteDepartment(c *gin.Context) {
@@ -63,7 +63,7 @@ func (d *DepartmentApiService) DeleteDepartment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNoContent,
-		gin.H{"code": http.StatusNoContent, "data": "", "msg": "删除成功!"})
+		gin.H{"code": http.StatusNoContent, "data": "", "msg": "deleted!"})
 }
 
 func (d *DepartmentApiService) DepartmentList(c *gin.Context) {
@@ -107,5 +107,5 @@ func (d *DepartmentApiService) EditDepartment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK,
-		gin.H{"code": http.StatusOK, "data": "", "msg": "编辑成功"})
+		gin.H{"code": http.StatusOK, "data": "", "msg": "success!"})
 }
