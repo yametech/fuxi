@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	//"log"
 	"net/http"
 
@@ -237,7 +238,16 @@ func main() {
 	// CustomResourceDefinition
 	{
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
-		group.GET("/crd/apis/:group/:version/:resource", GeneralCustomResourceDefinitionList)
+
+		apiVersions, err := workloadsAPI.ListCustomResourceRouter()
+		if err != nil {
+			panic(err)
+		}
+		routerPath := "/apis/%s"
+		for _, apiVersion := range apiVersions {
+			relativePath := fmt.Sprintf(routerPath, apiVersion)
+			group.GET(relativePath, GeneralCustomResourceDefinitionList)
+		}
 	}
 
 	// Namespace
