@@ -12,8 +12,9 @@ type FormRenderSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
-	ID           string `json:"id"`
-	FromMetadata []byte `json:"fromMetadata,omitempty"`
+	ID          string `json:"id"`
+	PropsSchema string `json:"props_schema,omitempty"`
+	UiSchema    string `json:"ui_schema,omitempty"`
 }
 
 // FormRenderStatus defines the observed state of FormRender
