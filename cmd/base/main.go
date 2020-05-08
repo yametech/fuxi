@@ -34,23 +34,23 @@ var departmentApiService *handler.DepartmentApiService
 var permissionApiService *handler.PermissionApiService
 var roleApiService *handler.RoleApiService
 
-// User 用户 >>>>
+// User >>>>
 
 // User info doc
 // @Summary base User authentication
-// @Description 用户登录验证
+// @Description User authentication
 // @Tags User
 // @Accept mpfd
 // @Produce json
-// @Param name query string true "用户名"
-// @Param password query string true "密码"
-// @Success 200 {string} string "Success 成功"
+// @Param name query string true "username"
+// @Param password query string true "password"
+// @Success 200 {string} string "Success"
 // @Router /base/v1/user/login [post]
 func uerAuthorization(c *gin.Context) { userApiService.UserAuthorization(c) }
 
 // User info doc
 // @Summary base User Info
-// @Description 用户信息
+// @Description User info
 // @Tags User
 // @Accept mpfd
 // @Produce json
@@ -62,7 +62,7 @@ func userInfo(c *gin.Context) { userApiService.UserInfo(c) }
 
 // User info doc
 // @Summary base User info registration
-// @Description 用户注册
+// @Description User info registration
 // @Tags User
 // @Accept mpfd
 // @Produce json
@@ -75,7 +75,7 @@ func userRegister(c *gin.Context) { userApiService.UserRegister(c) }
 
 // User info doc
 // @Summary base User info delete
-// @Description 用户删除
+// @Description User info delete
 // @Tags User
 // @Accept mpfd
 // @Produce json
@@ -84,12 +84,12 @@ func userRegister(c *gin.Context) { userApiService.UserRegister(c) }
 // @Router /base/v1/user/{ID} [delete]
 func userDelete(c *gin.Context) { userApiService.UserDelete(c) }
 
-// User 用户 <<<<
-// Department 部门 >>>>
+// User <<<<
+// Department >>>>
 
 // Department doc
-// @Summary base department create (创建部门信息)
-// @Description base services Department info create 创建部门
+// @Summary base department create
+// @Description base services Department info create
 // @Tags Department
 // @Accept mpfd
 // @Produce json
@@ -100,8 +100,8 @@ func userDelete(c *gin.Context) { userApiService.UserDelete(c) }
 func departmentCreate(c *gin.Context) { departmentApiService.CreateDepartment(c) }
 
 // Department doc
-// @Summary base department edit (编辑部门信息)
-// @Description Department info edit 编辑部门
+// @Summary base department edit
+// @Description Department info edit
 // @Tags Department
 // @Accept mpfd
 // @Produce json
@@ -113,8 +113,8 @@ func departmentCreate(c *gin.Context) { departmentApiService.CreateDepartment(c)
 func departmentEdit(c *gin.Context) { departmentApiService.EditDepartment(c) }
 
 // Department doc
-// @Summary base department delete (删除部门信息)
-// @Description Department info delete 删除部门
+// @Summary base department delete
+// @Description Department info delete
 // @Tags Department
 // @Accept mpfd
 // @Produce json
@@ -125,8 +125,8 @@ func departmentEdit(c *gin.Context) { departmentApiService.EditDepartment(c) }
 func departmentDelete(c *gin.Context) { departmentApiService.DeleteDepartment(c) }
 
 // Department doc
-// @Summary base department list (部门列表)
-// @Description Department info list 部门列表
+// @Summary base department list
+// @Description Department info list
 // @Tags Department
 // @Accept mpfd
 // @Produce json
@@ -137,12 +137,12 @@ func departmentDelete(c *gin.Context) { departmentApiService.DeleteDepartment(c)
 // @Router /base/v1/departments [get]
 func departmentList(c *gin.Context) { departmentApiService.DepartmentList(c) }
 
-// Department 部门 <<<<
-// Permission 权限 >>>>
+// Department <<<<
+// Permission >>>>
 
 // Permission doc
-// @Summary base permission create (创建权限)
-// @Description base services Permission info create 创建权限
+// @Summary base permission create
+// @Description base services Permission info create
 // @Tags Permission
 // @Accept mpfd
 // @Produce json
@@ -153,8 +153,8 @@ func departmentList(c *gin.Context) { departmentApiService.DepartmentList(c) }
 func permissionCreate(c *gin.Context) { permissionApiService.CreatePermission(c) }
 
 // Permission doc
-// @Summary base permission edit (编辑权限信息)
-// @Description base services Permission info edit 编辑权限
+// @Summary base permission edit
+// @Description base services Permission info edit
 // @Tags Permission
 // @Accept mpfd
 // @Produce json
@@ -166,8 +166,8 @@ func permissionCreate(c *gin.Context) { permissionApiService.CreatePermission(c)
 func permissionEdit(c *gin.Context) { permissionApiService.EditPermission(c) }
 
 // Permission doc
-// @Summary base permission delete (删除权限信息)
-// @Description Permission info delete 删除权限
+// @Summary base permission delete
+// @Description Permission info delete
 // @Tags Permission
 // @Accept mpfd
 // @Produce json
@@ -178,8 +178,8 @@ func permissionEdit(c *gin.Context) { permissionApiService.EditPermission(c) }
 func permissionDelete(c *gin.Context) { permissionApiService.DeletePermission(c) }
 
 // Permission doc
-// @Summary base permission list (权限列表)
-// @Description Permission info list (权限列表)
+// @Summary base permission list
+// @Description Permission info list
 // @Tags Permission
 // @Accept mpfd
 // @Produce json
@@ -192,8 +192,8 @@ func permissionDelete(c *gin.Context) { permissionApiService.DeletePermission(c)
 func permissionList(c *gin.Context) { permissionApiService.PermissionList(c) }
 
 // Permission doc
-// @Summary base permission list (权限详情)
-// @Description Permission info list (权限详情)
+// @Summary base permission list
+// @Description Permission info list
 // @Tags Permission
 // @Accept mpfd
 // @Produce json
@@ -204,12 +204,12 @@ func permissionList(c *gin.Context) { permissionApiService.PermissionList(c) }
 // @Router /base/v1/permission/{ID} [get]
 func permissionDetail(c *gin.Context) { permissionApiService.DetailPermission(c) }
 
-// Permission 权限 <<<<
-// Role 角色 >>>>
+// Permission <<<<
+// Role >>>>
 
 // Role doc
-// @Summary base role create (创建角色)
-// @Description base services Role info create 创建角色
+// @Summary base role create
+// @Description base services Role info create
 // @Tags Role
 // @Accept mpfd
 // @Produce json
@@ -220,8 +220,8 @@ func permissionDetail(c *gin.Context) { permissionApiService.DetailPermission(c)
 func roleCreate(c *gin.Context) { roleApiService.CreateRole(c) }
 
 // Role doc
-// @Summary base role edit (编辑角色信息)
-// @Description base services Role info edit 编辑角色
+// @Summary base role edit
+// @Description base services Role info edit
 // @Tags Role
 // @Accept mpfd
 // @Produce json
@@ -233,8 +233,8 @@ func roleCreate(c *gin.Context) { roleApiService.CreateRole(c) }
 func roleEdit(c *gin.Context) { roleApiService.EditRole(c) }
 
 // Role doc
-// @Summary base role delete (删除角色信息)
-// @Description base services  Role info delete 删除角色
+// @Summary base role delete
+// @Description base services  Role info delete
 // @Tags Role
 // @Accept mpfd
 // @Produce json
@@ -246,8 +246,8 @@ func roleEdit(c *gin.Context) { roleApiService.EditRole(c) }
 func roleDelete(c *gin.Context) { roleApiService.DeleteRole(c) }
 
 // Role doc
-// @Summary base role list (角色列表)
-// @Description base services  Role info list 角色列表
+// @Summary base role list
+// @Description base services  Role info list
 // @Tags Role
 // @Accept mpfd
 // @Produce json
@@ -259,7 +259,7 @@ func roleDelete(c *gin.Context) { roleApiService.DeleteRole(c) }
 // @Router /base/v1/roles [get]
 func roleList(c *gin.Context) { roleApiService.RoleList(c) }
 
-// Role 角色 <<<<
+// Role <<<<
 
 func main() {
 	service, token2, err := pri.InitApi(50, name, ver, "")
