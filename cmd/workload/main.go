@@ -256,7 +256,7 @@ func main() {
 		group.GET("/api/v1/namespaces/:namespace", NamespaceGet)
 	}
 
-	// // post  workload/stack
+	// post  workload/stack
 	{
 		group.POST("/stack", workloadsAPI.Apply)
 		// namesapces
@@ -265,6 +265,13 @@ func main() {
 
 		group.DELETE("/api/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
+	}
+
+	// fuxi.nip.io
+	// FormRender
+	{
+		group.GET("/apis/fuxi.nip.io/v1/formrenders", FormRenderList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/formrenders/:name", FormRenderGet)
 	}
 
 	// Metrics
