@@ -7,7 +7,6 @@ require (
 	code.gitea.io/sdk/gitea v0.0.0-20191013013401-e41e9ea72caa
 	contrib.go.opencensus.io/exporter/prometheus v0.1.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.12.4 // indirect
-	github.com/360yun/sockjs-go v0.0.0-20190620042557-e70edfda8e57
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/Shopify/sarama v1.24.1
 	github.com/abbot/go-http-auth v0.4.1-0.20181019201920-860ed7f246ff // indirect
@@ -40,7 +39,7 @@ require (
 	github.com/gin-contrib/static v0.0.0-20191128031702-f81c604d8ac2 // indirect
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-log/log v0.1.0
-	github.com/go-openapi/spec v0.19.6 // indirect
+	github.com/go-openapi/spec v0.19.6
 	github.com/go-openapi/swag v0.19.7 // indirect
 	github.com/go-redsync/redsync v1.3.1 // indirect
 	github.com/go-resty/resty/v2 v2.1.0
@@ -122,6 +121,7 @@ require (
 	k8s.io/gengo v0.0.0-20191010091904-7fa3014cb28f
 	k8s.io/klog v1.0.0
 	k8s.io/kube-openapi v0.0.0-20191107075043-30be4d16710a
+	k8s.io/metrics v0.0.0
 	k8s.io/sample-controller v0.0.0-20190326030654-b8f621986e45
 	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706
 	sigs.k8s.io/controller-runtime v0.4.0

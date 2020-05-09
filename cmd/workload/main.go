@@ -239,7 +239,10 @@ func main() {
 	{
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
 
-		apiVersions, err := workloadsAPI.ListCustomResourceRouter()
+		ignores := []string{
+			"fuxi.nip.io/v1/formrenders",
+		}
+		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)
 		if err != nil {
 			panic(err)
 		}

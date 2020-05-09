@@ -25,6 +25,7 @@ contrib.go.opencensus.io/exporter/stackdriver v0.12.4 h1:e1itpYdd++w6+DPhvyKqT7u
 contrib.go.opencensus.io/exporter/stackdriver v0.12.4/go.mod h1:fmn/xkyUfUhd1iD7Ic+HSN8y11KhSK5oe8CWfSjKa7M=
 contrib.go.opencensus.io/integrations/ocsql v0.1.4/go.mod h1:8DsSdjz3F+APR+0z0WkU1aRorQCFfRxvqjUUPMbF3fE=
 contrib.go.opencensus.io/resource v0.1.1/go.mod h1:F361eGI91LCmW1I/Saf+rX0+OFcigGlFvXwEGEnkRLA=
+github.com/360yun/sockjs-go v0.0.0-20190620042557-e70edfda8e57/go.mod h1:5GVPECHzBCEeajQeridxM/xj2p9fShBZo7/kX2rl9zA=
 github.com/Azure/azure-amqp-common-go/v2 v2.1.0/go.mod h1:R8rea+gJRuJR6QxTir/XuEd+YuKoUiazDC/N96FiDEU=
 github.com/Azure/azure-pipeline-go v0.1.8/go.mod h1:XA1kFWRVhSK+KNFiOhfv83Fv8L9achrP7OxIzeTn1Yg=
 github.com/Azure/azure-pipeline-go v0.1.9/go.mod h1:XA1kFWRVhSK+KNFiOhfv83Fv8L9achrP7OxIzeTn1Yg=
@@ -1697,6 +1698,7 @@ k8s.io/kubernetes v1.11.10/go.mod h1:ocZa8+6APFNC2tX1DZASIbocyYT5jHzqFVsY5aoB7Jk
 k8s.io/kubernetes v1.16.0/go.mod h1:nlP2zevWKRGKuaaVbKIwozU0Rjg9leVDXkL4YTtjmVs=
 k8s.io/kubernetes v1.16.2/go.mod h1:SmhGgKfQ30imqjFVj8AI+iW+zSyFsswNErKYeTfgoH0=
 k8s.io/legacy-cloud-providers v0.0.0-20191016115753-cf0698c3a16b/go.mod h1:tKW3pKqdRW8pMveUTpF5pJuCjQxg6a25iLo+Z9BXVH0=
+k8s.io/metrics v0.0.0-20191016113814-3b1a734dba6e h1:VbAmCGT95GvCZaGtW3oLhf7d2FXT+lnWiTtPE8hzPVo=
 k8s.io/metrics v0.0.0-20191016113814-3b1a734dba6e/go.mod h1:ve7/vMWeY5lEBkZf6Bt5TTbGS3b8wAxwGbdXAsufjRs=
 k8s.io/repo-infra v0.0.0-20181204233714-00fe14e3d1a3/go.mod h1:+G1xBfZDfVFsm1Tj/HNCvg4QqWx8rJ2Fxpqr1rqp/gQ=
 k8s.io/sample-apiserver v0.0.0-20191016112829-06bb3c9d77c9/go.mod h1:sXltHZrQa4jdKL14nOFRRUhhzpmbnRF0qGuAhRQbaxc=

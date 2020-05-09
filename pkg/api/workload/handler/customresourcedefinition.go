@@ -34,7 +34,7 @@ func (w *WorkloadsAPI) ListCustomResourceDefinition(g *gin.Context) {
 	g.JSON(http.StatusOK, customResourceDefinitionList)
 }
 
-func (w *WorkloadsAPI) ListCustomResourceRouter() ([]string, error) {
+func (w *WorkloadsAPI) ListCustomResourceRouter(gvrString []string) ([]string, error) {
 	list, err := w.customResourceDefinition.List(dyn.ResourceCustomResourceDefinition, "", "", 0, 0, nil)
 	if err != nil {
 		return nil, err
@@ -51,8 +51,16 @@ func (w *WorkloadsAPI) ListCustomResourceRouter() ([]string, error) {
 	}
 	results := make([]string, 0)
 	for _, item := range customResourceDefinitionList.Items {
-		group := fmt.Sprintf("%s/:version/%s", item.Spec.Group, item.Spec.Names.Plural)
-		results = append(results, group)
+		var apiVersionUrl string
+		for _, version := range item.Spec.Versions {
+			apiVersionUrl = fmt.Sprintf("%s/%s/%s", item.Spec.Group, version.Name, item.Spec.Names.Plural)
+			for _, ignoreItem := range gvrString {
+				if apiVersionUrl == ignoreItem {
+					continue
+				}
+				results = append(results, apiVersionUrl)
+			}
+		}
 	}
 	return results, nil
 }
