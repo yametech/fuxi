@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	v1 "k8s.io/api/rbac/v1"
 	"net/http"
 )
@@ -12,10 +11,9 @@ import (
 func (w *WorkloadsAPI) GetRole(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.role.Get(dyn.ResourceRole, namespace, name)
+	item, err := w.role.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -23,14 +21,21 @@ func (w *WorkloadsAPI) GetRole(g *gin.Context) {
 
 // List Role
 func (w *WorkloadsAPI) ListRole(g *gin.Context) {
-	list, _ := w.role.List(dyn.ResourceRole, "", "", 0, 10000, nil)
+	list, err := w.role.List("", "", 0, 10000, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	roleList := &v1.RoleList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, roleList)
+	err = json.Unmarshal(marshalData, roleList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, roleList)
 }

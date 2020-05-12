@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	appsv1 "k8s.io/api/apps/v1"
 	"net/http"
 )
@@ -11,20 +10,30 @@ import (
 func (w *WorkloadsAPI) GetDeployment(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.deployments.Get(dyn.ResourceDeployment, namespace, name)
+	item, err := w.deployments.Get(namespace, name)
 	if err != nil {
-		panic(err)
+		toInternalServerError(g, "", err)
+		return
 	}
 	g.JSON(http.StatusOK, item)
 }
 
 func (w *WorkloadsAPI) ListDeployment(g *gin.Context) {
-	list, _ := w.deployments.List(dyn.ResourceDeployment, "", "", 0, 100, nil)
+	list, err := w.deployments.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	deploymentList := &appsv1.DeploymentList{}
 	data, err := json.Marshal(list)
 	if err != nil {
-		panic(err)
+		toInternalServerError(g, "", err)
+		return
 	}
-	_ = json.Unmarshal(data, deploymentList)
+	err = json.Unmarshal(data, deploymentList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, deploymentList)
 }

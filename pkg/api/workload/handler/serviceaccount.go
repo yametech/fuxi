@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	v1 "k8s.io/api/core/v1"
 	"net/http"
 )
@@ -12,10 +11,9 @@ import (
 func (w *WorkloadsAPI) GetServiceAccount(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.serviceAccount.Get(dyn.ResourceServiceAccount, namespace, name)
+	item, err := w.serviceAccount.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -23,14 +21,21 @@ func (w *WorkloadsAPI) GetServiceAccount(g *gin.Context) {
 
 // List ServiceAccount
 func (w *WorkloadsAPI) ListServiceAccount(g *gin.Context) {
-	list, _ := w.serviceAccount.List(dyn.ResourceServiceAccount, "", "", 0, 10000, nil)
+	list, err := w.serviceAccount.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	serviceAccountList := &v1.ServiceAccountList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, serviceAccountList)
+	err = json.Unmarshal(marshalData, serviceAccountList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, serviceAccountList)
 }

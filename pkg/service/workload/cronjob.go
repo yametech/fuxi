@@ -1,5 +1,9 @@
 package workload
 
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+)
+
 // CronJob is kubernetes default resource cronjob
 type CronJob struct {
 	WorkloadsResourceHandler // extended for workloadsResourceHandler
@@ -7,5 +11,5 @@ type CronJob struct {
 
 // NewCronJob exported
 func NewCronJob() *CronJob {
-	return &CronJob{&defaultImplWorkloadsResourceHandler{}}
+	return &CronJob{&defaultImplWorkloadsResourceHandler{dyn.ResourceCronJobs}}
 }

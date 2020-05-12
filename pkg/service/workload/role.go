@@ -1,5 +1,7 @@
 package workload
 
+import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+
 // Role the kubernetes native role
 type Role struct {
 	WorkloadsResourceHandler
@@ -7,5 +9,7 @@ type Role struct {
 
 // NewRole exported
 func NewRole() *Role {
-	return &Role{&defaultImplWorkloadsResourceHandler{}}
+	return &Role{&defaultImplWorkloadsResourceHandler{
+		dyn.ResourceRole,
+	}}
 }

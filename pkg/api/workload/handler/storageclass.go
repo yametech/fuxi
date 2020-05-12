@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"k8s.io/api/storage/v1"
 	"net/http"
 )
@@ -11,10 +10,9 @@ import (
 // Get StorageClass
 func (w *WorkloadsAPI) GetStorageClass(g *gin.Context) {
 	name := g.Param("name")
-	item, err := w.storageClass.Get(dyn.ResourceStorageClass, "", name)
+	item, err := w.storageClass.Get("", name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -22,14 +20,21 @@ func (w *WorkloadsAPI) GetStorageClass(g *gin.Context) {
 
 // List StorageClass
 func (w *WorkloadsAPI) ListStorageClass(g *gin.Context) {
-	list, _ := w.storageClass.List(dyn.ResourceStorageClass, "", "", 0, 1000, nil)
+	list, err := w.storageClass.List("", "", 0, 1000, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	storageClassList := &v1.StorageClassList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, storageClassList)
+	err = json.Unmarshal(marshalData, storageClassList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, storageClassList)
 }

@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	autoscalingv2beta1 "k8s.io/api/autoscaling/v2beta1"
 	"net/http"
 )
@@ -12,10 +11,9 @@ import (
 func (w *WorkloadsAPI) GetHorizontalPodAutoscaler(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.horizontalPodAutoscaler.Get(dyn.ResourceHorizontalPodAutoscaler, namespace, name)
+	item, err := w.horizontalPodAutoscaler.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -23,14 +21,21 @@ func (w *WorkloadsAPI) GetHorizontalPodAutoscaler(g *gin.Context) {
 
 // List HorizontalPodAutoscaler
 func (w *WorkloadsAPI) ListHorizontalPodAutoscaler(g *gin.Context) {
-	list, _ := w.horizontalPodAutoscaler.List(dyn.ResourceHorizontalPodAutoscaler, "", "", 0, 10000, nil)
+	list, err := w.horizontalPodAutoscaler.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	horizontalPodAutoscalerList := &autoscalingv2beta1.HorizontalPodAutoscalerList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, horizontalPodAutoscalerList)
+	err = json.Unmarshal(marshalData, horizontalPodAutoscalerList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, horizontalPodAutoscalerList)
 }

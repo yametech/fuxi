@@ -1,20 +1,15 @@
 package workload
 
 import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"io"
 	"strconv"
 	"time"
 )
 
-//import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
-
 // Pod doc kubernetes
 type Pod struct {
 	WorkloadsResourceHandler
-}
-
-func NewPod() *Pod {
-	return &Pod{&defaultImplWorkloadsResourceHandler{}}
 }
 
 func (p *Pod) Logs(
@@ -60,4 +55,10 @@ func (p *Pod) Logs(
 	_, err = io.Copy(out, readCloser)
 
 	return err
+}
+
+func NewPod() *Pod {
+	return &Pod{&defaultImplWorkloadsResourceHandler{
+		dyn.ResourcePod,
+	}}
 }
