@@ -8,14 +8,13 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 // ListCustomResourceDefinition List CustomResourceDefinition
 func (w *WorkloadsAPI) ListCustomResourceDefinition(g *gin.Context) {
-	list, err := w.customResourceDefinition.List(dyn.ResourceCustomResourceDefinition, "", "", 0, 0, nil)
+	list, err := w.customResourceDefinition.List("", "", 0, 0, nil)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return
@@ -35,7 +34,7 @@ func (w *WorkloadsAPI) ListCustomResourceDefinition(g *gin.Context) {
 }
 
 func (w *WorkloadsAPI) ListCustomResourceRouter(gvrString []string) ([]string, error) {
-	list, err := w.customResourceDefinition.List(dyn.ResourceCustomResourceDefinition, "", "", 0, 0, nil)
+	list, err := w.customResourceDefinition.List("", "", 0, 0, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -81,9 +80,10 @@ func (w *WorkloadsAPI) ListGeneralCustomResourceDefinition(g *gin.Context) {
 	version := paths[3]
 	resource := paths[4]
 
-	//  import general GroupVersionResource
+	//  import general GetGroupVersionResource
 	groupVersionResource := schema.GroupVersionResource{Group: group, Version: version, Resource: resource}
-	list, err := w.customResourceDefinition.List(groupVersionResource, "", "", 0, 0, nil)
+	w.generic.SetGroupVersionResource(groupVersionResource)
+	list, err := w.generic.List("", "", 0, 0, nil)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return

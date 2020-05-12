@@ -92,7 +92,8 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 			log.Printf("parser api url error %s", api)
 			return
 		}
-		k8sWatchChan, err := event.Watch(*gvr, ns, rv, 0, nil)
+		event.SetGroupVersionResource(*gvr)
+		k8sWatchChan, err := event.Watch(ns, rv, 0, nil)
 		if err != nil {
 			log.Printf("watch for gvr: %s stream error: %s for api request %s \r\n", gvr, err, api)
 			continue

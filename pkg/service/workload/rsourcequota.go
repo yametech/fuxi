@@ -1,5 +1,7 @@
 package workload
 
+import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+
 // ResourceQuota the kubernetes native resource resource quota
 type ResourceQuota struct {
 	WorkloadsResourceHandler
@@ -7,5 +9,7 @@ type ResourceQuota struct {
 
 // NewResourceQuota exported
 func NewResourceQuota() *ResourceQuota {
-	return &ResourceQuota{&defaultImplWorkloadsResourceHandler{}}
+	return &ResourceQuota{&defaultImplWorkloadsResourceHandler{
+		dyn.ResourceResourceQuota,
+	}}
 }

@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	corev1 "k8s.io/api/core/v1"
 	"net/http"
 )
@@ -11,10 +10,9 @@ import (
 // Get Node
 func (w *WorkloadsAPI) GetNode(g *gin.Context) {
 	node := g.Param("node")
-	item, err := w.node.Get(dyn.ResourceNode, "", node)
+	item, err := w.node.Get("", node)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -22,14 +20,21 @@ func (w *WorkloadsAPI) GetNode(g *gin.Context) {
 
 // List Node
 func (w *WorkloadsAPI) ListNode(g *gin.Context) {
-	list, _ := w.node.List(dyn.ResourceNode, "", "", 0, 10000, nil)
+	list, err := w.node.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	nodeList := &corev1.NodeList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, nodeList)
+	err = json.Unmarshal(marshalData, nodeList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, nodeList)
 }

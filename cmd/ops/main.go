@@ -62,7 +62,7 @@ func main() {
 	{
 		//log
 		group.GET("/v1/log/:namespace/:pipelinename", ops.GetRealLog)
-		group.GET("/v1/taskrun/log/:namespace/:taskrunname",ops.GetTaskRunLog)
+		group.GET("/v1/taskrun/log/:namespace/:taskrunname", ops.GetTaskRunLog)
 		//pipeline
 		group.POST("/v1/pipeline", ops.CreateOrUpdatePipeline)
 		group.GET("/v1/pipelines/:namespace", ops.PipelineList)

@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"k8s.io/api/core/v1"
 	"net/http"
 )
@@ -12,10 +11,9 @@ import (
 func (w *WorkloadsAPI) GetPersistentVolumeClaims(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.persistentVolumeClaims.Get(dyn.ResourcePersistentVolumeClaims, namespace, name)
+	item, err := w.persistentVolumeClaims.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -23,14 +21,21 @@ func (w *WorkloadsAPI) GetPersistentVolumeClaims(g *gin.Context) {
 
 // List PersistentVolumeClaims
 func (w *WorkloadsAPI) ListPersistentVolumeClaims(g *gin.Context) {
-	list, _ := w.persistentVolumeClaims.List(dyn.ResourcePersistentVolumeClaims, "", "", 0, 100, nil)
+	list, err := w.persistentVolumeClaims.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	persistentVolumeClaimsList := &v1.PersistentVolumeClaimList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, persistentVolumeClaimsList)
+	err = json.Unmarshal(marshalData, persistentVolumeClaimsList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, persistentVolumeClaimsList)
 }

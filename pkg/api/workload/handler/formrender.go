@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"net/http"
 )
 
@@ -12,10 +11,9 @@ import (
 func (w *WorkloadsAPI) GetFormRender(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.formRender.Get(dyn.ResourceFormRender, namespace, name)
+	item, err := w.formRender.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toRequestParamsError(g, err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -23,14 +21,21 @@ func (w *WorkloadsAPI) GetFormRender(g *gin.Context) {
 
 // List FormRender
 func (w *WorkloadsAPI) ListFormRender(g *gin.Context) {
-	list, _ := w.formRender.List(dyn.ResourceFormRender, "", "", 0, 10000, nil)
+	list, err := w.formRender.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	formRenderList := &v1.FormRenderList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, formRenderList)
+	err = json.Unmarshal(marshalData, formRenderList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, formRenderList)
 }

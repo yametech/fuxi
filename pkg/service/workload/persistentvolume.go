@@ -1,5 +1,7 @@
 package workload
 
+import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+
 // PersistentVolume the kubernetes native resource persistent volume
 type PersistentVolume struct {
 	WorkloadsResourceHandler
@@ -7,5 +9,7 @@ type PersistentVolume struct {
 
 // NewPersistentVolume exported
 func NewPersistentVolume() *PersistentVolume {
-	return &PersistentVolume{&defaultImplWorkloadsResourceHandler{}}
+	return &PersistentVolume{&defaultImplWorkloadsResourceHandler{
+		dyn.ResourcePersistentVolume,
+	}}
 }

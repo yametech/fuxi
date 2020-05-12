@@ -1,5 +1,7 @@
 package workload
 
+import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+
 // RoleBinding the kubernetes native role binding
 type RoleBinding struct {
 	WorkloadsResourceHandler
@@ -7,5 +9,7 @@ type RoleBinding struct {
 
 // NewRoleBinding exported
 func NewRoleBinding() *RoleBinding {
-	return &RoleBinding{&defaultImplWorkloadsResourceHandler{}}
+	return &RoleBinding{&defaultImplWorkloadsResourceHandler{
+		dyn.ResourceRoleBinding,
+	}}
 }

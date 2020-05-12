@@ -5,14 +5,12 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/workload/template"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/remotecommand"
 	"net/http"
 	"time"
 )
 
-//GET /workload/api/v1/namespaces/:namespace/pods/:name/log?container=controller&timestamps=true&tailLines=1000&sinceTime=2020-04-23T02%3A13%3A16.273Z
 type logRequest struct {
 	Container  string    `form:"container" json:"container"`
 	Timestamps bool      `form:"timestamps" json:"timestamps"`
@@ -50,14 +48,8 @@ func (w *WorkloadsAPI) LogPod(g *gin.Context) {
 		buf,
 	)
 	if err != nil {
-		g.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    err.Error(),
-				status: "Request bad parameter"},
-		)
+		toRequestParamsError(g, err)
+		return
 	}
 
 	g.JSON(http.StatusOK, buf.String())
@@ -67,15 +59,9 @@ func (w *WorkloadsAPI) LogPod(g *gin.Context) {
 func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.pod.Get(dyn.ResourcePod, namespace, name)
+	item, err := w.pod.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    err.Error(),
-				status: "Request bad parameter"},
-		)
+		toRequestParamsError(g, err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -83,20 +69,22 @@ func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 
 // List Pods
 func (w *WorkloadsAPI) ListPod(g *gin.Context) {
-	list, _ := w.pod.List(dyn.ResourcePod, "", "", 0, 10000, nil)
+	list, err := w.pod.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	podList := &corev1.PodList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				code:   http.StatusBadRequest,
-				data:   "",
-				msg:    err.Error(),
-				status: "Request bad parameter"},
-		)
+		toRequestParamsError(g, err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, podList)
+	err = json.Unmarshal(marshalData, podList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	g.JSON(http.StatusOK, podList)
 }
 

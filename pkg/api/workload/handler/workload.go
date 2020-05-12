@@ -91,7 +91,8 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	}
 
 	gvr := schema.GroupVersionResource{Group: group, Version: version, Resource: resource}
-	if err := w.generic.Delete(gvr, namespace, name); err != nil {
+	w.generic.SetGroupVersionResource(gvr)
+	if err := w.generic.Delete(namespace, name); err != nil {
 		toInternalServerError(g, "delete resource internal server error", err)
 		return
 	}
@@ -150,7 +151,8 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 		return
 	}
 
-	newObj, err := w.generic.Apply(runtimeClassGVR, namespace, name, unstructuredData)
+	w.generic.SetGroupVersionResource(runtimeClassGVR)
+	newObj, err := w.generic.Apply(namespace, name, unstructuredData)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return

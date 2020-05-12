@@ -1,5 +1,7 @@
 package workload
 
+import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+
 // Statfulset is kubernetes default resource statfulsets
 type StatefulSet struct {
 	WorkloadsResourceHandler
@@ -7,5 +9,7 @@ type StatefulSet struct {
 
 // NewStatfulset exported
 func NewStatefulSet() *StatefulSet {
-	return &StatefulSet{&defaultImplWorkloadsResourceHandler{}}
+	return &StatefulSet{&defaultImplWorkloadsResourceHandler{
+		dyn.ResourceStatefulSet,
+	}}
 }

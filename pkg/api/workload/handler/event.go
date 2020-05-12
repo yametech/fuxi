@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	corev1 "k8s.io/api/core/v1"
 	"net/http"
 	"strconv"
@@ -13,10 +12,9 @@ import (
 func (w *WorkloadsAPI) GetEvent(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.event.Get(dyn.ResourceEvent, namespace, name)
+	item, err := w.event.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -30,20 +28,26 @@ func (w *WorkloadsAPI) ListEvent(g *gin.Context) {
 	if limit != "" {
 		limitNum, err = strconv.ParseInt(limit, 64, 10)
 		if err != nil {
-			g.JSON(http.StatusBadRequest,
-				gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+			toRequestParamsError(g, err)
 			return
 		}
 	}
-
-	list, _ := w.event.List(dyn.ResourceEvent, "", "", 0, limitNum, nil)
+	list, err := w.event.List("", "", 0, limitNum, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	eventList := &corev1.EventList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
-	_ = json.Unmarshal(marshalData, eventList)
+	err = json.Unmarshal(marshalData, eventList)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
+
 	g.JSON(http.StatusOK, eventList)
 }
