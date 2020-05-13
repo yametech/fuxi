@@ -3,7 +3,6 @@ package workload
 import (
 	"encoding/json"
 	"fmt"
-
 	metrics "k8s.io/metrics/pkg/apis/metrics"
 )
 
@@ -13,21 +12,11 @@ func NewMetrics() *Metrics {
 	return &Metrics{}
 }
 
-type MetricsContent struct {
-	Status string `json:"status"`
-	Data   struct {
-		ResultType string `json:"resultType"`
-		Result     []struct {
-			Metric struct {
-			} `json:"metric"`
-			Values [][]interface{} `json:"values"`
-		} `json:"result"`
-	} `json:"data"`
-}
+type MetricsContentMap map[string]interface{}
 
-func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[string]MetricsContent, error) {
+func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[string]MetricsContentMap, error) {
 	var bodyMap map[string]string
-	var resultMap = make(map[string]MetricsContent)
+	var resultMap = make(map[string]MetricsContentMap)
 	err := json.Unmarshal(body, &bodyMap)
 	if err != nil {
 		return nil, err
@@ -53,14 +42,12 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 		if err != nil {
 			return nil, err
 		}
-
-		metricsContext := MetricsContent{}
-		err = json.Unmarshal(raw, &metricsContext)
+		var metricsContextMap MetricsContentMap
+		err = json.Unmarshal(raw, &metricsContextMap)
 		if err != nil {
 			return nil, err
 		}
-
-		resultMap[bodyKey] = metricsContext
+		resultMap[bodyKey] = metricsContextMap
 	}
 
 	return resultMap, nil

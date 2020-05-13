@@ -18,6 +18,17 @@ func (w *WorkloadsAPI) GetPersistentVolume(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
+// Delete PersistentVolume
+func (w *WorkloadsAPI) DeletePersistentVolume(g *gin.Context) {
+	name := g.Param("name")
+	err := w.persistentVolume.Delete("", name)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
+	g.JSON(http.StatusOK, "")
+}
+
 // List PersistentVolume
 func (w *WorkloadsAPI) ListPersistentVolume(g *gin.Context) {
 	list, err := w.persistentVolume.List("", "", 0, 0, nil)

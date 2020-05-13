@@ -73,21 +73,24 @@ func NewWorkladAPI() *WorkloadsAPI {
 	}
 }
 
-// /:group/:version/namespaces/:namespace/:resource/:name
+// /api/:version/:resource/:name
+// /api/:version/namespaces/:namespace/:resource/:name
+// /apis/:group/:version/namespaces/:namespace
 func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	group := g.Param("group")
 	version := g.Param("version")
+
 	namespace := g.Param("namespace")
 	resource := g.Param("resource")
 	name := g.Param("name")
 
-	if version == "" || namespace == "" || resource == "" || name == "" {
+	if namespace == "" || resource == "" || name == "" {
 		toRequestParamsError(g, fmt.Errorf("request params not define"))
 		return
 	}
 
-	if group == "api" {
-		group = ""
+	if group == "" {
+		version = "v1"
 	}
 
 	gvr := schema.GroupVersionResource{Group: group, Version: version, Resource: resource}

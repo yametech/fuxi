@@ -34,7 +34,7 @@ func NamespaceGet(g *gin.Context) { workloadsAPI.GetNamespace(g) }
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/api/v1/namespaces/:namespace [delete]
+// @Router /workload/api/v1/namespaces/:name [delete]
 func NamespaceDelete(g *gin.Context) { workloadsAPI.DeleteNamespace(g) }
 
 // Namespaces doc
@@ -46,5 +46,5 @@ func NamespaceDelete(g *gin.Context) { workloadsAPI.DeleteNamespace(g) }
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/api/v1/namespaces/:namespace [post]
+// @Router /workload/api/v1/namespaces/:name [post]
 func NamespaceCreate(g *gin.Context) { workloadsAPI.CreateNamespace(g) }
