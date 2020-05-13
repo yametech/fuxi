@@ -97,6 +97,7 @@ func main() {
 	{
 		group.GET("/api/v1/persistentvolumes", PersistentVolumeList)
 		group.GET("/api/v1/persistentvolumes/:name", PersistentVolumeGet)
+		group.DELETE("/api/v1/persistentvolumes/:name", PersistentVolumeDelete)
 	}
 
 	// PersistentVolumeClaims
@@ -257,16 +258,18 @@ func main() {
 	{
 		group.GET("/api/v1/namespaces", NamespaceList)
 		group.GET("/api/v1/namespaces/:namespace", NamespaceGet)
+		group.POST("/api/v1/namespaces", NamespaceCreate)
+		group.DELETE("/api/v1/namespaces/:namespace", NamespaceDelete)
+
 	}
 
 	// post  workload/stack
 	{
+		// all resource apply
 		group.POST("/stack", workloadsAPI.Apply)
-		// namesapces
-		group.POST("/api/:version/namespaces", NamespaceCreate)
-		group.DELETE("/api/:version/namespaces/:namespace", NamespaceDelete)
 
-		group.DELETE("/api/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
+		// other resource  api/apis resource
+		group.DELETE("/api/v1/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 	}
 

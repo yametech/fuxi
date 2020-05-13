@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -12,12 +11,6 @@ import (
 
 // Create Namespace
 func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
-	version := g.Param("version")
-	if version != "v1" {
-		toRequestParamsError(g, fmt.Errorf("%s", "url version is not v1"))
-		return
-	}
-
 	rawData, err := g.GetRawData()
 	if err != nil {
 		toRequestParamsError(g, err)
@@ -51,12 +44,6 @@ func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 
 // Delete Namespace
 func (w *WorkloadsAPI) DeleteNamespace(g *gin.Context) {
-	version := g.Param("version")
-	if version != "v1" {
-		toRequestParamsError(g, fmt.Errorf("%s", "url version is not v1"))
-		return
-	}
-
 	namespaceName := g.Param("namespace")
 	err := w.namespace.Delete("", namespaceName)
 	if err != nil {
