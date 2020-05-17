@@ -39,6 +39,7 @@ type WorkloadsAPI struct {
 	metrics                  *workloadservice.Metrics
 	generic                  *workloadservice.Generic
 	formRender               *workloadservice.FormRender
+	statefulSet1             *workloadservice.StatefulSet1
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -70,6 +71,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		metrics:                  workloadservice.NewMetrics(),
 		generic:                  workloadservice.NewGeneric(),
 		formRender:               workloadservice.NewFormRender(),
+		statefulSet1:             workloadservice.NewStatefulSet1(),
 	}
 }
 
@@ -116,7 +118,12 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 		toRequestParamsError(g, fmt.Errorf("form data kind not define"))
 		return
 	}
-	kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "s")
+	if strings.HasSuffix(strings.ToLower(kind), "s") {
+		// Compatible with ingress resources
+		kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "es")
+	} else {
+		kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "s")
+	}
 
 	md, ok := formData["metadata"]
 	if !ok {
@@ -157,7 +164,7 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	w.generic.SetGroupVersionResource(runtimeClassGVR)
 	newObj, err := w.generic.Apply(namespace, name, unstructuredData)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		toInternalServerError(g, runtimeClassGVR.String(), err)
 		return
 	}
 

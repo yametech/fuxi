@@ -163,6 +163,12 @@ func main() {
 		group.GET("/apis/apps/v1/namespaces/:namespace/statefulsets/:name", StatefulSetGet)
 	}
 
+	// StatefulSet1
+	{
+		group.GET("/apis/nuwa.nip.io/v1/statefulsets", StatefulSet1List)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/statefulsets/:name", StatefulSet1Get)
+	}
+
 	// DaemonSet
 	{
 		group.GET("/apis/apps/v1/daemonsets", DaemonSetList)
@@ -242,6 +248,7 @@ func main() {
 
 		ignores := []string{
 			"fuxi.nip.io/v1/formrenders",
+			"nuwa.nip.io/v1/statefulsets",
 		}
 		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)
 		if err != nil {

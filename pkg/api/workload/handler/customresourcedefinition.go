@@ -14,6 +14,7 @@ import (
 
 // ListCustomResourceDefinition List CustomResourceDefinition
 func (w *WorkloadsAPI) ListCustomResourceDefinition(g *gin.Context) {
+	//selector := metav1.LabelSelector{MatchLabels: map[string]string{"name": "statefulsets.nuwa.nip.io"}}
 	list, err := w.customResourceDefinition.List("", "", 0, 0, nil)
 	if err != nil {
 		toInternalServerError(g, "", err)
@@ -53,10 +54,13 @@ func (w *WorkloadsAPI) ListCustomResourceRouter(gvrString []string) ([]string, e
 		var apiVersionUrl string
 		for _, version := range item.Spec.Versions {
 			apiVersionUrl = fmt.Sprintf("%s/%s/%s", item.Spec.Group, version.Name, item.Spec.Names.Plural)
+			needIgnore := false
 			for _, ignoreItem := range gvrString {
 				if apiVersionUrl == ignoreItem {
-					continue
+					needIgnore = true
 				}
+			}
+			if !needIgnore {
 				results = append(results, apiVersionUrl)
 			}
 		}

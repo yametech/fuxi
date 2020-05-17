@@ -75,24 +75,16 @@ func (d *defaultImplWorkloadsResourceHandler) SetGroupVersionResource(g schema.G
 }
 
 func (d *defaultImplWorkloadsResourceHandler) HistoryGet(namespace, name string) (*fv1.Workloads, error) {
-	return sharedK8sClient.
-		clientSet.
-		client.
-		FuxiV1().
-		Workloadses(namespace).
-		Get(name, metav1.GetOptions{})
+	//return sharedK8sClient.
+	//	clientSet.
+	//	client.
+	//	FuxiV1().
+	//	Workloadses(namespace).
+	//	Get(name, metav1.GetOptions{})
+	return nil, nil
 }
 
 func (d *defaultImplWorkloadsResourceHandler) HistorySave(namespace string, workloads *fv1.Workloads) error {
-	_, err := sharedK8sClient.
-		clientSet.
-		client.
-		FuxiV1().
-		Workloadses(namespace).
-		Create(workloads)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
