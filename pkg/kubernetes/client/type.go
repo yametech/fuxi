@@ -34,7 +34,8 @@ const (
 	Role                     ResourceName = "roles"
 	RoleBinding              ResourceName = "rolebindings"
 	Namespace                ResourceName = "namesapces"
-	FormRender               ResourceName = "formrender"
+	FormRender               ResourceName = "formrenders"
+	Endponit                 ResourceName = "endpoints"
 )
 
 // GroupVersionResources describe resource collection
@@ -68,6 +69,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
 	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
 	FormRender:               {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
+	Endponit:                 {Group: "", Version: "v1", Resource: "endpoints"},
 }
 
 var (
@@ -100,6 +102,7 @@ var (
 	ResourceRoleBinding              = GetGVR(RoleBinding)
 	ResourceNamespace                = GetGVR(Namespace)
 	ResourceFormRender               = GetGVR(FormRender)
+	ResourceEndponit                 = GetGVR(Endponit)
 )
 
 func GetGVR(rs ResourceName) schema.GroupVersionResource {

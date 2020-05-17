@@ -40,6 +40,7 @@ type WorkloadsAPI struct {
 	generic                  *workloadservice.Generic
 	formRender               *workloadservice.FormRender
 	statefulSet1             *workloadservice.StatefulSet1
+	endpoint                 *workloadservice.Endpoint
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -72,6 +73,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		generic:                  workloadservice.NewGeneric(),
 		formRender:               workloadservice.NewFormRender(),
 		statefulSet1:             workloadservice.NewStatefulSet1(),
+		endpoint:                 workloadservice.NewEndpoint(),
 	}
 }
 
@@ -138,7 +140,8 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	}
 
 	namespace, ok := metadata["namespace"].(string)
-	if !ok && kind != "namespaces" {
+	// TODO: ignore cluster scope resource
+	if !ok && kind != "namespaces" && kind != "subnets" {
 		toRequestParamsError(g, fmt.Errorf("namespace not define"))
 		return
 	}
