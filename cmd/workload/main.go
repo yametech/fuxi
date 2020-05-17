@@ -116,12 +116,19 @@ func main() {
 	{
 		group.GET("/api/v1/resourcequotas", ResourceQuotaList)
 		group.GET("/api/v1/namespaces/:namespace/resourcequotas/:name", ResourceQuotaGet)
+		group.POST("/api/v1/namespaces/:namespace/resourcequotas", workloadsAPI.Apply)
 	}
 
 	// Service
 	{
 		group.GET("/api/v1/services", ServiceList)
 		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
+	}
+
+	// Endpoint
+	{
+		group.GET("/api/v1/endpoints", EndpointList)
+		group.GET("/api/v1/namespaces/:namespace/endpoints/:name", EndpointGet)
 	}
 
 	// ServiceAccount
@@ -161,6 +168,12 @@ func main() {
 	{
 		group.GET("/apis/apps/v1/statefulsets", StatefulSetList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/statefulsets/:name", StatefulSetGet)
+	}
+
+	// StatefulSet1
+	{
+		group.GET("/apis/nuwa.nip.io/v1/statefulsets", StatefulSet1List)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/statefulsets/:name", StatefulSet1Get)
 	}
 
 	// DaemonSet
@@ -242,6 +255,7 @@ func main() {
 
 		ignores := []string{
 			"fuxi.nip.io/v1/formrenders",
+			"nuwa.nip.io/v1/statefulsets",
 		}
 		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)
 		if err != nil {
@@ -285,9 +299,9 @@ func main() {
 		group.POST("/metrics", workloadsAPI.Metrics)
 		group.GET("/apis/metrics.k8s.io/v1beta1/nodes", workloadsAPI.NodeMetrics)
 
-		// GET /workload/apis/metrics.k8s.io/v1beta1/namespaces/rook-ceph/pods
 		group.GET("/apis/metrics.k8s.io/v1beta1/pods", workloadsAPI.PodMetricsList)
-		group.GET("/apis/metrics.k8s.io/v1beta1/namespaces/:namespace/pods", workloadsAPI.PodMetricsList)
+		// GET /workload/apis/metrics.k8s.io/v1beta1/namespaces/rook-ceph/pods
+		group.GET("/apis/metrics.k8s.io/v1beta1/namespaces/:namespace/pods", workloadsAPI.PodMetrics)
 	}
 
 	{
