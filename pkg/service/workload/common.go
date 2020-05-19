@@ -1,6 +1,7 @@
 package workload
 
 import (
+	"encoding/json"
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -8,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/util/retry"
 	"reflect"
@@ -30,13 +32,14 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 type ResourceQuery interface {
 	List(namespace, flag string, pos, size int64, selector interface{}) (*unstructured.UnstructuredList, error)
 	Get(namespace, name string) (runtime.Object, error)
-	RemoteGet(namespace, name string) (runtime.Object, error)
+	RemoteGet(namespace, name string, subresources ...string) (runtime.Object, error)
 	Watch(namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector) (<-chan watch.Event, error)
 }
 
 // ResourceApply update resource interface
 type ResourceApply interface {
 	Apply(namespace, name string, obj *unstructured.Unstructured) (*unstructured.Unstructured, error)
+	Path(namespace, name string, patchData map[string]interface{}) (*unstructured.Unstructured, error)
 	Delete(namespace, name string) error
 }
 
@@ -171,13 +174,13 @@ func (d *defaultImplWorkloadsResourceHandler) Get(namespace, name string) (
 	return object, nil
 }
 
-func (d *defaultImplWorkloadsResourceHandler) RemoteGet(namespace, name string) (runtime.Object, error) {
+func (d *defaultImplWorkloadsResourceHandler) RemoteGet(namespace, name string, subresources ...string) (runtime.Object, error) {
 	object, err := sharedK8sClient.
 		cacheInformer.
 		Client.
 		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
-		Get(name, metav1.GetOptions{})
+		Get(name, metav1.GetOptions{}, subresources...)
 	if err != nil {
 		return nil, err
 	}
@@ -259,6 +262,19 @@ func (d *defaultImplWorkloadsResourceHandler) Apply(
 	})
 
 	return
+}
+
+func (d *defaultImplWorkloadsResourceHandler) Path(namespace, name string, pathData map[string]interface{}) (*unstructured.Unstructured, error) {
+	ptBytes, err := json.Marshal(pathData)
+	if err != nil {
+		return nil, err
+	}
+	return sharedK8sClient.
+		cacheInformer.
+		Client.
+		Resource(d.GetGroupVersionResource()).
+		Namespace(namespace).
+		Patch(name, types.StrategicMergePatchType, ptBytes, metav1.PatchOptions{})
 }
 
 func (d *defaultImplWorkloadsResourceHandler) Delete(namespace, name string) error {

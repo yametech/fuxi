@@ -156,6 +156,10 @@ func main() {
 	{
 		group.GET("/apis/apps/v1/deployments", DeploymentList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
+		// deployment scale
+
+		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name/scale", workloadsAPI.GetDeploymentScale)
+		group.PUT("/apis/apps/v1/namespaces/:namespace/deployments/:name/scale", workloadsAPI.PutDeploymentScale)
 	}
 
 	// ReplicaSet

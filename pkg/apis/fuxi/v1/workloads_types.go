@@ -12,12 +12,10 @@ type WorkloadsSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
-	// Workloads Type [Deployment,Statefulset...]
-	Type      string `json:"type"`
-	Namespace string `json:"namespace"`
-	Name      string `json:"name"`
-	Metadata  []byte `json:"metadata"`
-	Version   uint64 `json:"version"`
+	// Workloads ResourceType [Deployment,Statefulset...]
+	ResourceType      string `json:"resourceType"`
+	GenerateTimestamp int64  `json:"generateTimestamp"`
+	Metadata          string `json:"metadata"`
 }
 
 // WorkloadsStatus defines the observed state of Workloads
