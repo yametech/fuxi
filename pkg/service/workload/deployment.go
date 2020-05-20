@@ -1,6 +1,8 @@
 package workload
 
-import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+)
 
 // Deployment the kubernetes native resource deployments
 type Deployment struct {
