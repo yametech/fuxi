@@ -2,13 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	v1 "k8s.io/api/rbac/v1"
-	"net/http"
 )
 
-// Get Role
-func (w *WorkloadsAPI) GetRole(g *gin.Context) {
+// Get ClusterRole
+func (w *WorkloadsAPI) GetClusterRole(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
 	item, err := w.role.Get(namespace, name)
@@ -19,8 +20,8 @@ func (w *WorkloadsAPI) GetRole(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List Role
-func (w *WorkloadsAPI) ListRole(g *gin.Context) {
+// List ClusterRole
+func (w *WorkloadsAPI) ListClusterRole(g *gin.Context) {
 	list, err := w.role.List("", "", 0, 10000, nil)
 	if err != nil {
 		toInternalServerError(g, "", err)

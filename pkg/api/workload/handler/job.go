@@ -2,9 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	v1 "k8s.io/api/batch/v1"
-	"net/http"
 )
 
 // Get Job
@@ -21,7 +22,7 @@ func (w *WorkloadsAPI) GetJob(g *gin.Context) {
 
 // List Job
 func (w *WorkloadsAPI) ListJob(g *gin.Context) {
-	list, err := w.job.List("", "", 0, 10000, nil)
+	list, err := w.job.List("", "", 0, 0, nil)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return

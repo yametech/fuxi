@@ -2,9 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"k8s.io/api/batch/v1beta1"
-	"net/http"
 )
 
 // Get CronJob
@@ -22,16 +23,20 @@ func (w *WorkloadsAPI) GetCronJob(g *gin.Context) {
 
 // List CronJob
 func (w *WorkloadsAPI) ListCronJob(g *gin.Context) {
-	list, _ := w.cronJob.List("", "", 0, 100, nil)
+	list, err := w.cronJob.List("", "", 0, 0, nil)
+	if err != nil {
+		toInternalServerError(g, "", err)
+		return
+	}
 	cronJobList := &v1beta1.CronJobList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{code: http.StatusBadRequest, data: "", msg: err.Error(), status: "Request bad parameter"})
+		toInternalServerError(g, "", err)
 		return
 	}
 	if err = json.Unmarshal(marshalData, cronJobList); err != nil {
-		panic(err)
+		toInternalServerError(g, "", err)
+		return
 	}
 	g.JSON(http.StatusOK, cronJobList)
 }

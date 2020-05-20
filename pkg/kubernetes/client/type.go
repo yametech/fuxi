@@ -32,10 +32,12 @@ const (
 	StorageClass             ResourceName = "storageclasses"
 	ServiceAccount           ResourceName = "serviceaccounts"
 	Role                     ResourceName = "roles"
+	ClusterRole              ResourceName = "clusterroles"
 	RoleBinding              ResourceName = "rolebindings"
 	Namespace                ResourceName = "namesapces"
 	FormRender               ResourceName = "formrenders"
 	Endponit                 ResourceName = "endpoints"
+	ClusterRoleBinding       ResourceName = "clusterrolebindings"
 )
 
 // GroupVersionResources describe resource collection
@@ -66,46 +68,50 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	PersistentVolumeClaims:   {Group: "", Version: "v1", Resource: "persistentvolumeclaims"},
 	StorageClass:             {Group: "storage.k8s.io", Version: "v1", Resource: "storageclasses"},
 	ServiceAccount:           {Group: "", Version: "v1", Resource: "serviceaccounts"},
+	ClusterRole:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterroles"},
 	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
-	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
-	FormRender:               {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
-	Endponit:                 {Group: "", Version: "v1", Resource: "endpoints"},
+	ClusterRoleBinding:       {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterrolebindings"},
+
+	RoleBinding: {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
+	FormRender:  {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
+	Endponit:    {Group: "", Version: "v1", Resource: "endpoints"},
 }
 
 var (
-	ResourceWater                    = GetGVR(Water)
-	ResourceJob                      = GetGVR(Job)
-	ResourceDeployment               = GetGVR(Deployment)
-	ResourceStone                    = GetGVR(Stone)
-	ResourceStatefulSet              = GetGVR(StatefulSet)
-	ResourceStatefulSet1             = GetGVR(StatefulSet1)
-	ResourceDaemonSet                = GetGVR(DaemonSet)
-	ResourceInjector                 = GetGVR(Injector)
-	ResourcePod                      = GetGVR(Pod)
-	ResourceCronJobs                 = GetGVR(CronJobs)
-	ResourceReplicaSet               = GetGVR(ReplicaSet)
-	ResourceEvent                    = GetGVR(Event)
-	ResourceNode                     = GetGVR(Node)
-	ResourceConfigMaps               = GetGVR(ConfigMaps)
-	ResourceSecrets                  = GetGVR(Secrets)
-	ResourceResourceQuota            = GetGVR(ResourceQuota)
-	ResourceService                  = GetGVR(Service)
-	ResourceIngress                  = GetGVR(Ingress)
-	ResourceNetworkPolicy            = GetGVR(NetworkPolicy)
-	ResourceHorizontalPodAutoscaler  = GetGVR(HorizontalPodAutoscaler)
-	ResourceCustomResourceDefinition = GetGVR(CustomResourceDefinition)
-	ResourcePersistentVolume         = GetGVR(PersistentVolume)
-	ResourcePersistentVolumeClaims   = GetGVR(PersistentVolumeClaims)
-	ResourceStorageClass             = GetGVR(StorageClass)
-	ResourceServiceAccount           = GetGVR(ServiceAccount)
-	ResourceRole                     = GetGVR(Role)
-	ResourceRoleBinding              = GetGVR(RoleBinding)
-	ResourceNamespace                = GetGVR(Namespace)
-	ResourceFormRender               = GetGVR(FormRender)
-	ResourceEndponit                 = GetGVR(Endponit)
+	ResourceWater                    = getGvr(Water)
+	ResourceJob                      = getGvr(Job)
+	ResourceDeployment               = getGvr(Deployment)
+	ResourceStone                    = getGvr(Stone)
+	ResourceStatefulSet              = getGvr(StatefulSet)
+	ResourceStatefulSet1             = getGvr(StatefulSet1)
+	ResourceDaemonSet                = getGvr(DaemonSet)
+	ResourceInjector                 = getGvr(Injector)
+	ResourcePod                      = getGvr(Pod)
+	ResourceCronJobs                 = getGvr(CronJobs)
+	ResourceReplicaSet               = getGvr(ReplicaSet)
+	ResourceEvent                    = getGvr(Event)
+	ResourceNode                     = getGvr(Node)
+	ResourceConfigMaps               = getGvr(ConfigMaps)
+	ResourceSecrets                  = getGvr(Secrets)
+	ResourceResourceQuota            = getGvr(ResourceQuota)
+	ResourceService                  = getGvr(Service)
+	ResourceIngress                  = getGvr(Ingress)
+	ResourceNetworkPolicy            = getGvr(NetworkPolicy)
+	ResourceHorizontalPodAutoscaler  = getGvr(HorizontalPodAutoscaler)
+	ResourceCustomResourceDefinition = getGvr(CustomResourceDefinition)
+	ResourcePersistentVolume         = getGvr(PersistentVolume)
+	ResourcePersistentVolumeClaims   = getGvr(PersistentVolumeClaims)
+	ResourceStorageClass             = getGvr(StorageClass)
+	ResourceServiceAccount           = getGvr(ServiceAccount)
+	ResourceRole                     = getGvr(ClusterRole)
+	ResourceRoleBinding              = getGvr(RoleBinding)
+	ResourceNamespace                = getGvr(Namespace)
+	ResourceFormRender               = getGvr(FormRender)
+	ResourceEndponit                 = getGvr(Endponit)
+	ResourceClusterRoleBinding       = getGvr(ClusterRoleBinding)
 )
 
-func GetGVR(rs ResourceName) schema.GroupVersionResource {
+func getGvr(rs ResourceName) schema.GroupVersionResource {
 	gvr, exist := GroupVersionResources[rs]
 	if !exist {
 		panic("try to get an undefined resource")

@@ -2,9 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"k8s.io/api/extensions/v1beta1"
-	"net/http"
 )
 
 // Get Ingress
@@ -21,7 +22,7 @@ func (w *WorkloadsAPI) GetIngress(g *gin.Context) {
 
 // List Ingress
 func (w *WorkloadsAPI) ListIngress(g *gin.Context) {
-	list, err := w.ingress.List("", "", 0, 10000, nil)
+	list, err := w.ingress.List("", "", 0, 0, nil)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return

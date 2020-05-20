@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"net/http"
-	"strings"
 )
 
 // WorkloadsAPI all resource operate
@@ -41,6 +42,7 @@ type WorkloadsAPI struct {
 	formRender               *workloadservice.FormRender
 	statefulSet1             *workloadservice.StatefulSet1
 	endpoint                 *workloadservice.Endpoint
+	clusterRoleBinding       *workloadservice.ClusterRoleBinding
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -74,6 +76,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		formRender:               workloadservice.NewFormRender(),
 		statefulSet1:             workloadservice.NewStatefulSet1(),
 		endpoint:                 workloadservice.NewEndpoint(),
+		clusterRoleBinding:       workloadservice.NewClusterRoleBinding(),
 	}
 }
 
