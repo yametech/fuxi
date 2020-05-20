@@ -12,7 +12,7 @@ import "github.com/gin-gonic/gin"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/api/v1/serviceaccounts [get]
-func ServiceAccountList(g *gin.Context) { workloadsAPI.ListService(g) }
+func ServiceAccountList(g *gin.Context) { workloadsAPI.ListServiceAccount(g) }
 
 // ServiceAccount doc
 // @Summary workload service get
@@ -25,4 +25,4 @@ func ServiceAccountList(g *gin.Context) { workloadsAPI.ListService(g) }
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/api/v1/namespaces/:namespace/serviceaccounts/:name [get]
-func ServiceAccountGet(g *gin.Context) { workloadsAPI.GetService(g) }
+func ServiceAccountGet(g *gin.Context) { workloadsAPI.GetServiceAccount(g) }

@@ -135,6 +135,12 @@ func main() {
 	{
 		group.GET("/api/v1/serviceaccounts", ServiceAccountList)
 		group.GET("/api/v1/namespaces/:namespace/serviceaccounts/:name", ServiceAccountGet)
+		group.POST("/api/v1/namespaces/:namespace/serviceaccounts", workloadsAPI.Apply)
+	}
+	// ClusterRolebind
+	{
+		group.GET("/apis/rbac.authorization.k8s.io/v1/clusterrolebindings", ClusterRoleBindList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterrolebindings/:name ", ClusterRoleBindGet)
 	}
 
 	// ConfigMaps
@@ -238,10 +244,11 @@ func main() {
 
 	// #rbac.authorization.k8s.io
 	// #v1
-	// Role
+	// Clusterroles
 	{
-		group.GET("/apis/rbac.authorization.k8s.io/v1/roles", RoleList)
-		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/roles/:name", RoleGet)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/clusterroles", ClusterRoleList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterroles/:name", ClusterRoleGet)
+		// group.POST("/apis/rbac.authorization.k8s/v1/")
 	}
 
 	// RoleBinding

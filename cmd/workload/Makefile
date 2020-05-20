@@ -5,7 +5,7 @@ GOPATH:=$(shell go env GOPATH)
 
 .PHONY: run
 run:
-	go run *.go  --registry etcd --registry_address gz.nuwa.xyz:12379
+	go run *.go  --registry etcd --server_address 0.0.0.0:8080 --registry_address fuxi.io:12379
 
 .PHONY: proto
 proto:
