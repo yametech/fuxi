@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	cloud.google.com/go/pubsub v1.0.1 // indirect
-	code.gitea.io/sdk/gitea v0.0.0-20191013013401-e41e9ea72caa
+	code.gitea.io/sdk/gitea v0.12.0
 	contrib.go.opencensus.io/exporter/prometheus v0.1.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.12.4 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
