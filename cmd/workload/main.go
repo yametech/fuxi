@@ -135,12 +135,7 @@ func main() {
 	{
 		group.GET("/api/v1/serviceaccounts", ServiceAccountList)
 		group.GET("/api/v1/namespaces/:namespace/serviceaccounts/:name", ServiceAccountGet)
-		group.POST("/api/v1/namespaces/:namespace/serviceaccounts", workloadsAPI.Apply)
-	}
-	// ClusterRolebind
-	{
-		group.GET("/apis/rbac.authorization.k8s.io/v1/clusterrolebindings", ClusterRoleBindList)
-		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterrolebindings/:name ", ClusterRoleBindGet)
+		//group.POST("/api/v1/namespaces/:namespace/serviceaccounts", workloadsAPI.Apply)
 	}
 
 	// ConfigMaps
@@ -153,17 +148,16 @@ func main() {
 	{
 		group.GET("/api/v1/secrets", SecretList)
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
+		group.POST("/api/v1/namespaces/:namespace/secrets", workloadsAPI.Apply)
 	}
 
 	// #apis
 	// #apps v1
-
 	// Deployment
 	{
 		group.GET("/apis/apps/v1/deployments", DeploymentList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
 		// deployment scale
-
 		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name/scale", workloadsAPI.GetDeploymentScale)
 		group.PUT("/apis/apps/v1/namespaces/:namespace/deployments/:name/scale", workloadsAPI.PutDeploymentScale)
 	}
@@ -242,30 +236,60 @@ func main() {
 		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
 	}
 
+
+
+
+	// kubernetes RBAC
+	// #rbac.authorization.k8s.io
+	// v1
+	// Roles
+	{
+		group.GET("/apis/rbac.authorization.k8s.io/v1/roles", RoleList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/roles/:name", RoleGet)
+	}
 	// #rbac.authorization.k8s.io
 	// #v1
 	// Clusterroles
 	{
 		group.GET("/apis/rbac.authorization.k8s.io/v1/clusterroles", ClusterRoleList)
 		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterroles/:name", ClusterRoleGet)
-		// group.POST("/apis/rbac.authorization.k8s/v1/")
+		group.POST("/apis/rbac.authorization.k8s.io/v1/clusterroles", workloadsAPI.Apply)
 	}
 
 	// RoleBinding
 	{
 		group.GET("/apis/rbac.authorization.k8s.io/v1/rolebindings", RoleBindingList)
 		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/rolebindings/:name", RoleBindingGet)
+		group.POST("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/rolebindings", workloadsAPI.Apply)
+	}
+
+	// ClusterRolebind
+	{
+		group.GET("/apis/rbac.authorization.k8s.io/v1/clusterrolebindings", ClusterRoleBindList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterrolebindings/:name ", ClusterRoleBindGet)
+		group.POST("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterrolebindings", workloadsAPI.Apply)
+	}
+
+
+
+	// #policy
+	// #v1beta1
+	// #podsecuritypolicies
+	{
+		group.GET("/apis/policy/v1beta1/podsecuritypolicies", RoleBindingList)
+		group.GET("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies/:name", RoleBindingGet)
+		group.POST("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies", workloadsAPI.Apply)
 	}
 
 	// #apiextensions.k8s.io/v1beta1
 	// #v1beta1
-
 	// CustomResourceDefinition
 	{
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
 
 		ignores := []string{
 			"fuxi.nip.io/v1/formrenders",
+			"fuxi.nip.io/v1/workloads",
 			"nuwa.nip.io/v1/statefulsets",
 		}
 		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)
@@ -303,6 +327,13 @@ func main() {
 	{
 		group.GET("/apis/fuxi.nip.io/v1/formrenders", FormRenderList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/formrenders/:name", FormRenderGet)
+	}
+
+	// fuxi.nip.io
+	// Workloads
+	{
+		group.GET("/apis/fuxi.nip.io/v1/workloads", WorkloadsTemplateList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/workloads/:name", WorkloadsTemplateGet)
 	}
 
 	// Metrics

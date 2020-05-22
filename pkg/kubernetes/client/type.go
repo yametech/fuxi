@@ -38,6 +38,7 @@ const (
 	FormRender               ResourceName = "formrenders"
 	Endponit                 ResourceName = "endpoints"
 	ClusterRoleBinding       ResourceName = "clusterrolebindings"
+	WorkloadsTemplate        ResourceName = "workloads"
 )
 
 // GroupVersionResources describe resource collection
@@ -75,6 +76,8 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	RoleBinding: {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
 	FormRender:  {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
 	Endponit:    {Group: "", Version: "v1", Resource: "endpoints"},
+
+	WorkloadsTemplate: {Group: "fuxi.nip.io", Version: "v1", Resource: "workloads"},
 }
 
 var (
@@ -103,12 +106,14 @@ var (
 	ResourcePersistentVolumeClaims   = getGvr(PersistentVolumeClaims)
 	ResourceStorageClass             = getGvr(StorageClass)
 	ResourceServiceAccount           = getGvr(ServiceAccount)
-	ResourceRole                     = getGvr(ClusterRole)
+	ResourceRole                     = getGvr(Role)
 	ResourceRoleBinding              = getGvr(RoleBinding)
 	ResourceNamespace                = getGvr(Namespace)
 	ResourceFormRender               = getGvr(FormRender)
 	ResourceEndponit                 = getGvr(Endponit)
+	ResourceClusterRole              = getGvr(ClusterRole)
 	ResourceClusterRoleBinding       = getGvr(ClusterRoleBinding)
+	ResourceWorkloadsTemplate        = getGvr(WorkloadsTemplate)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {

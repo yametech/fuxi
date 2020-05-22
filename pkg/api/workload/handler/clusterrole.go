@@ -8,11 +8,11 @@ import (
 	v1 "k8s.io/api/rbac/v1"
 )
 
-// Get Role
-func (w *WorkloadsAPI) GetRole(g *gin.Context) {
+// Get ClusterRole
+func (w *WorkloadsAPI) GetClusterRole(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.role.Get(namespace, name)
+	item, err := w.clusterrole.Get(namespace, name)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return
@@ -21,13 +21,13 @@ func (w *WorkloadsAPI) GetRole(g *gin.Context) {
 }
 
 // List ClusterRole
-func (w *WorkloadsAPI) ListRole(g *gin.Context) {
-	list, err := w.role.List("", "", 0, 0, nil)
+func (w *WorkloadsAPI) ListClusterRole(g *gin.Context) {
+	list, err := w.clusterrole.List("", "", 0, 0, nil)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return
 	}
-	roleList := &v1.RoleList{}
+	roleList := &v1.ClusterRoleList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		toInternalServerError(g, "", err)

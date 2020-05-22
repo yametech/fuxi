@@ -11,9 +11,9 @@ const (
 )
 
 const (
-	msg    = "msg"
+	msg    = "message"
 	data   = "data"
-	status = "status"
+	status = "errors"
 	code   = "code"
 )
 

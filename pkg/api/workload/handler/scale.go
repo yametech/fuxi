@@ -39,7 +39,7 @@ func (w *WorkloadsAPI) PutDeploymentScale(g *gin.Context) {
 	}
 
 	w.generic.SetGroupVersionResource(dyn.ResourceDeployment)
-	_, err = w.generic.Path(namespace, name, pathData)
+	_, err = w.generic.Patch(namespace, name, pathData)
 	if err != nil {
 		toInternalServerError(g, "", err)
 		return

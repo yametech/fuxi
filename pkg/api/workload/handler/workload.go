@@ -42,7 +42,9 @@ type WorkloadsAPI struct {
 	formRender               *workloadservice.FormRender
 	statefulSet1             *workloadservice.StatefulSet1
 	endpoint                 *workloadservice.Endpoint
+	clusterrole              *workloadservice.ClusterRole
 	clusterRoleBinding       *workloadservice.ClusterRoleBinding
+	workloadsTemplate        *workloadservice.WorkloadsTemplate
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -76,7 +78,9 @@ func NewWorkladAPI() *WorkloadsAPI {
 		formRender:               workloadservice.NewFormRender(),
 		statefulSet1:             workloadservice.NewStatefulSet1(),
 		endpoint:                 workloadservice.NewEndpoint(),
+		clusterrole:              workloadservice.NewClusterRole(),
 		clusterRoleBinding:       workloadservice.NewClusterRoleBinding(),
+		workloadsTemplate:        workloadservice.NewWorkloadsTemplate(),
 	}
 }
 
@@ -109,6 +113,22 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	g.JSON(http.StatusOK, nil)
 }
 
+var ignoreList = []string{
+	"namespaces",
+	"subnets",
+	"clusterroles",
+	"clusterrolebindings",
+}
+
+var in = func(item string) bool {
+	for _, ignoreItem := range ignoreList {
+		if ignoreItem == item {
+			return true
+		}
+	}
+	return false
+}
+
 func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	var formData map[string]interface{}
 	if err := g.BindJSON(&formData); err != nil {
@@ -123,9 +143,11 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 		toRequestParamsError(g, fmt.Errorf("form data kind not define"))
 		return
 	}
-	if strings.HasSuffix(strings.ToLower(kind), "s") {
+	if strings.HasSuffix(strings.ToLower(kind), "ss") {
 		// Compatible with ingress resources
 		kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "es")
+	} else if strings.HasSuffix(strings.ToLower(kind), "s") {
+		kind = strings.ToLower(kind)
 	} else {
 		kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "s")
 	}
@@ -143,8 +165,8 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	}
 
 	namespace, ok := metadata["namespace"].(string)
-	// TODO: ignore cluster scope resource
-	if !ok && kind != "namespaces" && kind != "subnets" {
+	// ignore cluster scope resource
+	if !ok && !in(kind) {
 		toRequestParamsError(g, fmt.Errorf("namespace not define"))
 		return
 	}
@@ -173,7 +195,6 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 		toInternalServerError(g, runtimeClassGVR.String(), err)
 		return
 	}
-
 	g.JSON(
 		http.StatusOK,
 		[]unstructured.Unstructured{

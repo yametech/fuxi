@@ -39,7 +39,7 @@ type ResourceQuery interface {
 // ResourceApply update resource interface
 type ResourceApply interface {
 	Apply(namespace, name string, obj *unstructured.Unstructured) (*unstructured.Unstructured, error)
-	Path(namespace, name string, patchData map[string]interface{}) (*unstructured.Unstructured, error)
+	Patch(namespace, name string, patchData map[string]interface{}) (*unstructured.Unstructured, error)
 	Delete(namespace, name string) error
 }
 
@@ -264,7 +264,7 @@ func (d *defaultImplWorkloadsResourceHandler) Apply(
 	return
 }
 
-func (d *defaultImplWorkloadsResourceHandler) Path(namespace, name string, pathData map[string]interface{}) (*unstructured.Unstructured, error) {
+func (d *defaultImplWorkloadsResourceHandler) Patch(namespace, name string, pathData map[string]interface{}) (*unstructured.Unstructured, error) {
 	ptBytes, err := json.Marshal(pathData)
 	if err != nil {
 		return nil, err
