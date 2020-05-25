@@ -32,12 +32,15 @@ const (
 	StorageClass             ResourceName = "storageclasses"
 	ServiceAccount           ResourceName = "serviceaccounts"
 	Role                     ResourceName = "roles"
-	ClusterRole              ResourceName = "clusterroles"
 	RoleBinding              ResourceName = "rolebindings"
 	Namespace                ResourceName = "namesapces"
-	FormRender               ResourceName = "formrenders"
-	Endponit                 ResourceName = "endpoints"
+	ClusterRole              ResourceName = "clusterroles"
 	ClusterRoleBinding       ResourceName = "clusterrolebindings"
+	FormRender               ResourceName = "formrenders"
+	Endpoint                 ResourceName = "endpoints"
+	Page                     ResourceName = "pages"
+	Form                     ResourceName = "forms"
+	Field                    ResourceName = "fields"
 )
 
 // GroupVersionResources describe resource collection
@@ -70,48 +73,53 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	ServiceAccount:           {Group: "", Version: "v1", Resource: "serviceaccounts"},
 	ClusterRole:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterroles"},
 	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
+	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
 	ClusterRoleBinding:       {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterrolebindings"},
-
-	RoleBinding: {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
-	FormRender:  {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
-	Endponit:    {Group: "", Version: "v1", Resource: "endpoints"},
+	FormRender:               {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
+	Endpoint:                 {Group: "", Version: "v1", Resource: "endpoints"},
+	Page:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "pages"},
+	Form:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "forms"},
+	Field:                    {Group: "fuxi.nip.io", Version: "v1", Resource: "fields"},
 }
 
 var (
-	ResourceWater                    = getGvr(Water)
-	ResourceJob                      = getGvr(Job)
-	ResourceDeployment               = getGvr(Deployment)
-	ResourceStone                    = getGvr(Stone)
-	ResourceStatefulSet              = getGvr(StatefulSet)
-	ResourceStatefulSet1             = getGvr(StatefulSet1)
-	ResourceDaemonSet                = getGvr(DaemonSet)
-	ResourceInjector                 = getGvr(Injector)
-	ResourcePod                      = getGvr(Pod)
-	ResourceCronJobs                 = getGvr(CronJobs)
-	ResourceReplicaSet               = getGvr(ReplicaSet)
-	ResourceEvent                    = getGvr(Event)
-	ResourceNode                     = getGvr(Node)
-	ResourceConfigMaps               = getGvr(ConfigMaps)
-	ResourceSecrets                  = getGvr(Secrets)
-	ResourceResourceQuota            = getGvr(ResourceQuota)
-	ResourceService                  = getGvr(Service)
-	ResourceIngress                  = getGvr(Ingress)
-	ResourceNetworkPolicy            = getGvr(NetworkPolicy)
-	ResourceHorizontalPodAutoscaler  = getGvr(HorizontalPodAutoscaler)
-	ResourceCustomResourceDefinition = getGvr(CustomResourceDefinition)
-	ResourcePersistentVolume         = getGvr(PersistentVolume)
-	ResourcePersistentVolumeClaims   = getGvr(PersistentVolumeClaims)
-	ResourceStorageClass             = getGvr(StorageClass)
-	ResourceServiceAccount           = getGvr(ServiceAccount)
-	ResourceRole                     = getGvr(ClusterRole)
-	ResourceRoleBinding              = getGvr(RoleBinding)
-	ResourceNamespace                = getGvr(Namespace)
-	ResourceFormRender               = getGvr(FormRender)
-	ResourceEndponit                 = getGvr(Endponit)
-	ResourceClusterRoleBinding       = getGvr(ClusterRoleBinding)
+	ResourceWater                    = GetGVR(Water)
+	ResourceJob                      = GetGVR(Job)
+	ResourceDeployment               = GetGVR(Deployment)
+	ResourceStone                    = GetGVR(Stone)
+	ResourceStatefulSet              = GetGVR(StatefulSet)
+	ResourceStatefulSet1             = GetGVR(StatefulSet1)
+	ResourceDaemonSet                = GetGVR(DaemonSet)
+	ResourceInjector                 = GetGVR(Injector)
+	ResourcePod                      = GetGVR(Pod)
+	ResourceCronJobs                 = GetGVR(CronJobs)
+	ResourceReplicaSet               = GetGVR(ReplicaSet)
+	ResourceEvent                    = GetGVR(Event)
+	ResourceNode                     = GetGVR(Node)
+	ResourceConfigMaps               = GetGVR(ConfigMaps)
+	ResourceSecrets                  = GetGVR(Secrets)
+	ResourceResourceQuota            = GetGVR(ResourceQuota)
+	ResourceService                  = GetGVR(Service)
+	ResourceIngress                  = GetGVR(Ingress)
+	ResourceNetworkPolicy            = GetGVR(NetworkPolicy)
+	ResourceHorizontalPodAutoscaler  = GetGVR(HorizontalPodAutoscaler)
+	ResourceCustomResourceDefinition = GetGVR(CustomResourceDefinition)
+	ResourcePersistentVolume         = GetGVR(PersistentVolume)
+	ResourcePersistentVolumeClaims   = GetGVR(PersistentVolumeClaims)
+	ResourceStorageClass             = GetGVR(StorageClass)
+	ResourceServiceAccount           = GetGVR(ServiceAccount)
+	ResourceRole                     = GetGVR(Role)
+	ResourceRoleBinding              = GetGVR(RoleBinding)
+	ResourceNamespace                = GetGVR(Namespace)
+	ResourceFormRender               = GetGVR(FormRender)
+	ResourceEndpoint                 = GetGVR(Endpoint)
+	ResourceClusterRoleBinding       = GetGVR(ClusterRoleBinding)
+	ResourcePage                     = GetGVR(Page)
+	ResourceForm                     = GetGVR(Form)
+	ResourceField                    = GetGVR(Field)
 )
 
-func getGvr(rs ResourceName) schema.GroupVersionResource {
+func GetGVR(rs ResourceName) schema.GroupVersionResource {
 	gvr, exist := GroupVersionResources[rs]
 	if !exist {
 		panic("try to get an undefined resource")
