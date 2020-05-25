@@ -17,7 +17,7 @@ func NewGiteaClient(gitArgs *GitArgs) *GiteaClient {
 func (client *GiteaClient) ListRepositories(org string) ([]*GitRepository, error) {
 	var gitRepos []*GitRepository
 	if org == "" {
-		repos, err := client.Client.ListMyRepos()
+		repos, err := client.Client.ListMyRepos(gitea.ListReposOptions{})
 		if err != nil {
 			return gitRepos, err
 		}
@@ -26,7 +26,7 @@ func (client *GiteaClient) ListRepositories(org string) ([]*GitRepository, error
 		}
 		return gitRepos, nil
 	}
-	repos, err := client.Client.ListOrgRepos(org)
+	repos, err := client.Client.ListOrgRepos(org, gitea.ListOrgReposOptions{})
 	if err != nil {
 		return gitRepos, err
 	}
@@ -39,7 +39,7 @@ func (client *GiteaClient) ListRepositories(org string) ([]*GitRepository, error
 //ListBranch get a repo all Branch
 func (client *GiteaClient) ListBranchs(repoName string) ([]string, error) {
 	var branchArray []string
-	branchs, err := client.Client.ListRepoBranches(client.UserName, repoName)
+	branchs, err := client.Client.ListRepoBranches(client.UserName, repoName, gitea.ListRepoBranchesOptions{})
 	if err != nil {
 		return branchArray, err
 	}
