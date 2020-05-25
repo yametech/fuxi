@@ -329,13 +329,6 @@ func main() {
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/pages", PageCreate)
 	}
 
-	// Field
-	{
-		group.GET("/apis/fuxi.nip.io/v1/fields", FieldList)
-		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/fields/:name", FieldGet)
-		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/fields", FieldCreate)
-	}
-
 	// Metrics
 	{
 		group.POST("/metrics", workloadsAPI.Metrics)
