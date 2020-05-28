@@ -1,111 +1,79 @@
 package handler
 
 import (
-	"github.com/biezhi/gorm-paginator/pagination"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/yametech/fuxi/pkg/db"
+	"github.com/yametech/fuxi/pkg/api/common"
+	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
-	"strconv"
-	"time"
 )
 
-type DepartmentApiService struct{}
+// Get BaseDepartment
+func (b *BaseAPI) GetBaseDepartment(g *gin.Context) {
 
-func (d *DepartmentApiService) CreateDepartment(c *gin.Context) {
-
-	department := db.Department{}
-
-	// check bind struct
-	if err := c.ShouldBind(&department); err != nil {
-		c.JSON(http.StatusUnprocessableEntity,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	namespace := g.Param("namespace")
+	name := g.Param("name")
+	item, err := b.basedepartments.Get(namespace, name)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
-
-	// setting created time time now
-	department.CreatedAt = time.Now()
-	department.UpdatedAt = time.Now()
-
-	//	create
-	if err := db.DB.Create(&department).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated,
-		gin.H{"code": http.StatusCreated, "data": department, "msg": "success!"})
+	g.JSON(http.StatusOK, item)
 }
 
-func (d *DepartmentApiService) DeleteDepartment(c *gin.Context) {
+// List BaseDepartment
+func (b *BaseAPI) ListBaseDepartment(g *gin.Context) {
 
-	//
-	department := db.Department{}
-	if err := c.ShouldBindUri(&department); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	list, err := b.basedepartments.List("", "", 0, 0, nil)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
 		return
 	}
-
-	// find model instance if exists
-	if err := db.DB.Find(&department).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	baseDepartmentList := &v1.BaseDepartmentList{}
+	marshalData, err := json.Marshal(list)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
 		return
 	}
-
-	// set is_delete true
-	department.IsDelete = true
-	if err := db.DB.Save(&department).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	err = json.Unmarshal(marshalData, baseDepartmentList)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
 		return
 	}
-
-	c.JSON(http.StatusNoContent,
-		gin.H{"code": http.StatusNoContent, "data": "", "msg": "deleted!"})
+	g.JSON(http.StatusOK, baseDepartmentList)
 }
 
-func (d *DepartmentApiService) DepartmentList(c *gin.Context) {
-
-	var department []*db.Department
-
-	// page
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
-
-	//query paginator
-	paginator := pagination.Paging(&pagination.Param{
-		DB:      db.DB.DB,
-		Page:    page,
-		Limit:   pageSize,
-		OrderBy: []string{"id desc"},
-		ShowSQL: true,
-	}, &department)
-
-	// return
-	c.JSON(http.StatusOK,
-		gin.H{"code": http.StatusOK, "data": paginator, "msg": ""})
-}
-
-func (d *DepartmentApiService) EditDepartment(c *gin.Context) {
-
-	department := db.Department{}
-	if err := c.ShouldBindJSON(&department); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+// Create BaseDepartment
+func (b *BaseAPI) CreateBaseDepartment(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
-	// set updated time now
-	department.UpdatedAt = time.Now()
-
-	if err := db.DB.Update(&department).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	obj := v1.BaseDepartment{}
+	err = json.Unmarshal(rawData, &obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		gin.H{"code": http.StatusOK, "data": "", "msg": "success!"})
+	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	unstructuredStruct := &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}
+	newObj, err := b.basedepartments.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	g.JSON(http.StatusOK, newObj)
 }

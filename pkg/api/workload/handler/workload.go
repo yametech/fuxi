@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/yametech/fuxi/pkg/api/common"
 	"net/http"
 	"strings"
 
@@ -102,7 +103,7 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	name := g.Param("name")
 
 	if namespace == "" || resource == "" || name == "" {
-		toRequestParamsError(g, fmt.Errorf("request params not define"))
+		common.ToRequestParamsError(g, fmt.Errorf("request params not define"))
 		return
 	}
 
@@ -113,7 +114,7 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	gvr := schema.GroupVersionResource{Group: group, Version: version, Resource: resource}
 	w.generic.SetGroupVersionResource(gvr)
 	if err := w.generic.Delete(namespace, name); err != nil {
-		toInternalServerError(g, "delete resource internal server error", err)
+		common.ToInternalServerError(g, "delete resource internal server error", err)
 		return
 	}
 	g.JSON(http.StatusOK, nil)
@@ -138,7 +139,7 @@ var in = func(item string) bool {
 func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	var formData map[string]interface{}
 	if err := g.BindJSON(&formData); err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 	apiVersion := formData["apiVersion"].(string)
@@ -146,7 +147,7 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	apiVersions := strings.Split(apiVersion, "/")
 	kind, ok := formData["kind"].(string)
 	if !ok {
-		toRequestParamsError(g, fmt.Errorf("form data kind not define"))
+		common.ToRequestParamsError(g, fmt.Errorf("form data kind not define"))
 		return
 	}
 	if strings.HasSuffix(strings.ToLower(kind), "ss") {
@@ -160,26 +161,26 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 
 	md, ok := formData["metadata"]
 	if !ok {
-		toRequestParamsError(g, fmt.Errorf("form data metadata not define"))
+		common.ToRequestParamsError(g, fmt.Errorf("form data metadata not define"))
 		return
 	}
 
 	metadata, ok := md.(map[string]interface{})
 	if !ok {
-		toRequestParamsError(g, fmt.Errorf("form data metadata type error"))
+		common.ToRequestParamsError(g, fmt.Errorf("form data metadata type error"))
 		return
 	}
 
 	namespace, ok := metadata["namespace"].(string)
 	// ignore cluster scope resource
 	if !ok && !in(kind) {
-		toRequestParamsError(g, fmt.Errorf("namespace not define"))
+		common.ToRequestParamsError(g, fmt.Errorf("namespace not define"))
 		return
 	}
 
 	name, ok := metadata["name"].(string)
 	if !ok {
-		toRequestParamsError(g, fmt.Errorf("name not define"))
+		common.ToRequestParamsError(g, fmt.Errorf("name not define"))
 		return
 	}
 
@@ -191,14 +192,14 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	} else if len(apiVersions) == 1 {
 		runtimeClassGVR = schema.GroupVersionResource{Group: "", Version: apiVersions[0], Resource: kind}
 	} else {
-		toInternalServerError(g, formData, nil)
+		common.ToInternalServerError(g, formData, nil)
 		return
 	}
 
 	w.generic.SetGroupVersionResource(runtimeClassGVR)
 	newObj, err := w.generic.Apply(namespace, name, unstructuredData)
 	if err != nil {
-		toInternalServerError(g, runtimeClassGVR.String(), err)
+		common.ToInternalServerError(g, runtimeClassGVR.String(), err)
 		return
 	}
 	g.JSON(

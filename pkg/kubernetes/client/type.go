@@ -42,6 +42,10 @@ const (
 	Page                     ResourceName = "pages"
 	Form                     ResourceName = "forms"
 	Field                    ResourceName = "fields"
+	BaseDepartment           ResourceName = "basedepartments"
+	BasePermission           ResourceName = "basepermissions"
+	BaseRole                 ResourceName = "baseroles"
+	BaseUser                 ResourceName = "baseusers"
 )
 
 // GroupVersionResources describe resource collection
@@ -82,6 +86,10 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Page:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "pages"},
 	Form:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "forms"},
 	Field:                    {Group: "fuxi.nip.io", Version: "v1", Resource: "fields"},
+	BaseDepartment:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basedepartments"},
+	BasePermission:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basepermissions"},
+	BaseRole:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
+	BaseUser:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
 }
 
 var (
@@ -121,6 +129,10 @@ var (
 	ResourcePage                     = getGvr(Page)
 	ResourceForm                     = getGvr(Form)
 	ResourceField                    = getGvr(Field)
+	ResourceBaseDepartment           = getGvr(BaseDepartment)
+	ResourceBasePermission           = getGvr(BasePermission)
+	ResourceBaseRole                 = getGvr(BaseRole)
+	ResourceBaseUser                 = getGvr(BaseUser)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {

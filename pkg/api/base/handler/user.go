@@ -2,147 +2,78 @@ package handler
 
 import (
 	"encoding/json"
-	"net/http"
-	"time"
-
 	"github.com/gin-gonic/gin"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/client"
-	"github.com/yametech/fuxi/pkg/db"
-	"github.com/yametech/fuxi/thirdparty/lib/token"
+	"github.com/yametech/fuxi/pkg/api/common"
+	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	"net/http"
 )
 
-type UserApiService struct {
-	jwt  *token.Token
-	pub  micro.Publisher
-	wrap client.Wrapper
-}
+// Get BaseUser
+func (b *BaseAPI) GetBaseUser(g *gin.Context) {
 
-func NewUserApiService(pub micro.Publisher, token *token.Token, cliWrap client.Wrapper) *UserApiService {
-	return &UserApiService{
-		jwt:  token,
-		pub:  pub,
-		wrap: cliWrap,
-	}
-}
-
-func (u *UserApiService) UserInfo(c *gin.Context) {
-	// jwt rewrite header
-	tokenUser := c.Request.Header.Get("x-auth-username")
-	if len(tokenUser) < 1 {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": "验证有误"})
-		return
-	}
-	user := &db.User{
-		Name: &tokenUser,
-	}
-
-	if err := db.DB.Find(user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-	bytes, err := json.Marshal(user)
+	namespace := g.Param("namespace")
+	name := g.Param("name")
+	item, err := b.baseusers.Get(namespace, name)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+		common.ToRequestParamsError(g, err)
 		return
 	}
-	var m map[string]interface{}
-	if err = json.Unmarshal(bytes, &m); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, m)
+	g.JSON(http.StatusOK, item)
 }
 
-func (u *UserApiService) UserAuthorization(c *gin.Context) {
+// List BaseUser
+func (b *BaseAPI) ListBaseUser(g *gin.Context) {
 
-	user := &db.User{}
-	if err := c.ShouldBind(user); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	if err := db.DB.Find(user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	expireTime := time.Now().Add(time.Minute * 30).Unix()
-	s, err := u.jwt.Encode("", *user.Name, expireTime)
+	list, err := b.baseusers.List("", "", 0, 0, nil)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+		common.ToInternalServerError(g, "", err)
 		return
 	}
-
-	// data
-	data := map[string]interface{}{"user": user.Name, "id": user.ID, "token": s}
-	c.JSON(http.StatusOK,
-		gin.H{"code": http.StatusOK, "data": data, "msg": "编辑成功"})
-
+	baseUserList := &v1.BaseUserList{}
+	marshalData, err := json.Marshal(list)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	err = json.Unmarshal(marshalData, baseUserList)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	g.JSON(http.StatusOK, baseUserList)
 }
 
-func (u *UserApiService) UserRegister(c *gin.Context) {
-	//Call lower layer service context TODO + ctx
-	//ctx, ok := gin2micro.ContextWithSpan(c)
-	//if ok == false {
-	//	log.Error("get context err")
-	//}
-	//_ = ctx
-
-	user := db.User{}
-
-	// check bind struct
-	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(http.StatusUnprocessableEntity,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+// Create BaseUser
+func (b *BaseAPI) CreateBaseUser(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
-	// setting created time time now
-	user.CreatedAt = time.Now()
-	user.UpdatedAt = time.Now()
-
-	//	create
-	if err := db.DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	obj := v1.BasePermission{}
+	err = json.Unmarshal(rawData, &obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
-	c.JSON(http.StatusCreated,
-		gin.H{"code": http.StatusCreated, "data": user, "msg": "创建成功!"})
-}
-
-func (u *UserApiService) UserDelete(c *gin.Context) {
-	user := db.User{}
-	if err := c.ShouldBindUri(&user); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
-	// find model instance if exists
-	if err := db.DB.Find(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	unstructuredStruct := &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}
+	newObj, err := b.baseusers.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 
-	// set is_delete true
-	user.IsDelete = true
-	if err := db.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusNoContent,
-		gin.H{"code": http.StatusNoContent, "data": "", "msg": "删除成功!"})
+	g.JSON(http.StatusOK, newObj)
 }

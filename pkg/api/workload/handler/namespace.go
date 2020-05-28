@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/yametech/fuxi/pkg/api/common"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -13,20 +14,20 @@ import (
 func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 	rawData, err := g.GetRawData()
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
 	obj := corev1.Namespace{}
 	err = json.Unmarshal(rawData, &obj)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
 	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
@@ -35,7 +36,7 @@ func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 	}
 	newObj, err := w.namespace.Apply("", obj.Name, unstructuredStruct)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
@@ -47,7 +48,7 @@ func (w *WorkloadsAPI) DeleteNamespace(g *gin.Context) {
 	namespaceName := g.Param("namespace")
 	err := w.namespace.Delete("", namespaceName)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, "")
@@ -58,7 +59,7 @@ func (w *WorkloadsAPI) GetNamespace(g *gin.Context) {
 	namespaceName := g.Param("namespace")
 	item, err := w.namespace.Get("", namespaceName)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
@@ -69,20 +70,20 @@ func (w *WorkloadsAPI) GetNamespace(g *gin.Context) {
 func (w *WorkloadsAPI) ListNamespace(g *gin.Context) {
 	list, err := w.namespace.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 
 	namespaceList := &corev1.NamespaceList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 
 	err = json.Unmarshal(marshalData, namespaceList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, namespaceList)

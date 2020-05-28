@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/yametech/fuxi/pkg/api/common"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ func (w *WorkloadsAPI) GetRole(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.role.Get(namespace, name)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -24,18 +25,18 @@ func (w *WorkloadsAPI) GetRole(g *gin.Context) {
 func (w *WorkloadsAPI) ListRole(g *gin.Context) {
 	list, err := w.role.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	roleList := &v1.RoleList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	err = json.Unmarshal(marshalData, roleList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, roleList)

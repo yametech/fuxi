@@ -1,148 +1,79 @@
 package handler
 
 import (
-	"github.com/biezhi/gorm-paginator/pagination"
-	"github.com/fatih/structs"
-	"github.com/jinzhu/gorm"
-	"net/http"
-	"strconv"
-	"time"
-
+	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/yametech/fuxi/pkg/db"
+	"github.com/yametech/fuxi/pkg/api/common"
+	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	"net/http"
 )
 
-type ApiPermission struct {
-	Name          string `json:"name"`
-	NamespacePerm string `json:"namespace_perm"`
-	ServicePerm   string `json:"service_perm"`
-	UserPerm      string `json:"user_perm"`
-	AppPerm       string `json:"app_perm"`
-}
+// Get BasePermission
+func (b *BaseAPI) GetBasePermission(g *gin.Context) {
 
-type PermissionApiService struct{}
-
-func (p *PermissionApiService) CreatePermission(c *gin.Context) {
-
-	permission := db.Permission{}
-
-	// check bind struct
-	if err := c.ShouldBind(&permission); err != nil {
-		c.JSON(http.StatusUnprocessableEntity,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	// setting created time time now
-	permission.CreatedAt = time.Now()
-	permission.UpdatedAt = time.Now()
-
-	//
-	if err := db.DB.Create(&permission).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated,
-		gin.H{"code": http.StatusCreated, "data": permission, "msg": "创建成功!"})
-}
-
-func (p *PermissionApiService) DeletePermission(c *gin.Context) {
-
-	//
-	permission := db.Permission{}
-	if err := c.ShouldBindUri(&permission); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	// find model instance if exists
-	if err := db.DB.Find(&permission).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	// set is_delete true
-	permission.IsDelete = true
-	if err := db.DB.Save(&permission).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusNoContent,
-		gin.H{"code": http.StatusNoContent, "data": "", "msg": "删除成功!"})
-}
-
-func (p *PermissionApiService) PermissionList(c *gin.Context) {
-
-	var permissions []*db.Permission
-
-	// page
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
-
-	//query paginator
-	paginator := pagination.Paging(&pagination.Param{
-		DB:      db.DB.DB,
-		Page:    page,
-		Limit:   pageSize,
-		OrderBy: []string{"id desc"},
-		ShowSQL: true,
-	}, &permissions)
-
-	// return
-	c.JSON(http.StatusOK,
-		gin.H{"code": http.StatusOK, "data": paginator, "msg": ""})
-}
-
-func (p *PermissionApiService) EditPermission(c *gin.Context) {
-
-	pid, err := strconv.Atoi(c.Param("ID"))
+	namespace := g.Param("namespace")
+	name := g.Param("name")
+	item, err := b.basepermissions.Get(namespace, name)
 	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
-	permission := db.Permission{Model: gorm.Model{ID: uint(pid)}}
-
-	//fmt.Println(config)
-	//permission.Value = permission.PermissionAuthorizeValue(config)
-
-	if err := c.Bind(&permission); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	// set updated time now
-	permission.UpdatedAt = time.Now()
-
-	if err := db.DB.Update(&permission).Error; err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK,
-		gin.H{"code": http.StatusOK, "data": permission, "msg": "编辑成功"})
+	g.JSON(http.StatusOK, item)
 }
 
-func (p *PermissionApiService) DetailPermission(c *gin.Context) {
+// List BasePermission
+func (b *BaseAPI) ListBasePermission(g *gin.Context) {
 
-	permission := db.Permission{}
-	if err := c.ShouldBindUri(&permission); err != nil {
-		c.JSON(http.StatusInternalServerError,
-			gin.H{"code": http.StatusUnprocessableEntity, "data": "", "msg": err.Error()})
+	list, err := b.basepermissions.List("", "", 0, 0, nil)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	basePermissionList := &v1.BasePermissionList{}
+	marshalData, err := json.Marshal(list)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	err = json.Unmarshal(marshalData, basePermissionList)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	g.JSON(http.StatusOK, basePermissionList)
+}
+
+// Create BasePermission
+func (b *BaseAPI) CreateBasePermission(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
-	// perm struct to map
-	perMap := structs.Map(permission)
-	perMap["config"] = permission.PermissionTransfer()
+	obj := v1.BasePermission{}
+	err = json.Unmarshal(rawData, &obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
 
-	c.JSON(http.StatusOK,
-		gin.H{"code": http.StatusOK, "data": perMap, "msg": ""})
+	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
 
+	unstructuredStruct := &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}
+	newObj, err := b.basepermissions.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	g.JSON(http.StatusOK, newObj)
 }

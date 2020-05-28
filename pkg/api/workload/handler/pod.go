@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/yametech/fuxi/pkg/api/common"
 	"github.com/yametech/fuxi/pkg/api/workload/template"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/remotecommand"
@@ -48,7 +49,7 @@ func (w *WorkloadsAPI) LogPod(g *gin.Context) {
 		buf,
 	)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
@@ -61,7 +62,7 @@ func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.pod.Get(namespace, name)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -71,18 +72,18 @@ func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 func (w *WorkloadsAPI) ListPod(g *gin.Context) {
 	list, err := w.pod.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	podList := &corev1.PodList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 	err = json.Unmarshal(marshalData, podList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, podList)

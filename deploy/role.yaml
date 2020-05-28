@@ -74,6 +74,10 @@ rules:
   - pages
   - forms
   - fields
+  - baseroles
+  - basepermissions
+  - basedepartments
+  - baseusers
   verbs:
   - create
   - delete

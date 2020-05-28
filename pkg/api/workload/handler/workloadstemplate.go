@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/yametech/fuxi/pkg/api/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"net/http"
 )
@@ -13,7 +14,7 @@ func (w *WorkloadsAPI) GetWorkloadsTemplate(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.workloadsTemplate.Get(namespace, name)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -23,18 +24,18 @@ func (w *WorkloadsAPI) GetWorkloadsTemplate(g *gin.Context) {
 func (w *WorkloadsAPI) ListWorkloadsTemplate(g *gin.Context) {
 	list, err := w.workloadsTemplate.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	workloadList := &v1.WorkloadsList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	err = json.Unmarshal(marshalData, workloadList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, workloadList)
