@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/yametech/fuxi/pkg/api/common"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"net/http"
 )
@@ -15,7 +16,7 @@ func (w *WorkloadsAPI) GetDeploymentScale(g *gin.Context) {
 	w.generic.SetGroupVersionResource(dyn.ResourceDeployment)
 	item, err := w.generic.RemoteGet(namespace, name, "scale")
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -28,20 +29,20 @@ func (w *WorkloadsAPI) PutDeploymentScale(g *gin.Context) {
 
 	rawData, err := g.GetRawData()
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 	pathData := make(map[string]interface{})
 	err = json.Unmarshal(rawData, &pathData)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
 	w.generic.SetGroupVersionResource(dyn.ResourceDeployment)
 	_, err = w.generic.Patch(namespace, name, pathData)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, "")

@@ -1,4 +1,4 @@
-package handler
+package common
 
 import (
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ const (
 	code   = "code"
 )
 
-func toRequestParamsError(g *gin.Context, err error) {
+func ToRequestParamsError(g *gin.Context, err error) {
 	g.JSON(
 		http.StatusBadRequest,
 		gin.H{
@@ -29,7 +29,7 @@ func toRequestParamsError(g *gin.Context, err error) {
 	)
 }
 
-func toInternalServerError(g *gin.Context, runtimeData interface{}, err error) {
+func ToInternalServerError(g *gin.Context, runtimeData interface{}, err error) {
 	g.JSON(
 		http.StatusInternalServerError,
 		gin.H{

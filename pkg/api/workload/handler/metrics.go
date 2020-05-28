@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/yametech/fuxi/pkg/api/common"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 func (w *WorkloadsAPI) Metrics(g *gin.Context) {
 	body, err := g.GetRawData()
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
@@ -22,7 +23,7 @@ func (w *WorkloadsAPI) Metrics(g *gin.Context) {
 
 	bufRaw, err := w.metrics.ProxyToPrometheus(newParams, body)
 	if err != nil {
-		toInternalServerError(g, "backend service get error", err)
+		common.ToInternalServerError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, bufRaw)
@@ -31,7 +32,7 @@ func (w *WorkloadsAPI) Metrics(g *gin.Context) {
 func (w *WorkloadsAPI) NodeMetrics(g *gin.Context) {
 	nodeMetricsList := &metrics.NodeMetricsList{}
 	if err := w.metrics.GetNodeMetricsList(nodeMetricsList); err != nil {
-		toInternalServerError(g, "backend service get error", err)
+		common.ToInternalServerError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, nodeMetricsList)
@@ -42,7 +43,7 @@ func (w *WorkloadsAPI) PodMetrics(g *gin.Context) {
 	name := g.Query("name")
 	podMetrics := &metrics.PodMetrics{}
 	if err := w.metrics.GetPodMetrics(namespace, name, podMetrics); err != nil {
-		toInternalServerError(g, "backend service get error", err)
+		common.ToInternalServerError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, podMetrics)
@@ -52,7 +53,7 @@ func (w *WorkloadsAPI) PodMetricsList(g *gin.Context) {
 	namespace := g.Query("namespace")
 	podMetricsList := &metrics.PodMetricsList{}
 	if err := w.metrics.GetPodMetricsList(namespace, podMetricsList); err != nil {
-		toInternalServerError(g, "backend service get error", err)
+		common.ToInternalServerError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, podMetricsList)

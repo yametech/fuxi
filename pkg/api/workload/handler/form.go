@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/yametech/fuxi/pkg/api/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -15,7 +16,7 @@ func (w *WorkloadsAPI) GetForm(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.form.Get(namespace, name)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -25,18 +26,18 @@ func (w *WorkloadsAPI) GetForm(g *gin.Context) {
 func (w *WorkloadsAPI) ListForm(g *gin.Context) {
 	list, err := w.form.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	formList := &v1.FormList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	err = json.Unmarshal(marshalData, formList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, formList)
@@ -46,20 +47,20 @@ func (w *WorkloadsAPI) ListForm(g *gin.Context) {
 func (w *WorkloadsAPI) CreateForm(g *gin.Context) {
 	rawData, err := g.GetRawData()
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
 	obj := v1.Form{}
 	err = json.Unmarshal(rawData, &obj)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
 	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 
@@ -68,7 +69,7 @@ func (w *WorkloadsAPI) CreateForm(g *gin.Context) {
 	}
 	newObj, err := w.form.Apply(obj.Namespace, obj.Name, unstructuredStruct)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 

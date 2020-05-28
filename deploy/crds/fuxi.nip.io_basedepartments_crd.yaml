@@ -1,0 +1,75 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: basedepartments.fuxi.nip.io
+spec:
+  group: fuxi.nip.io
+  names:
+    kind: BaseDepartment
+    listKind: BaseDepartmentList
+    plural: basedepartments
+    singular: basedepartment
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: BaseDepartment is the Schema for the basedepartments API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: BaseDepartmentSpec defines the desired state of BaseDepartment
+          properties:
+            creator:
+              type: integer
+            dept_full_id:
+              type: string
+            dept_level:
+              format: int32
+              type: integer
+            dept_name:
+              type: string
+            description:
+              type: string
+            is_delete:
+              type: boolean
+            owner_user_id:
+              format: int32
+              type: integer
+            parent_id:
+              format: int32
+              type: integer
+            role_group_id:
+              format: int32
+              type: integer
+          required:
+          - creator
+          - dept_full_id
+          - dept_level
+          - dept_name
+          - description
+          - is_delete
+          - owner_user_id
+          - parent_id
+          - role_group_id
+          type: object
+        status:
+          description: BaseDepartmentStatus defines the observed state of BaseDepartment
+          type: object
+      type: object
+  version: v1
+  versions:
+  - name: v1
+    served: true
+    storage: true

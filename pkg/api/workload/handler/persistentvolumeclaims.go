@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/yametech/fuxi/pkg/api/common"
 	"k8s.io/api/core/v1"
 	"net/http"
 )
@@ -13,7 +14,7 @@ func (w *WorkloadsAPI) GetPersistentVolumeClaims(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.persistentVolumeClaims.Get(namespace, name)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
@@ -25,7 +26,7 @@ func (w *WorkloadsAPI) DeletePersistentVolumeClaims(g *gin.Context) {
 	name := g.Param("name")
 	err := w.persistentVolumeClaims.Delete(namespace, name)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, "")
@@ -35,18 +36,18 @@ func (w *WorkloadsAPI) DeletePersistentVolumeClaims(g *gin.Context) {
 func (w *WorkloadsAPI) ListPersistentVolumeClaims(g *gin.Context) {
 	list, err := w.persistentVolumeClaims.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	persistentVolumeClaimsList := &v1.PersistentVolumeClaimList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	err = json.Unmarshal(marshalData, persistentVolumeClaimsList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, persistentVolumeClaimsList)

@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yametech/fuxi/pkg/api/common"
 	"net/http"
 	"net/url"
 	"strings"
@@ -17,18 +18,18 @@ func (w *WorkloadsAPI) ListCustomResourceDefinition(g *gin.Context) {
 	//selector := metav1.LabelSelector{MatchLabels: map[string]string{"name": "statefulsets.nuwa.nip.io"}}
 	list, err := w.customResourceDefinition.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	customResourceDefinitionList := &v1beta1.CustomResourceDefinitionList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	err = json.Unmarshal(marshalData, customResourceDefinitionList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, customResourceDefinitionList)
@@ -72,12 +73,12 @@ func (w *WorkloadsAPI) ListCustomResourceRouter(gvrString []string) ([]string, e
 func (w *WorkloadsAPI) ListGeneralCustomResourceDefinition(g *gin.Context) {
 	u, err := url.Parse(g.Request.RequestURI)
 	if err != nil {
-		toRequestParamsError(g, err)
+		common.ToRequestParamsError(g, err)
 		return
 	}
 	paths := trimPrefixSuffixSpace(strings.Split(u.Path, "/"))
 	if len(paths) < 5 {
-		toRequestParamsError(g, fmt.Errorf("request url error %s", g.Request.RequestURI))
+		common.ToRequestParamsError(g, fmt.Errorf("request url error %s", g.Request.RequestURI))
 		return
 	}
 	group := paths[2]
@@ -89,18 +90,18 @@ func (w *WorkloadsAPI) ListGeneralCustomResourceDefinition(g *gin.Context) {
 	w.generic.SetGroupVersionResource(groupVersionResource)
 	list, err := w.generic.List("", "", 0, 0, nil)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	customResourceDefinitionList := &v1beta1.CustomResourceDefinitionList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	err = json.Unmarshal(marshalData, customResourceDefinitionList)
 	if err != nil {
-		toInternalServerError(g, "", err)
+		common.ToInternalServerError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, list)
