@@ -1,15 +1,18 @@
 package workload
 
-import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/service/common"
+)
 
 // NetworkPolicy the kubernetes native resource network policy
 type NetworkPolicy struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 // NewNetworkPolicy exported
 func NewNetworkPolicy() *NetworkPolicy {
-	return &NetworkPolicy{&defaultImplWorkloadsResourceHandler{
+	return &NetworkPolicy{&common.DefaultImplWorkloadsResourceHandler{
 		dyn.ResourceNetworkPolicy,
 	}}
 }

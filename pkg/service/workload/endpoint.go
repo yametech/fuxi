@@ -1,14 +1,17 @@
 package workload
 
-import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/service/common"
+)
 
 type Endpoint struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 // NewEvent exported
 func NewEndpoint() *Endpoint {
-	return &Endpoint{&defaultImplWorkloadsResourceHandler{
+	return &Endpoint{&common.DefaultImplWorkloadsResourceHandler{
 		dyn.ResourceEndponit,
 	}}
 }

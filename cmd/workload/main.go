@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/yametech/fuxi/pkg/service/common"
 	//"log"
 	"net/http"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/yametech/fuxi/pkg/k8s/client"
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"github.com/yametech/fuxi/pkg/preinstall"
-	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
 
 	// swagger doc
@@ -50,7 +50,7 @@ func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsA
 	router := gin.Default()
 	router.Use(gin2micro.TracerWrapper)
 
-	err = workloadservice.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sClient, client.RestConf)
+	err = common.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sClient, client.RestConf)
 	if err != nil {
 		panic(err)
 	}
@@ -236,9 +236,6 @@ func main() {
 		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
 	}
 
-
-
-
 	// kubernetes RBAC
 	// #rbac.authorization.k8s.io
 	// v1
@@ -269,8 +266,6 @@ func main() {
 		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterrolebindings/:name ", ClusterRoleBindGet)
 		group.POST("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterrolebindings", workloadsAPI.Apply)
 	}
-
-
 
 	// #policy
 	// #v1beta1

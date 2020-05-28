@@ -1,16 +1,19 @@
 package workload
 
-import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/service/common"
+)
 
 // WorkloadsTemplate is fuxi.nip.io/v1 resource workloads
 type WorkloadsTemplate struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 // NewWorkloadsTemplate exported
 func NewWorkloadsTemplate() *WorkloadsTemplate {
 	return &WorkloadsTemplate{
-		&defaultImplWorkloadsResourceHandler{
+		&common.DefaultImplWorkloadsResourceHandler{
 			dyn.ResourceWorkloadsTemplate,
 		}}
 }

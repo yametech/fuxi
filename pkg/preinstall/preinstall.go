@@ -110,8 +110,8 @@ func EtcdStringFlag() cli.StringFlag {
 		Name:   "etcd_address",
 		Usage:  "etcd address for config K/V",
 		EnvVar: "ETCD_ADDRESS",
-		// Value:  "gz.nuwa.xyz:32428",
-		Value: "fuxi.io:12379",
+		Value:  "gz.nuwa.xyz:32428",
+		//Value: "fuxi.io:12379",
 	}
 }
 
@@ -263,7 +263,6 @@ func InitKubeClientFactoryResourceHandler() error {
 }
 
 func NewConfig(addr string) config.Config {
-	log.Info("start load config from etcd adddress: " + addr)
 	configure := common.NewConfigServer(addr, common.ConfigPrefix)
 	configServer := config.NewConfig()
 	if err := configServer.Load(configure); err != nil {
