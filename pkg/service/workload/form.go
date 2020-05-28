@@ -1,15 +1,18 @@
 package workload
 
-import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/service/common"
+)
 
 // Form the kubernetes native service account
 type Form struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 // NewField exported
 func NewForm() *Form {
-	return &Form{&defaultImplWorkloadsResourceHandler{
+	return &Form{&common.DefaultImplWorkloadsResourceHandler{
 		dyn.ResourceForm,
 	}}
 }

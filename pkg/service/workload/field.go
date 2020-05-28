@@ -1,15 +1,18 @@
 package workload
 
-import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/service/common"
+)
 
 // Field the kubernetes native service account
 type Field struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 // NewField exported
 func NewField() *Field {
-	return &Field{&defaultImplWorkloadsResourceHandler{
+	return &Field{&common.DefaultImplWorkloadsResourceHandler{
 		dyn.ResourceField,
 	}}
 }

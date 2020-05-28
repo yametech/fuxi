@@ -1,9 +1,11 @@
 package workload
 
+import "github.com/yametech/fuxi/pkg/service/common"
+
 type Generic struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 func NewGeneric() *Generic {
-	return &Generic{&defaultImplWorkloadsResourceHandler{}}
+	return &Generic{&common.DefaultImplWorkloadsResourceHandler{}}
 }

@@ -2,6 +2,7 @@ package workload
 
 import (
 	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/service/common"
 	"io"
 	"strconv"
 	"time"
@@ -9,7 +10,7 @@ import (
 
 // Pod doc kubernetes
 type Pod struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 func (p *Pod) Logs(
@@ -21,8 +22,8 @@ func (p *Pod) Logs(
 	tailLines int64,
 	out io.Writer,
 ) error {
-	req := sharedK8sClient.
-		clientSetV1.
+	req := common.SharedK8sClient.
+		ClientSetV1.
 		CoreV1().
 		RESTClient().
 		Get().
@@ -58,7 +59,7 @@ func (p *Pod) Logs(
 }
 
 func NewPod() *Pod {
-	return &Pod{&defaultImplWorkloadsResourceHandler{
+	return &Pod{&common.DefaultImplWorkloadsResourceHandler{
 		dyn.ResourcePod,
 	}}
 }

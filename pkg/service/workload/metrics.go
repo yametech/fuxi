@@ -3,6 +3,7 @@ package workload
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yametech/fuxi/pkg/service/common"
 	metrics "k8s.io/metrics/pkg/apis/metrics"
 )
 
@@ -23,7 +24,8 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 	}
 
 	for bodyKey, bodyValue := range bodyMap {
-		req := sharedK8sClient.clientSetV1.
+		req := common.SharedK8sClient.
+			ClientSetV1.
 			CoreV1().
 			RESTClient().
 			Get().
@@ -55,8 +57,8 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 
 func (m *Metrics) GetPodMetrics(namespace, name string, pods *metrics.PodMetrics) error {
 	uri := fmt.Sprintf("apis/metrics.k8s.io/v1beta1/%s/%s/pods", namespace, name)
-	data, err := sharedK8sClient.
-		clientSetV1.
+	data, err := common.SharedK8sClient.
+		ClientSetV1.
 		RESTClient().
 		Get().
 		AbsPath(uri).
@@ -72,8 +74,8 @@ func (m *Metrics) GetPodMetricsList(namespace string, pods *metrics.PodMetricsLi
 	if namespace != "" {
 		uri = fmt.Sprintf("apis/metrics.k8s.io/v1beta1/namespaces/%s/pods", namespace)
 	}
-	data, err := sharedK8sClient.
-		clientSetV1.
+	data, err := common.SharedK8sClient.
+		ClientSetV1.
 		RESTClient().
 		Get().
 		AbsPath(uri).
@@ -85,8 +87,8 @@ func (m *Metrics) GetPodMetricsList(namespace string, pods *metrics.PodMetricsLi
 }
 
 func (m *Metrics) GetNodeMetricsList(nodes *metrics.NodeMetricsList) error {
-	data, err := sharedK8sClient.
-		clientSetV1.
+	data, err := common.SharedK8sClient.
+		ClientSetV1.
 		RESTClient().
 		Get().
 		AbsPath("apis/metrics.k8s.io/v1beta1/nodes").

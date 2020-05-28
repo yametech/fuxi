@@ -1,16 +1,19 @@
 package workload
 
-import dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+import (
+	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/service/common"
+)
 
 // CustomResourceDefinition the kubernetes native CustomResourceDefinition
 type CustomResourceDefinition struct {
-	WorkloadsResourceHandler
+	common.WorkloadsResourceHandler
 }
 
 // NewCustomResourceDefinition exported
 func NewCustomResourceDefinition() *CustomResourceDefinition {
 	return &CustomResourceDefinition{
-		&defaultImplWorkloadsResourceHandler{
+		&common.DefaultImplWorkloadsResourceHandler{
 			dyn.ResourceCustomResourceDefinition,
 		}}
 }
