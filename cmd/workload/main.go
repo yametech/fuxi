@@ -285,6 +285,9 @@ func main() {
 		ignores := []string{
 			"fuxi.nip.io/v1/formrenders",
 			"fuxi.nip.io/v1/workloads",
+			"fuxi.nip.io/v1/fields",
+			"fuxi.nip.io/v1/forms",
+			"fuxi.nip.io/v1/pages",
 			"nuwa.nip.io/v1/statefulsets",
 		}
 		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)
@@ -329,6 +332,27 @@ func main() {
 	{
 		group.GET("/apis/fuxi.nip.io/v1/workloads", WorkloadsTemplateList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/workloads/:name", WorkloadsTemplateGet)
+	}
+
+	// Field
+	{
+		group.GET("/apis/fuxi.nip.io/v1/fields", FieldList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/fields/:name", FieldGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/fields", FieldCreate)
+	}
+
+	// Form
+	{
+		group.GET("/apis/fuxi.nip.io/v1/forms", FormList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/forms/:name", FormGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/forms", FormCreate)
+	}
+
+	// Page
+	{
+		group.GET("/apis/fuxi.nip.io/v1/pages", PageList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/pages/:name", PageGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/pages", PageCreate)
 	}
 
 	// Metrics

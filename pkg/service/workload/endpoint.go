@@ -12,6 +12,6 @@ type Endpoint struct {
 // NewEvent exported
 func NewEndpoint() *Endpoint {
 	return &Endpoint{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceEndponit,
+		dyn.ResourceEndpoint,
 	}}
 }

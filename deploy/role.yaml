@@ -71,6 +71,9 @@ rules:
   resources:
   - '*'
   - formrenders
+  - pages
+  - forms
+  - fields
   verbs:
   - create
   - delete

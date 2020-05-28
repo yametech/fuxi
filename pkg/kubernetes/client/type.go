@@ -36,9 +36,12 @@ const (
 	RoleBinding              ResourceName = "rolebindings"
 	Namespace                ResourceName = "namesapces"
 	FormRender               ResourceName = "formrenders"
-	Endponit                 ResourceName = "endpoints"
 	ClusterRoleBinding       ResourceName = "clusterrolebindings"
 	WorkloadsTemplate        ResourceName = "workloads"
+	Endpoint                 ResourceName = "endpoints"
+	Page                     ResourceName = "pages"
+	Form                     ResourceName = "forms"
+	Field                    ResourceName = "fields"
 )
 
 // GroupVersionResources describe resource collection
@@ -72,12 +75,13 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	ClusterRole:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterroles"},
 	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
 	ClusterRoleBinding:       {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterrolebindings"},
-
-	RoleBinding: {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
-	FormRender:  {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
-	Endponit:    {Group: "", Version: "v1", Resource: "endpoints"},
-
-	WorkloadsTemplate: {Group: "fuxi.nip.io", Version: "v1", Resource: "workloads"},
+	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
+	FormRender:               {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
+	Endpoint:                 {Group: "", Version: "v1", Resource: "endpoints"},
+	WorkloadsTemplate:        {Group: "fuxi.nip.io", Version: "v1", Resource: "workloads"},
+	Page:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "pages"},
+	Form:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "forms"},
+	Field:                    {Group: "fuxi.nip.io", Version: "v1", Resource: "fields"},
 }
 
 var (
@@ -110,10 +114,13 @@ var (
 	ResourceRoleBinding              = getGvr(RoleBinding)
 	ResourceNamespace                = getGvr(Namespace)
 	ResourceFormRender               = getGvr(FormRender)
-	ResourceEndponit                 = getGvr(Endponit)
-	ResourceClusterRole              = getGvr(ClusterRole)
+	ResourceEndpoint                 = getGvr(Endpoint)
 	ResourceClusterRoleBinding       = getGvr(ClusterRoleBinding)
 	ResourceWorkloadsTemplate        = getGvr(WorkloadsTemplate)
+	ResourceClusterRole              = getGvr(ClusterRole)
+	ResourcePage                     = getGvr(Page)
+	ResourceForm                     = getGvr(Form)
+	ResourceField                    = getGvr(Field)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {

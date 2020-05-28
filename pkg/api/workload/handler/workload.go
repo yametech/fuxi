@@ -40,6 +40,9 @@ type WorkloadsAPI struct {
 	metrics                  *workloadservice.Metrics
 	generic                  *workloadservice.Generic
 	formRender               *workloadservice.FormRender
+	field                    *workloadservice.Field
+	form                     *workloadservice.Form
+	page                     *workloadservice.Page
 	statefulSet1             *workloadservice.StatefulSet1
 	endpoint                 *workloadservice.Endpoint
 	clusterrole              *workloadservice.ClusterRole
@@ -76,6 +79,9 @@ func NewWorkladAPI() *WorkloadsAPI {
 		metrics:                  workloadservice.NewMetrics(),
 		generic:                  workloadservice.NewGeneric(),
 		formRender:               workloadservice.NewFormRender(),
+		field:                    workloadservice.NewField(),
+		form:                     workloadservice.NewForm(),
+		page:                     workloadservice.NewPage(),
 		statefulSet1:             workloadservice.NewStatefulSet1(),
 		endpoint:                 workloadservice.NewEndpoint(),
 		clusterrole:              workloadservice.NewClusterRole(),
