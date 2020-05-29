@@ -2,9 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"github.com/yametech/fuxi/pkg/api/common"
 	"net/http"
 	"strings"
+
+	"github.com/yametech/fuxi/pkg/api/common"
 
 	"github.com/gin-gonic/gin"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
@@ -49,6 +50,11 @@ type WorkloadsAPI struct {
 	clusterrole              *workloadservice.ClusterRole
 	clusterRoleBinding       *workloadservice.ClusterRoleBinding
 	workloadsTemplate        *workloadservice.WorkloadsTemplate
+	pipeline                 *workloadservice.Pipeline
+	pipelineRun              *workloadservice.PipelineRun
+	task                     *workloadservice.Task
+	taskrun                  *workloadservice.TaskRun
+	pipelineResource         *workloadservice.PipelineResource
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -88,6 +94,8 @@ func NewWorkladAPI() *WorkloadsAPI {
 		clusterrole:              workloadservice.NewClusterRole(),
 		clusterRoleBinding:       workloadservice.NewClusterRoleBinding(),
 		workloadsTemplate:        workloadservice.NewWorkloadsTemplate(),
+		pipeline:                 workloadservice.NewPipeline(),
+		pipelineRun:              workloadservice.NewPipelineRun(),
 	}
 }
 

@@ -12,7 +12,9 @@ type PersistentVolume struct {
 
 // NewPersistentVolume exported
 func NewPersistentVolume() *PersistentVolume {
-	return &PersistentVolume{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourcePersistentVolume,
-	}}
+	return &PersistentVolume{
+		&common.DefaultImplWorkloadsResourceHandler{
+			dyn.ResourcePersistentVolume,
+		},
+	}
 }

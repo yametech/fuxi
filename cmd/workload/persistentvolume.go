@@ -25,7 +25,6 @@ func PersistentVolumeList(g *gin.Context) { workloadsAPI.ListPersistentVolume(g)
 // @Router /workload/api/v1/persistentvolumes/{name} [get]
 func PersistentVolumeGet(g *gin.Context) { workloadsAPI.GetPersistentVolume(g) }
 
-
 // PersistentVolume doc
 // @Summary workload persistent volume get
 // @Description workload service for get a persistent volume detail

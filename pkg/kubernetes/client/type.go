@@ -46,6 +46,13 @@ const (
 	BasePermission           ResourceName = "basepermissions"
 	BaseRole                 ResourceName = "baseroles"
 	BaseUser                 ResourceName = "baseusers"
+
+	//tekton
+	Pipeline         ResourceName = "pipelines"
+	PipelineRun      ResourceName = "pipelineruns"
+	Task             ResourceName = "tasks"
+	TaskRun          ResourceName = "taskruns"
+	PipelineResource ResourceName = "pipelineresources"
 )
 
 // GroupVersionResources describe resource collection
@@ -90,6 +97,13 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	BasePermission:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basepermissions"},
 	BaseRole:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
 	BaseUser:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
+
+	// tekton.dev resource view
+	Pipeline:         {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelines"},
+	PipelineRun:      {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelineruns"},
+	Task:             {Group: "tekton.dev", Version: "v1alpha1", Resource: "tasks"},
+	TaskRun:          {Group: "tekton.dev", Version: "v1alpha1", Resource: "taskruns"},
+	PipelineResource: {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelineresources"},
 }
 
 var (
@@ -133,6 +147,11 @@ var (
 	ResourceBasePermission           = getGvr(BasePermission)
 	ResourceBaseRole                 = getGvr(BaseRole)
 	ResourceBaseUser                 = getGvr(BaseUser)
+	ResourcePieline                  = getGvr(Pipeline)
+	ResourcePipelineRun              = getGvr(PipelineRun)
+	ResourceTask                     = getGvr(Task)
+	ResourceTaskRun                  = getGvr(TaskRun)
+	ResourcePipelineResource         = getGvr(PipelineResource)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {

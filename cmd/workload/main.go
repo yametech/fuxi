@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/yametech/fuxi/pkg/service/common"
+
 	//"log"
 	"net/http"
 
@@ -289,6 +291,11 @@ func main() {
 			"fuxi.nip.io/v1/forms",
 			"fuxi.nip.io/v1/pages",
 			"nuwa.nip.io/v1/statefulsets",
+			"tekton.dev/v1alpha1/pipelines",
+			"tekton.dev/v1alpha1/pipelineruns",
+			"tekton.dev/v1alpha1/pipelineresources",
+			"tekton.dev/v1alpha1/tasks",
+			"tekton.dev/v1alpha1/taskruns",
 		}
 		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)
 		if err != nil {
@@ -379,6 +386,31 @@ func main() {
 			})
 		})
 	}
+
+	// tekton.dev
+	// v1alpha1
+	{
+		// pipeline
+		group.GET("/apis/tekton.dev/v1alpha1/pipelines", PipelineList)
+		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name", PipelineGet)
+
+		// pipelineRun
+		group.GET("/apis/tekton.dev/v1alpha1/pipelineruns", PipelineRunList)
+		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns/:name", PipelineRunGet)
+
+		// task
+		group.GET("/apis/tekton.dev/v1alpha1/tasks", TaskList)
+		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/tasks/:name", TaskGet)
+
+		// taskRun
+		group.GET("/apis/tekton.dev/v1alpha1/taskruns", TaskRunList)
+		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/taskruns/:name", TaskRunGet)
+
+		// pipelineResource
+		group.GET("/apis/tekton.dev/v1alpha1/pipelineresources", PipelineResourceList)
+		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources/:name", PipelineResourceGet)
+	}
+
 	// watch the group resource
 	{
 		group.GET("/watch", WatchStream)
