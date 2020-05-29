@@ -31,16 +31,27 @@ spec:
         spec:
           description: FormSpec defines the desired state of Form
           properties:
-            id:
-              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                Important: Run "operator-sdk generate k8s" to regenerate code after
-                modifying this file Add custom validation using kubebuilder tags:
-                https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
+            props_schema:
               type: string
             tree:
-              type: string
+              items:
+                properties:
+                  children:
+                    items: {}
+                    type: array
+                  key:
+                    type: string
+                  node_type:
+                    type: string
+                  title:
+                    type: string
+                required:
+                - children
+                type: object
+              type: array
           required:
-          - id
+          - props_schema
+          - tree
           type: object
         status:
           description: FormStatus defines the observed state of Form
