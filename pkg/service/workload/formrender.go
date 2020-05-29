@@ -12,5 +12,5 @@ type FormRender struct {
 // NewFormRender exported
 func NewFormRender() *FormRender {
 	return &FormRender{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceFormRender,}}
+		dyn.ResourceFormRender}}
 }
