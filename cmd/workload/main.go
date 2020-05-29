@@ -288,6 +288,10 @@ func main() {
 			"fuxi.nip.io/v1/fields",
 			"fuxi.nip.io/v1/forms",
 			"fuxi.nip.io/v1/pages",
+			"fuxi.nip.io/v1/basedepartments",
+			"fuxi.nip.io/v1/basepermissions",
+			"fuxi.nip.io/v1/baseroles",
+			"fuxi.nip.io/v1/baseusers",
 			"nuwa.nip.io/v1/statefulsets",
 		}
 		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)

@@ -7,13 +7,17 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type DataNode struct {
+	Title    string     `json:"title,omitempty"`
+	Key      string     `json:"key,omitempty"`
+	NodeType string     `json:"node_type,omitempty"`
+	Children []DataNode `json:"children, omitempty"`
+}
+
 // FormSpec defines the desired state of Form
 type FormSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
-	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
-	ID   string `json:"id"`
-	Tree string `json:"tree,omitempty"`
+	Tree        []DataNode `json:"tree, omitempty"`
+	PropsSchema string     `json:"props_schema, omitempty"`
 }
 
 // FormStatus defines the observed state of Form
