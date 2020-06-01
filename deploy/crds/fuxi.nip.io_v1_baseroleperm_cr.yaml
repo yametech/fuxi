@@ -1,7 +1,0 @@
-apiVersion: fuxi.nip.io/v1
-kind: BaseRolePerm
-metadata:
-  name: example-baseroleperm
-spec:
-  # Add fields here
-  size: 3
