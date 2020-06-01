@@ -2,23 +2,13 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/yametech/fuxi/pkg/service/common"
-
-	//"log"
 	"net/http"
-
-	"github.com/afex/hystrix-go/hystrix"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
 	"github.com/micro/go-micro/web"
-	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	"github.com/yametech/fuxi/pkg/api/workload/handler"
-	"github.com/yametech/fuxi/pkg/k8s/client"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"github.com/yametech/fuxi/pkg/preinstall"
-	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
-
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
@@ -40,24 +30,13 @@ const (
 )
 
 func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsAPI) {
-	service, _, err := preinstall.InitApi(50, name, ver, "")
+	service, _, apiInstallConfigure, err := preinstall.InitApi(50, name, ver, "")
 	if err != nil {
 		panic(err)
 	}
-
-	hystrix.DefaultTimeout = 5000
-	wrapper := hystrixplugin.NewClientWrapper()
-	_ = wrapper
-
 	router := gin.Default()
-	router.Use(gin2micro.TracerWrapper)
-
-	err = common.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sClient, client.RestConf)
-	if err != nil {
-		panic(err)
-	}
-
-	handler.CreateSharedSessionManager(client.K8sClient, client.RestConf)
+	common.SharedK8sClient = apiInstallConfigure
+	handler.CreateSharedSessionManager(apiInstallConfigure.ClientV1, apiInstallConfigure.RestConfig)
 
 	return service, router, router.Group("/workload"), handler.NewWorkladAPI()
 }
@@ -343,6 +322,7 @@ func main() {
 	{
 		group.GET("/apis/fuxi.nip.io/v1/workloads", WorkloadsTemplateList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/workloads/:name", WorkloadsTemplateGet)
+		group.POST("/apis/fuxi.nip.io/v1/workloads", WorkloadsTemplateCreate)
 	}
 
 	// Field
@@ -383,7 +363,7 @@ func main() {
 				"lensTheme":         "",
 				"userName":          "admin",
 				"token":             "",
-				"allowedNamespaces": "[]",
+				"allowedNamespaces": "[dxp,xxx,yyy]",
 				"isClusterAdmin":    true,
 				"chartEnable":       true,
 				"kubectlAccess":     true,

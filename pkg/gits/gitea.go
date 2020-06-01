@@ -7,7 +7,7 @@ type GiteaClient struct {
 	UserName string
 }
 
-//NewGiteaClient new a gitea client
+//NewGiteaClient new a gitea clientv2
 func NewGiteaClient(gitArgs *GitArgs) *GiteaClient {
 	client := gitea.NewClient(gitArgs.Url, gitArgs.ApiToken)
 	return &GiteaClient{Client: client, UserName: gitArgs.Username}

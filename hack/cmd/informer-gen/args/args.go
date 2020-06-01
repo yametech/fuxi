@@ -42,10 +42,10 @@ func NewDefaults() (*args.GeneratorArgs, *CustomArgs) {
 	genericArgs.CustomArgs = customArgs
 
 	if pkg := codegenutil.CurrentPackage(); len(pkg) != 0 {
-		genericArgs.OutputPackagePath = path.Join(pkg, "pkg/client/informers")
-		customArgs.VersionedClientSetPackage = path.Join(pkg, "pkg/client/clientset/versioned")
-		customArgs.InternalClientSetPackage = path.Join(pkg, "pkg/client/clientset/internalversion")
-		customArgs.ListersPackage = path.Join(pkg, "pkg/client/listers")
+		genericArgs.OutputPackagePath = path.Join(pkg, "pkg/clientv2/informers")
+		customArgs.VersionedClientSetPackage = path.Join(pkg, "pkg/clientv2/clientset/versioned")
+		customArgs.InternalClientSetPackage = path.Join(pkg, "pkg/clientv2/clientset/internalversion")
+		customArgs.ListersPackage = path.Join(pkg, "pkg/clientv2/listers")
 	}
 
 	return genericArgs, customArgs

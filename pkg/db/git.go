@@ -6,13 +6,13 @@ import (
 )
 
 type Git struct {
-	gorm.Model
+	//gorm.Model
 	ops.Git
 }
 
-func AutoMigrateGit() {
-	DB.AutoMigrate(&Git{})
-}
+//func AutoMigrateGit() {
+//	DB.AutoMigrate(&Git{})
+//}
 
 //FindGitByUserId find a git detail  by userid
 func FindGitByUserId(uid int32) (*Git, error) {

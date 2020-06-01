@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// client-gen makes the individual typed clients using gengo.
+// clientv2-gen makes the individual typed clients using gengo.
 package main
 
 import (
@@ -35,12 +35,12 @@ func main() {
 	genericArgs, customArgs := generatorargs.NewDefaults()
 
 	// Override defaults.
-	// TODO: move this out of client-gen
+	// TODO: move this out of clientv2-gen
 	genericArgs.GoHeaderFilePath = filepath.Join(args.DefaultSourceTree(), util.BoilerplatePath())
-	genericArgs.OutputPackagePath = "k8s.io/kubernetes/pkg/client/clientset_generated/"
+	genericArgs.OutputPackagePath = "k8s.io/kubernetes/pkg/clientv2/clientset_generated/"
 
 	genericArgs.AddFlags(pflag.CommandLine)
-	customArgs.AddFlags(pflag.CommandLine, "k8s.io/kubernetes/pkg/apis") // TODO: move this input path out of client-gen
+	customArgs.AddFlags(pflag.CommandLine, "k8s.io/kubernetes/pkg/apis") // TODO: move this input path out of clientv2-gen
 	flag.Set("logtostderr", "true")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()

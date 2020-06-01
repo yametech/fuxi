@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -13,6 +13,6 @@ type Page struct {
 // NewPage exported
 func NewPage() *Page {
 	return &Page{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourcePage,
+		types.ResourcePage,
 	}}
 }

@@ -34,9 +34,9 @@ func main() {
 
 	group := router.Group("/ns")
 	//hystrix.DefaultTimeout = 5000
-	//sClient := hystrixplugin.NewClientWrapper()(service.Options().Service.Client())
+	//sClient := hystrixplugin.NewClientWrapper()(service.Options().Service.Interface())
 	//sClient.Init(
-	//	client.Retries(3),
+	//	clientv2.Retries(3),
 	//)
 	//
 	//ns := handler.New(sClient)

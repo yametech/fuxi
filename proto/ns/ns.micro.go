@@ -31,7 +31,7 @@ var _ context.Context
 var _ client.Option
 var _ server.Option
 
-// Client API for Ns service
+// Interface API for Ns service
 
 type NsService interface {
 	CreateNameSpace(ctx context.Context, in *NS, opts ...client.CallOption) (*NSResponse, error)

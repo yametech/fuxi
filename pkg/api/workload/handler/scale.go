@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"net/http"
 )
 
@@ -13,7 +13,7 @@ func (w *WorkloadsAPI) GetDeploymentScale(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
 
-	w.generic.SetGroupVersionResource(dyn.ResourceDeployment)
+	w.generic.SetGroupVersionResource(types.ResourceDeployment)
 	item, err := w.generic.RemoteGet(namespace, name, "scale")
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
@@ -39,7 +39,7 @@ func (w *WorkloadsAPI) PutDeploymentScale(g *gin.Context) {
 		return
 	}
 
-	w.generic.SetGroupVersionResource(dyn.ResourceDeployment)
+	w.generic.SetGroupVersionResource(types.ResourceDeployment)
 	_, err = w.generic.Patch(namespace, name, pathData)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)

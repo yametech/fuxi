@@ -88,7 +88,7 @@ var _ reconcile.Reconciler = &ReconcileNodeLiveness{}
 
 // ReconcileNodeLiveness reconciles a NodeLiveness object
 type ReconcileNodeLiveness struct {
-	// This client, initialized using mgr.Client() above, is a split client
+	// This clientv2, initialized using mgr.Interface() above, is a split clientv2
 	// that reads objects from the cache and writes to the apiserver
 	client client.Client
 	scheme *runtime.Scheme
@@ -129,10 +129,10 @@ func (r *ReconcileNodeLiveness) Reconcile(request reconcile.Request) (reconcile.
 	//
 	//// Check if this Pod already exists
 	//found := &corev1.Pod{}
-	//err = r.client.Get(context.TODO(), types.NamespacedName{Name: pod.Name, Namespace: pod.Namespace}, found)
+	//err = r.clientv2.Get(context.TODO(), types.NamespacedName{Name: pod.Name, Namespace: pod.Namespace}, found)
 	//if err != nil && errors.IsNotFound(err) {
 	//	reqLogger.Info("Creating a new Pod", "Pod.Namespace", pod.Namespace, "Pod.Name", pod.Name)
-	//	err = r.client.Create(context.TODO(), pod)
+	//	err = r.clientv2.Create(context.TODO(), pod)
 	//	if err != nil {
 	//		return reconcile.Result{}, err
 	//	}

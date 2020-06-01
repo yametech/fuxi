@@ -110,7 +110,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
         &$.${},
     $end$
 	)
-    // AddToGroupVersion allows the serialization of client types like ListOptions.
+    // AddToGroupVersion allows the serialization of clientv2 types like ListOptions.
 	$.addToGroupVersion|raw$(scheme, SchemeGroupVersion)
 	return nil
 }

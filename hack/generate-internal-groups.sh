@@ -47,7 +47,7 @@ EXT_APIS_PKG="$4"
 GROUPS_WITH_VERSIONS="$5"
 shift 5
 
-go install ./"$(dirname "${0}")"/cmd/{defaulter-gen,conversion-gen,client-gen,lister-gen,informer-gen,deepcopy-gen,openapi-gen}
+go install ./"$(dirname "${0}")"/cmd/{defaulter-gen,conversion-gen,clientv2-gen,lister-gen,informer-gen,deepcopy-gen,openapi-gen}
 
 function codegen::join() { local IFS="$1"; shift; echo "$*"; }
 

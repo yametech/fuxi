@@ -36,10 +36,10 @@ func main() {
 	// Override defaults.
 	// TODO: move out of informer-gen
 	genericArgs.GoHeaderFilePath = filepath.Join(args.DefaultSourceTree(), util.BoilerplatePath())
-	genericArgs.OutputPackagePath = "k8s.io/kubernetes/pkg/client/informers/informers_generated"
-	customArgs.VersionedClientSetPackage = "k8s.io/kubernetes/pkg/client/clientset_generated/clientset"
-	customArgs.InternalClientSetPackage = "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
-	customArgs.ListersPackage = "k8s.io/kubernetes/pkg/client/listers"
+	genericArgs.OutputPackagePath = "k8s.io/kubernetes/pkg/clientv2/informers/informers_generated"
+	customArgs.VersionedClientSetPackage = "k8s.io/kubernetes/pkg/clientv2/clientset_generated/clientset"
+	customArgs.InternalClientSetPackage = "k8s.io/kubernetes/pkg/clientv2/clientset_generated/internalclientset"
+	customArgs.ListersPackage = "k8s.io/kubernetes/pkg/clientv2/listers"
 
 	genericArgs.AddFlags(pflag.CommandLine)
 	customArgs.AddFlags(pflag.CommandLine)

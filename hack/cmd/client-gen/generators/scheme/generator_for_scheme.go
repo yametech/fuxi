@@ -167,9 +167,9 @@ var localSchemeBuilder = $.runtimeSchemeBuilder|raw${
 // of clientsets, like in:
 //
 //   import (
-//     "k8s.io/client-go/kubernetes"
-//     clientsetscheme "k8s.io/client-go/kubernetes/scheme"
-//     aggregatorclientsetscheme "k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset/scheme"
+//     "k8s.io/clientv2-go/kubernetes"
+//     clientsetscheme "k8s.io/clientv2-go/kubernetes/scheme"
+//     aggregatorclientsetscheme "k8s.io/kube-aggregator/pkg/clientv2/clientset_generated/clientset/scheme"
 //   )
 //
 //   kclientset, _ := kubernetes.NewForConfig(c)

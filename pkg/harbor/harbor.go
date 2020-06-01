@@ -2,12 +2,12 @@ package harbor
 
 import "github.com/go-resty/resty/v2"
 
-//HarborClient a harbor client
+//HarborClient a harbor clientv2
 type HarborClient struct {
 	Client *resty.Client
 }
 
-//NewHarborClient new a harbor client
+//NewHarborClient new a harbor clientv2
 func NewHarborClient(host, userName, passWord string) *HarborClient {
 	client := resty.New()
 	client.HostURL = host

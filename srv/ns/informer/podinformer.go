@@ -6,8 +6,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/yametech/fuxi/pkg/db"
 
-	"github.com/yametech/fuxi/pkg/k8s/client"
-	kubeclient "github.com/yametech/fuxi/pkg/k8s/client"
+	kubeclient "github.com/yametech/fuxi/pkg/kubernetes/clientv1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kubeinformers "k8s.io/client-go/informers"
@@ -21,7 +20,7 @@ type PodInformer struct {
 }
 
 func NewPodInformer() *PodInformer {
-	informerFactory := kubeinformers.NewSharedInformerFactoryWithOptions(client.K8sClient, 0,
+	informerFactory := kubeinformers.NewSharedInformerFactoryWithOptions(kubeclient.K8sClient, 0,
 		kubeinformers.WithTweakListOptions(func(listOption *metav1.ListOptions) {
 			listOption.AllowWatchBookmarks = true
 		}))

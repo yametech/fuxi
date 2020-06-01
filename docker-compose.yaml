@@ -3,7 +3,7 @@ version: '3.1'
 services:
   etcd:
     image: quay.io/coreos/etcd:latest
-    command: etcd -name etcd1 -advertise-client-urls=http://0.0.0.0:2379  -listen-client-urls=http://0.0.0.0:2379 -initial-cluster-state new
+    command: etcd -name etcd1 -advertise-clientv2-urls=http://0.0.0.0:2379  -listen-clientv2-urls=http://0.0.0.0:2379 -initial-cluster-state new
     ports:
       - "2379:2379"
     volumes:

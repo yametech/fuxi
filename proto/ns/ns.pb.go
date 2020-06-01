@@ -270,7 +270,7 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for Ns service
+// Interface API for Ns service
 
 type NsClient interface {
 	CreateNameSpace(ctx context.Context, in *NS, opts ...grpc.CallOption) (*NSResponse, error)

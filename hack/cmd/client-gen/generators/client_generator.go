@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package generators has the generators for the client-gen utility.
+// Package generators has the generators for the clientv2-gen utility.
 package generators
 
 import (
@@ -146,7 +146,7 @@ func packageForGroup(gv clientgentypes.GroupVersion, typeList []*types.Type, cli
 				// Always generate a "doc.go" file.
 				generator.DefaultGen{OptionalName: "doc"},
 			}
-			// Since we want a file per type that we generate a client for, we
+			// Since we want a file per type that we generate a clientv2 for, we
 			// have to provide a function for this.
 			for _, t := range typeList {
 				generators = append(generators, &genClientForType{
@@ -229,7 +229,7 @@ func packageForClientset(customArgs *clientgenargs.CustomArgs, clientsetPackage 
 func packageForScheme(customArgs *clientgenargs.CustomArgs, clientsetPackage string, srcTreePath string, groupGoNames map[clientgentypes.GroupVersion]string, boilerplate []byte) generator.Package {
 	schemePackage := filepath.Join(clientsetPackage, "scheme")
 
-	// create runtime.Registry for internal client because it has to know about group versions
+	// create runtime.Registry for internal clientv2 because it has to know about group versions
 	internalClient := false
 NextGroup:
 	for _, group := range customArgs.Groups {
@@ -315,7 +315,7 @@ func applyGroupOverrides(universe types.Universe, customArgs *clientgenargs.Cust
 	customArgs.Groups = newGroups
 }
 
-// Packages makes the client package definition.
+// Packages makes the clientv2 package definition.
 func Packages(context *generator.Context, arguments *args.GeneratorArgs) generator.Packages {
 	boilerplate, err := arguments.LoadGoBoilerplate()
 	if err != nil {

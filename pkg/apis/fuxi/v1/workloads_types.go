@@ -15,7 +15,6 @@ type WorkloadsSpec struct {
 	// Workloads ResourceType [Deployment,Statefulset...]
 	AppName           *string `json:"appName"`
 	ResourceType      *string `json:"resourceType"`
-	GenerateTimestamp *int64  `json:"generateTimestamp"`
 	Metadata          *string `json:"metadata"`
 }
 

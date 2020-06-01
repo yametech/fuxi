@@ -31,7 +31,7 @@ import (
 
 func PackageForGroup(gv clientgentypes.GroupVersion, typeList []*types.Type, clientsetPackage string, groupPackageName string, groupGoName string, inputPackage string, boilerplate []byte) generator.Package {
 	outputPackage := filepath.Join(clientsetPackage, "typed", strings.ToLower(groupPackageName), strings.ToLower(gv.Version.NonEmpty()), "fake")
-	// TODO: should make this a function, called by here and in client-generator.go
+	// TODO: should make this a function, called by here and in clientv2-generator.go
 	realClientPackage := filepath.Join(clientsetPackage, "typed", strings.ToLower(groupPackageName), strings.ToLower(gv.Version.NonEmpty()))
 	return &generator.DefaultPackage{
 		PackageName: "fake",
@@ -47,7 +47,7 @@ func PackageForGroup(gv clientgentypes.GroupVersion, typeList []*types.Type, cli
 				// Always generate a "doc.go" file.
 				generator.DefaultGen{OptionalName: "doc"},
 			}
-			// Since we want a file per type that we generate a client for, we
+			// Since we want a file per type that we generate a clientv2 for, we
 			// have to provide a function for this.
 			for _, t := range typeList {
 				generators = append(generators, &genFakeForType{

@@ -1,17 +1,12 @@
 package main
 
 import (
-	"github.com/afex/hystrix-go/hystrix"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
 	"github.com/micro/go-micro/web"
-	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	"github.com/yametech/fuxi/pkg/api/base/handler"
-	"github.com/yametech/fuxi/pkg/k8s/client"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"github.com/yametech/fuxi/pkg/preinstall"
 	"github.com/yametech/fuxi/pkg/service/common"
-	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
 
 	// swagger doc
 	file "github.com/swaggo/files"
@@ -34,23 +29,12 @@ const (
 )
 
 func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.BaseAPI) {
-	service, _, err := preinstall.InitApi(50, name, ver, "")
+	service, _, apiInstallConfigure, err := preinstall.InitApi(50, name, ver, "")
 	if err != nil {
 		panic(err)
 	}
-
-	hystrix.DefaultTimeout = 5000
-	wrapper := hystrixplugin.NewClientWrapper()
-	_ = wrapper
-
 	router := gin.Default()
-	router.Use(gin2micro.TracerWrapper)
-
-	err = common.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sClient, client.RestConf)
-	if err != nil {
-		panic(err)
-	}
-
+	common.SharedK8sClient = apiInstallConfigure
 	return service, router, router.Group("/base"), handler.NewBaseAPi()
 }
 

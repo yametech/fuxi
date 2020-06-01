@@ -26,7 +26,7 @@ import (
 	"k8s.io/gengo/types"
 )
 
-// genExpansion produces a file for a group client, e.g. ExtensionsClient for the extension group.
+// genExpansion produces a file for a group clientv2, e.g. ExtensionsClient for the extension group.
 type genExpansion struct {
 	generator.DefaultGen
 	groupPackagePath string

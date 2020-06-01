@@ -29,13 +29,13 @@ import (
 
 var DefaultInputDirs = []string{}
 
-// ClientGenArgs is a wrapper for arguments to client-gen.
+// ClientGenArgs is a wrapper for arguments to clientv2-gen.
 type CustomArgs struct {
 	// A sorted list of group versions to generate. For each of them the package path is found
 	// in GroupVersionToInputPath.
 	Groups []types.GroupVersions
 
-	// Overrides for which types should be included in the client.
+	// Overrides for which types should be included in the clientv2.
 	IncludedTypesOverrides map[types.GroupVersion][]string
 
 	// ClientsetName is the name of the clientset to be generated. It's
@@ -47,7 +47,7 @@ type CustomArgs struct {
 	// types along with the clientset. It's populated from command-line
 	// arguments.
 	ClientsetOnly bool
-	// FakeClient determines if client-gen generates the fake clients.
+	// FakeClient determines if clientv2-gen generates the fake clients.
 	FakeClient bool
 }
 
@@ -63,7 +63,7 @@ func NewDefaults() (*args.GeneratorArgs, *CustomArgs) {
 	genericArgs.InputDirs = DefaultInputDirs
 
 	if pkg := codegenutil.CurrentPackage(); len(pkg) != 0 {
-		genericArgs.OutputPackagePath = path.Join(pkg, "pkg/client/clientset")
+		genericArgs.OutputPackagePath = path.Join(pkg, "pkg/clientv2/clientset")
 	}
 
 	return genericArgs, customArgs
@@ -71,13 +71,13 @@ func NewDefaults() (*args.GeneratorArgs, *CustomArgs) {
 
 func (ca *CustomArgs) AddFlags(fs *pflag.FlagSet, inputBase string) {
 	gvsBuilder := NewGroupVersionsBuilder(&ca.Groups)
-	pflag.Var(NewGVPackagesValue(gvsBuilder, nil), "input", "group/versions that client-gen will generate clients for. At most one version per group is allowed. Specified in the format \"group1/version1,group2/version2...\".")
-	pflag.Var(NewGVTypesValue(&ca.IncludedTypesOverrides, []string{}), "included-types-overrides", "list of group/version/type for which client should be generated. By default, client is generated for all types which have genclient in types.go. This overrides that. For each groupVersion in this list, only the types mentioned here will be included. The default check of genclient will be used for other group versions.")
+	pflag.Var(NewGVPackagesValue(gvsBuilder, nil), "input", "group/versions that clientv2-gen will generate clients for. At most one version per group is allowed. Specified in the format \"group1/version1,group2/version2...\".")
+	pflag.Var(NewGVTypesValue(&ca.IncludedTypesOverrides, []string{}), "included-types-overrides", "list of group/version/type for which clientv2 should be generated. By default, clientv2 is generated for all types which have genclient in types.go. This overrides that. For each groupVersion in this list, only the types mentioned here will be included. The default check of genclient will be used for other group versions.")
 	pflag.Var(NewInputBasePathValue(gvsBuilder, inputBase), "input-base", "base path to look for the api group.")
 	pflag.StringVarP(&ca.ClientsetName, "clientset-name", "n", ca.ClientsetName, "the name of the generated clientset package.")
 	pflag.StringVarP(&ca.ClientsetAPIPath, "clientset-api-path", "", ca.ClientsetAPIPath, "the value of default API HTTP path, starting with / and without trailing /.")
-	pflag.BoolVar(&ca.ClientsetOnly, "clientset-only", ca.ClientsetOnly, "when set, client-gen only generates the clientset shell, without generating the individual typed clients")
-	pflag.BoolVar(&ca.FakeClient, "fake-clientset", ca.FakeClient, "when set, client-gen will generate the fake clientset that can be used in tests")
+	pflag.BoolVar(&ca.ClientsetOnly, "clientset-only", ca.ClientsetOnly, "when set, clientv2-gen only generates the clientset shell, without generating the individual typed clients")
+	pflag.BoolVar(&ca.FakeClient, "fake-clientset", ca.FakeClient, "when set, clientv2-gen will generate the fake clientset that can be used in tests")
 
 	// support old flags
 	fs.SetNormalizeFunc(mapFlagName("clientset-path", "output-package", fs.GetNormalizeFunc()))

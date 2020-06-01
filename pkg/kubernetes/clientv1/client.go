@@ -1,4 +1,4 @@
-package client
+package clientv1
 
 import (
 	"time"
@@ -18,12 +18,6 @@ const (
 	defaultBurst = 1e6
 	// full resyc cache resource time
 	defaultResyncPeriod = 30 * time.Second
-)
-
-var (
-	K8sClient          *kubernetes.Clientset
-	RestConf           *rest.Config
-	K8sResourceHandler *ResourceHandler
 )
 
 func BuildClient(master string, configV1 clientcmdapiv1.Config) (*kubernetes.Clientset, *rest.Config, error) {

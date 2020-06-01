@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -12,5 +12,5 @@ type CronJob struct {
 
 // NewCronJob exported
 func NewCronJob() *CronJob {
-	return &CronJob{&common.DefaultImplWorkloadsResourceHandler{dyn.ResourceCronJobs}}
+	return &CronJob{&common.DefaultImplWorkloadsResourceHandler{types.ResourceCronJobs}}
 }

@@ -28,7 +28,7 @@ import (
 	"k8s.io/code-generator/cmd/client-gen/path"
 )
 
-// genGroup produces a file for a group client, e.g. ExtensionsClient for the extension group.
+// genGroup produces a file for a group clientv2, e.g. ExtensionsClient for the extension group.
 type genGroup struct {
 	generator.DefaultGen
 	outputPackage string
@@ -98,10 +98,10 @@ func (g *genGroup) GenerateType(c *generator.Context, t *types.Type, w io.Writer
 		"apiPath":                        apiPath(g.group),
 		"schemaGroupVersion":             c.Universe.Type(types.Name{Package: "k8s.io/apimachinery/pkg/runtime/schema", Name: "GroupVersion"}),
 		"runtimeAPIVersionInternal":      c.Universe.Variable(types.Name{Package: "k8s.io/apimachinery/pkg/runtime", Name: "APIVersionInternal"}),
-		"restConfig":                     c.Universe.Type(types.Name{Package: "k8s.io/client-go/rest", Name: "Config"}),
-		"restDefaultKubernetesUserAgent": c.Universe.Function(types.Name{Package: "k8s.io/client-go/rest", Name: "DefaultKubernetesUserAgent"}),
-		"restRESTClientInterface":        c.Universe.Type(types.Name{Package: "k8s.io/client-go/rest", Name: "Interface"}),
-		"restRESTClientFor":              c.Universe.Function(types.Name{Package: "k8s.io/client-go/rest", Name: "RESTClientFor"}),
+		"restConfig":                     c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "Config"}),
+		"restDefaultKubernetesUserAgent": c.Universe.Function(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "DefaultKubernetesUserAgent"}),
+		"restRESTClientInterface":        c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "Interface"}),
+		"restRESTClientFor":              c.Universe.Function(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "RESTClientFor"}),
 		"SchemeGroupVersion":             c.Universe.Variable(types.Name{Package: path.Vendorless(g.inputPackage), Name: "SchemeGroupVersion"}),
 	}
 	sw.Do(groupInterfaceTemplate, m)
@@ -169,11 +169,11 @@ func NewForConfig(c *$.restConfig|raw$) (*$.GroupGoName$$.Version$Client, error)
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
 	}
-	client, err := $.restRESTClientFor|raw$(&config)
+	clientv2, err := $.restRESTClientFor|raw$(&config)
 	if err != nil {
 		return nil, err
 	}
-	return &$.GroupGoName$$.Version$Client{client}, nil
+	return &$.GroupGoName$$.Version$Client{clientv2}, nil
 }
 `
 
@@ -181,17 +181,17 @@ var newClientForConfigOrDieTemplate = `
 // NewForConfigOrDie creates a new $.GroupGoName$$.Version$Client for the given config and
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *$.restConfig|raw$) *$.GroupGoName$$.Version$Client {
-	client, err := NewForConfig(c)
+	clientv2, err := NewForConfig(c)
 	if err != nil {
 		panic(err)
 	}
-	return client
+	return clientv2
 }
 `
 
 var getRESTClient = `
 // RESTClient returns a RESTClient that is used to communicate
-// with API server by this client implementation.
+// with API server by this clientv2 implementation.
 func (c *$.GroupGoName$$.Version$Client) RESTClient() $.restRESTClientInterface|raw$ {
 	if c == nil {
 		return nil

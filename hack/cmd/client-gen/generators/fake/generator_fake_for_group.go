@@ -29,7 +29,7 @@ import (
 	"k8s.io/code-generator/cmd/client-gen/generators/util"
 )
 
-// genFakeForGroup produces a file for a group client, e.g. ExtensionsClient for the extension group.
+// genFakeForGroup produces a file for a group clientv2, e.g. ExtensionsClient for the extension group.
 type genFakeForGroup struct {
 	generator.DefaultGen
 	outputPackage     string
@@ -75,9 +75,9 @@ func (g *genFakeForGroup) GenerateType(c *generator.Context, t *types.Type, w io
 	m := map[string]interface{}{
 		"GroupGoName":         g.groupGoName,
 		"Version":             namer.IC(g.version),
-		"Fake":                c.Universe.Type(types.Name{Package: "k8s.io/client-go/testing", Name: "Fake"}),
-		"RESTClientInterface": c.Universe.Type(types.Name{Package: "k8s.io/client-go/rest", Name: "Interface"}),
-		"RESTClient":          c.Universe.Type(types.Name{Package: "k8s.io/client-go/rest", Name: "RESTClient"}),
+		"Fake":                c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/testing", Name: "Fake"}),
+		"RESTClientInterface": c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "Interface"}),
+		"RESTClient":          c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "RESTClient"}),
 	}
 
 	sw.Do(groupClientTemplate, m)
@@ -122,7 +122,7 @@ func (c *Fake$.GroupGoName$$.Version$) $.type|publicPlural$() $.realClientPackag
 
 var getRESTClient = `
 // RESTClient returns a RESTClient that is used to communicate
-// with API server by this client implementation.
+// with API server by this clientv2 implementation.
 func (c *Fake$.GroupGoName$$.Version$) RESTClient() $.RESTClientInterface|raw$ {
 	var ret *$.RESTClient|raw$
 	return ret

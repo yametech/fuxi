@@ -21,7 +21,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
-	kubeclient "github.com/yametech/fuxi/pkg/k8s/client"
+	kubeclient "github.com/yametech/fuxi/pkg/kubernetes/clientv1"
 	"github.com/yametech/fuxi/pkg/service/ops/pods"
 	"github.com/yametech/fuxi/pkg/tekton"
 	corev1 "k8s.io/api/core/v1"

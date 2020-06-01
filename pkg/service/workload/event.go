@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -12,6 +12,6 @@ type Event struct {
 // NewEvent exported
 func NewEvent() *Event {
 	return &Event{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceEvent,
+		types.ResourceEvent,
 	}}
 }

@@ -30,7 +30,7 @@ func NewOption(opts ...Options) *Option {
 	return opt
 }
 
-// WithOptionsCreateClient use a one or more option create mysql client
+// WithOptionsCreateClient use a one or more option create mysql clientv2
 func WithOptionsCreateClient(mo *Option) (*Client, error) {
 	db, err := gorm.Open("mysql",
 		fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",

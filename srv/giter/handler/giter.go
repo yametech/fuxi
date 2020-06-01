@@ -10,14 +10,14 @@ import (
 
 type Giter struct{}
 
-// Call is a single request handler called via client.Call or the generated client code
+// Call is a single request handler called via clientv2.Call or the generated clientv2 code
 func (e *Giter) Call(ctx context.Context, req *giter.Request, rsp *giter.Response) error {
 	log.Log("Received Giter.Call request")
 	rsp.Msg = "Hello " + req.Name
 	return nil
 }
 
-// Stream is a server side stream handler called via client.Stream or the generated client code
+// Stream is a server side stream handler called via clientv2.Stream or the generated clientv2 code
 func (e *Giter) Stream(ctx context.Context, req *giter.StreamingRequest, stream giter.Giter_StreamStream) error {
 	log.Logf("Received Giter.Stream request with count: %d", req.Count)
 
@@ -33,7 +33,7 @@ func (e *Giter) Stream(ctx context.Context, req *giter.StreamingRequest, stream 
 	return nil
 }
 
-// PingPong is a bidirectional stream handler called via client.Stream or the generated client code
+// PingPong is a bidirectional stream handler called via clientv2.Stream or the generated clientv2 code
 func (e *Giter) PingPong(ctx context.Context, stream giter.Giter_PingPongStream) error {
 	for {
 		req, err := stream.Recv()

@@ -25,7 +25,6 @@ func (b *BaseAPI) GetBaseDepartment(g *gin.Context) {
 
 // List BaseDepartment
 func (b *BaseAPI) ListBaseDepartment(g *gin.Context) {
-
 	list, err := b.basedepartments.List("", "", 0, 0, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)

@@ -72,7 +72,7 @@ func (a sortableSliceOfVersions) Less(i, j int) bool {
 	return strings.Contains(viRemaining, "alpha")
 }
 
-// Determine the default version among versions. If a user calls a group client
+// Determine the default version among versions. If a user calls a group clientv2
 // without specifying the version (e.g., c.CoreV1(), instead of c.CoreV1()), the
 // default version will be returned.
 func defaultVersion(versions []PackageVersion) Version {

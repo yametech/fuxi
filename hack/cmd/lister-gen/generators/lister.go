@@ -62,7 +62,7 @@ func DefaultNameSystem() string {
 	return "public"
 }
 
-// Packages makes the client package definition.
+// Packages makes the clientv2 package definition.
 func Packages(context *generator.Context, arguments *args.GeneratorArgs) generator.Packages {
 	boilerplate, err := arguments.LoadGoBoilerplate()
 	if err != nil {
@@ -216,7 +216,7 @@ func (g *listerGenerator) Imports(c *generator.Context) (imports []string) {
 	imports = append(imports, "k8s.io/apimachinery/pkg/api/errors")
 	imports = append(imports, "k8s.io/apimachinery/pkg/labels")
 	// for Indexer
-	imports = append(imports, "k8s.io/client-go/tools/cache")
+	imports = append(imports, "k8s.io/clientv2-go/tools/cache")
 	return
 }
 

@@ -31,7 +31,7 @@ var _ context.Context
 var _ client.Option
 var _ server.Option
 
-// Client API for Ops service
+// Interface API for Ops service
 
 type OpsService interface {
 	ListRepos(ctx context.Context, in *RepoRequest, opts ...client.CallOption) (*RepoResponse, error)

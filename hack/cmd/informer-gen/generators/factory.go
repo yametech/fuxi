@@ -103,7 +103,7 @@ var sharedInformerFactoryStruct = `
 type SharedInformerOption func(*sharedInformerFactory) *sharedInformerFactory
 
 type sharedInformerFactory struct {
-	client {{.clientSetInterface|raw}}
+	clientv2 {{.clientSetInterface|raw}}
 	namespace string
 	tweakListOptions {{.interfacesTweakListOptionsFunc|raw}}
 	lock {{.syncMutex|raw}}
@@ -143,22 +143,22 @@ func WithNamespace(namespace string) SharedInformerOption {
 }
 
 // NewSharedInformerFactory constructs a new instance of sharedInformerFactory for all namespaces.
-func NewSharedInformerFactory(client {{.clientSetInterface|raw}}, defaultResync {{.timeDuration|raw}}) informer {
-	return NewSharedInformerFactoryWithOptions(client, defaultResync)
+func NewSharedInformerFactory(clientv2 {{.clientSetInterface|raw}}, defaultResync {{.timeDuration|raw}}) informer {
+	return NewSharedInformerFactoryWithOptions(clientv2, defaultResync)
 }
 
 // NewFilteredSharedInformerFactory constructs a new instance of sharedInformerFactory.
 // Listers obtained via this informer will be subject to the same filters
 // as specified here.
 // Deprecated: Please use NewSharedInformerFactoryWithOptions instead
-func NewFilteredSharedInformerFactory(client {{.clientSetInterface|raw}}, defaultResync {{.timeDuration|raw}}, namespace string, tweakListOptions {{.interfacesTweakListOptionsFunc|raw}}) informer {
-	return NewSharedInformerFactoryWithOptions(client, defaultResync, WithNamespace(namespace), WithTweakListOptions(tweakListOptions))
+func NewFilteredSharedInformerFactory(clientv2 {{.clientSetInterface|raw}}, defaultResync {{.timeDuration|raw}}, namespace string, tweakListOptions {{.interfacesTweakListOptionsFunc|raw}}) informer {
+	return NewSharedInformerFactoryWithOptions(clientv2, defaultResync, WithNamespace(namespace), WithTweakListOptions(tweakListOptions))
 }
 
 // NewSharedInformerFactoryWithOptions constructs a new instance of a informer with additional options.
-func NewSharedInformerFactoryWithOptions(client {{.clientSetInterface|raw}}, defaultResync {{.timeDuration|raw}}, options ...SharedInformerOption) informer {
+func NewSharedInformerFactoryWithOptions(clientv2 {{.clientSetInterface|raw}}, defaultResync {{.timeDuration|raw}}, options ...SharedInformerOption) informer {
 	factory := &sharedInformerFactory{
-		client:           client,
+		clientv2:           clientv2,
 		namespace:        v1.NamespaceAll,
 		defaultResync:    defaultResync,
 		informers:        make(map[{{.reflectType|raw}}]{{.cacheSharedIndexInformer|raw}}),
@@ -210,7 +210,7 @@ func (f *sharedInformerFactory) WaitForCacheSync(stopCh <-chan struct{}) map[ref
 }
 
 // InternalInformerFor returns the SharedIndexInformer for obj using an internal
-// client.
+// clientv2.
 func (f *sharedInformerFactory) InformerFor(obj {{.runtimeObject|raw}}, newFunc {{.interfacesNewInformerFunc|raw}}) {{.cacheSharedIndexInformer|raw}} {
   f.lock.Lock()
   defer f.lock.Unlock()
@@ -226,7 +226,7 @@ func (f *sharedInformerFactory) InformerFor(obj {{.runtimeObject|raw}}, newFunc 
     resyncPeriod = f.defaultResync
   }
 
-  informer = newFunc(f.client, resyncPeriod)
+  informer = newFunc(f.clientv2, resyncPeriod)
   f.informers[informerType] = informer
 
   return informer

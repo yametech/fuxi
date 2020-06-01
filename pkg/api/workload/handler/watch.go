@@ -122,7 +122,7 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 }
 
 // watchStream watch api request resource group and the version
-// after server timeout then close send closed event to client side server watcher close
+// after server timeout then close send closed event to clientv2 side server watcher close
 func (w *WorkloadsAPI) WatchStream(g *gin.Context) {
 	eventChan := make(chan Event, 32)
 	closed := make(chan struct{})

@@ -72,7 +72,7 @@ func genStatus(t *types.Type) bool {
 	return hasStatus && !util.MustParseClientGenTags(append(t.SecondClosestCommentLines, t.CommentLines...)).NoStatus
 }
 
-// GenerateType makes the body of a file implementing the individual typed client for type t.
+// GenerateType makes the body of a file implementing the individual typed clientv2 for type t.
 func (g *genClientForType) GenerateType(c *generator.Context, t *types.Type, w io.Writer) error {
 	sw := generator.NewSnippetWriter(w, c, "$", "$")
 	pkg := filepath.Base(t.Name.Package)
@@ -142,7 +142,7 @@ func (g *genClientForType) GenerateType(c *generator.Context, t *types.Type, w i
 		"GetOptions":           c.Universe.Type(types.Name{Package: "k8s.io/apimachinery/pkg/apis/meta/v1", Name: "GetOptions"}),
 		"PatchType":            c.Universe.Type(types.Name{Package: "k8s.io/apimachinery/pkg/types", Name: "PatchType"}),
 		"watchInterface":       c.Universe.Type(types.Name{Package: "k8s.io/apimachinery/pkg/watch", Name: "Interface"}),
-		"RESTClientInterface":  c.Universe.Type(types.Name{Package: "k8s.io/client-go/rest", Name: "Interface"}),
+		"RESTClientInterface":  c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "Interface"}),
 		"schemeParameterCodec": c.Universe.Variable(types.Name{Package: filepath.Join(g.clientsetPackage, "scheme"), Name: "ParameterCodec"}),
 	}
 
@@ -324,10 +324,10 @@ var defaultVerbTemplates = map[string]string{
 	"patch":            `Patch(name string, pt $.PatchType|raw$, data []byte, subresources ...string) (result *$.resultType|raw$, err error)`,
 }
 
-// group client will implement this interface.
+// group clientv2 will implement this interface.
 var getterComment = `
 // $.type|publicPlural$Getter has a method to return a $.type|public$Interface.
-// A group's client should implement this interface.`
+// A group's clientv2 should implement this interface.`
 
 var getterNamespaced = `
 type $.type|publicPlural$Getter interface {
@@ -341,7 +341,7 @@ type $.type|publicPlural$Getter interface {
 }
 `
 
-// this type's interface, typed client will implement this interface.
+// this type's interface, typed clientv2 will implement this interface.
 var interfaceTemplate1 = `
 // $.type|public$Interface has methods to work with $.type|public$ resources.
 type $.type|public$Interface interface {`
@@ -355,7 +355,7 @@ var interfaceTemplate4 = `
 var structNamespaced = `
 // $.type|privatePlural$ implements $.type|public$Interface
 type $.type|privatePlural$ struct {
-	client $.RESTClientInterface|raw$
+	clientv2 $.RESTClientInterface|raw$
 	ns     string
 }
 `
@@ -364,7 +364,7 @@ type $.type|privatePlural$ struct {
 var structNonNamespaced = `
 // $.type|privatePlural$ implements $.type|public$Interface
 type $.type|privatePlural$ struct {
-	client $.RESTClientInterface|raw$
+	clientv2 $.RESTClientInterface|raw$
 }
 `
 
@@ -372,7 +372,7 @@ var newStructNamespaced = `
 // new$.type|publicPlural$ returns a $.type|publicPlural$
 func new$.type|publicPlural$(c *$.GroupGoName$$.Version$Client, namespace string) *$.type|privatePlural$ {
 	return &$.type|privatePlural${
-		client: c.RESTClient(),
+		clientv2: c.RESTClient(),
 		ns:     namespace,
 	}
 }
@@ -382,7 +382,7 @@ var newStructNonNamespaced = `
 // new$.type|publicPlural$ returns a $.type|publicPlural$
 func new$.type|publicPlural$(c *$.GroupGoName$$.Version$Client) *$.type|privatePlural$ {
 	return &$.type|privatePlural${
-		client: c.RESTClient(),
+		clientv2: c.RESTClient(),
 	}
 }
 `
@@ -394,7 +394,7 @@ func (c *$.type|privatePlural$) List(opts $.ListOptions|raw$) (result *$.resultT
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	result = &$.resultType|raw$List{}
-	err = c.client.Get().
+	err = c.clientv2.Get().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		VersionedParams(&opts, $.schemeParameterCodec|raw$).
@@ -413,7 +413,7 @@ func (c *$.type|privatePlural$) List($.type|private$Name string, opts $.ListOpti
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	result = &$.resultType|raw$List{}
-	err = c.client.Get().
+	err = c.clientv2.Get().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name($.type|private$Name).
@@ -430,7 +430,7 @@ var getTemplate = `
 // Get takes name of the $.type|private$, and returns the corresponding $.resultType|private$ object, and an error if there is any.
 func (c *$.type|privatePlural$) Get(name string, options $.GetOptions|raw$) (result *$.resultType|raw$, err error) {
 	result = &$.resultType|raw${}
-	err = c.client.Get().
+	err = c.clientv2.Get().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name(name).
@@ -445,7 +445,7 @@ var getSubresourceTemplate = `
 // Get takes name of the $.type|private$, and returns the corresponding $.resultType|raw$ object, and an error if there is any.
 func (c *$.type|privatePlural$) Get($.type|private$Name string, options $.GetOptions|raw$) (result *$.resultType|raw$, err error) {
 	result = &$.resultType|raw${}
-	err = c.client.Get().
+	err = c.clientv2.Get().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name($.type|private$Name).
@@ -460,7 +460,7 @@ func (c *$.type|privatePlural$) Get($.type|private$Name string, options $.GetOpt
 var deleteTemplate = `
 // Delete takes name of the $.type|private$ and deletes it. Returns an error if one occurs.
 func (c *$.type|privatePlural$) Delete(name string, options *$.DeleteOptions|raw$) error {
-	return c.client.Delete().
+	return c.clientv2.Delete().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name(name).
@@ -477,7 +477,7 @@ func (c *$.type|privatePlural$) DeleteCollection(options *$.DeleteOptions|raw$, 
 	if listOptions.TimeoutSeconds != nil{
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
-	return c.client.Delete().
+	return c.clientv2.Delete().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		VersionedParams(&listOptions, $.schemeParameterCodec|raw$).
@@ -492,7 +492,7 @@ var createSubresourceTemplate = `
 // Create takes the representation of a $.inputType|private$ and creates it.  Returns the server's representation of the $.resultType|private$, and an error, if there is any.
 func (c *$.type|privatePlural$) Create($.type|private$Name string, $.inputType|private$ *$.inputType|raw$) (result *$.resultType|raw$, err error) {
 	result = &$.resultType|raw${}
-	err = c.client.Post().
+	err = c.clientv2.Post().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name($.type|private$Name).
@@ -508,7 +508,7 @@ var createTemplate = `
 // Create takes the representation of a $.inputType|private$ and creates it.  Returns the server's representation of the $.resultType|private$, and an error, if there is any.
 func (c *$.type|privatePlural$) Create($.inputType|private$ *$.inputType|raw$) (result *$.resultType|raw$, err error) {
 	result = &$.resultType|raw${}
-	err = c.client.Post().
+	err = c.clientv2.Post().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Body($.inputType|private$).
@@ -522,7 +522,7 @@ var updateSubresourceTemplate = `
 // Update takes the top resource name and the representation of a $.inputType|private$ and updates it. Returns the server's representation of the $.resultType|private$, and an error, if there is any.
 func (c *$.type|privatePlural$) Update($.type|private$Name string, $.inputType|private$ *$.inputType|raw$) (result *$.resultType|raw$, err error) {
 	result = &$.resultType|raw${}
-	err = c.client.Put().
+	err = c.clientv2.Put().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name($.type|private$Name).
@@ -538,7 +538,7 @@ var updateTemplate = `
 // Update takes the representation of a $.inputType|private$ and updates it. Returns the server's representation of the $.resultType|private$, and an error, if there is any.
 func (c *$.type|privatePlural$) Update($.inputType|private$ *$.inputType|raw$) (result *$.resultType|raw$, err error) {
 	result = &$.resultType|raw${}
-	err = c.client.Put().
+	err = c.clientv2.Put().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name($.inputType|private$.Name).
@@ -555,7 +555,7 @@ var updateStatusTemplate = `
 
 func (c *$.type|privatePlural$) UpdateStatus($.type|private$ *$.type|raw$) (result *$.type|raw$, err error) {
 	result = &$.type|raw${}
-	err = c.client.Put().
+	err = c.clientv2.Put().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		Name($.type|private$.Name).
@@ -575,7 +575,7 @@ func (c *$.type|privatePlural$) Watch(opts $.ListOptions|raw$) ($.watchInterface
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
 	opts.Watch = true
-	return c.client.Get().
+	return c.clientv2.Get().
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		VersionedParams(&opts, $.schemeParameterCodec|raw$).
@@ -588,7 +588,7 @@ var patchTemplate = `
 // Patch applies the patch and returns the patched $.resultType|private$.
 func (c *$.type|privatePlural$) Patch(name string, pt $.PatchType|raw$, data []byte, subresources ...string) (result *$.resultType|raw$, err error) {
 	result = &$.resultType|raw${}
-	err = c.client.Patch(pt).
+	err = c.clientv2.Patch(pt).
 		$if .namespaced$Namespace(c.ns).$end$
 		Resource("$.type|resource$").
 		SubResource(subresources...).

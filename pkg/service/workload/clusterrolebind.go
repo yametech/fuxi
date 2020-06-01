@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -14,6 +14,6 @@ type ClusterRoleBinding struct {
 func NewClusterRoleBinding() *ClusterRoleBinding {
 	return &ClusterRoleBinding{
 		&common.DefaultImplWorkloadsResourceHandler{
-			dyn.ResourceClusterRoleBinding,
+			types.ResourceClusterRoleBinding,
 		}}
 }

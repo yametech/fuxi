@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -14,7 +14,7 @@ type TaskRun struct {
 func NewTaskRun() *TaskRun {
 	return &TaskRun{
 		&common.DefaultImplWorkloadsResourceHandler{
-			dyn.ResourceTaskRun,
+			types.ResourceTaskRun,
 		},
 	}
 }

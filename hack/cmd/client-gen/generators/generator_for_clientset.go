@@ -74,15 +74,15 @@ func (g *genClientset) GenerateType(c *generator.Context, t *types.Type, w io.Wr
 	allGroups := clientgentypes.ToGroupVersionInfo(g.groups, g.groupGoNames)
 	m := map[string]interface{}{
 		"allGroups":                            allGroups,
-		"Config":                               c.Universe.Type(types.Name{Package: "k8s.io/client-go/rest", Name: "Config"}),
-		"DefaultKubernetesUserAgent":           c.Universe.Function(types.Name{Package: "k8s.io/client-go/rest", Name: "DefaultKubernetesUserAgent"}),
-		"RESTClientInterface":                  c.Universe.Type(types.Name{Package: "k8s.io/client-go/rest", Name: "Interface"}),
-		"DiscoveryInterface":                   c.Universe.Type(types.Name{Package: "k8s.io/client-go/discovery", Name: "DiscoveryInterface"}),
-		"DiscoveryClient":                      c.Universe.Type(types.Name{Package: "k8s.io/client-go/discovery", Name: "DiscoveryClient"}),
-		"NewDiscoveryClientForConfig":          c.Universe.Function(types.Name{Package: "k8s.io/client-go/discovery", Name: "NewDiscoveryClientForConfig"}),
-		"NewDiscoveryClientForConfigOrDie":     c.Universe.Function(types.Name{Package: "k8s.io/client-go/discovery", Name: "NewDiscoveryClientForConfigOrDie"}),
-		"NewDiscoveryClient":                   c.Universe.Function(types.Name{Package: "k8s.io/client-go/discovery", Name: "NewDiscoveryClient"}),
-		"flowcontrolNewTokenBucketRateLimiter": c.Universe.Function(types.Name{Package: "k8s.io/client-go/util/flowcontrol", Name: "NewTokenBucketRateLimiter"}),
+		"Config":                               c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "Config"}),
+		"DefaultKubernetesUserAgent":           c.Universe.Function(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "DefaultKubernetesUserAgent"}),
+		"RESTClientInterface":                  c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/rest", Name: "Interface"}),
+		"DiscoveryInterface":                   c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/discovery", Name: "DiscoveryInterface"}),
+		"DiscoveryClient":                      c.Universe.Type(types.Name{Package: "k8s.io/clientv2-go/discovery", Name: "DiscoveryClient"}),
+		"NewDiscoveryClientForConfig":          c.Universe.Function(types.Name{Package: "k8s.io/clientv2-go/discovery", Name: "NewDiscoveryClientForConfig"}),
+		"NewDiscoveryClientForConfigOrDie":     c.Universe.Function(types.Name{Package: "k8s.io/clientv2-go/discovery", Name: "NewDiscoveryClientForConfigOrDie"}),
+		"NewDiscoveryClient":                   c.Universe.Function(types.Name{Package: "k8s.io/clientv2-go/discovery", Name: "NewDiscoveryClient"}),
+		"flowcontrolNewTokenBucketRateLimiter": c.Universe.Function(types.Name{Package: "k8s.io/clientv2-go/util/flowcontrol", Name: "NewTokenBucketRateLimiter"}),
 	}
 	sw.Do(clientsetInterface, m)
 	sw.Do(clientsetTemplate, m)

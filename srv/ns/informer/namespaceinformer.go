@@ -10,7 +10,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/yametech/fuxi/pkg/db"
-	kubeclient "github.com/yametech/fuxi/pkg/k8s/client"
+	kubeclient "github.com/yametech/fuxi/pkg/kubernetes/clientv1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/informers"
 	coreinformers "k8s.io/client-go/informers/core/v1"

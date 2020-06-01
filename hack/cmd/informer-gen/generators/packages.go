@@ -98,7 +98,7 @@ func vendorless(p string) string {
 	return p
 }
 
-// Packages makes the client package definition.
+// Packages makes the clientv2 package definition.
 func Packages(context *generator.Context, arguments *args.GeneratorArgs) generator.Packages {
 	boilerplate, err := arguments.LoadGoBoilerplate()
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/yametech/fuxi/pkg/db"
-	kubeclient "github.com/yametech/fuxi/pkg/k8s/client"
+	kubeclient "github.com/yametech/fuxi/pkg/kubernetes/clientv1"
 	ns "github.com/yametech/fuxi/proto/ns"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

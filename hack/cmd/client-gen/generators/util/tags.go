@@ -59,7 +59,7 @@ var ReadonlyVerbs = []string{
 const genClientPrefix = "genclient:"
 
 // unsupportedExtensionVerbs is a list of verbs we don't support generating
-// extension client functions for.
+// extension clientv2 functions for.
 var unsupportedExtensionVerbs = []string{
 	"updateStatus",
 	"deleteCollection",
@@ -84,7 +84,7 @@ var resultTypeSupportedVerbs = []string{
 	"patch",
 }
 
-// Extensions allows to extend the default set of client verbs
+// Extensions allows to extend the default set of clientv2 verbs
 // (CRUD+watch+patch+list+deleteCollection) for a given type with custom defined
 // verbs. Custom verbs can have custom input and result types and also allow to
 // use a sub-resource in a request instead of top-level resource type.
@@ -95,12 +95,12 @@ var resultTypeSupportedVerbs = []string{
 //
 // type ReplicaSet struct { ... }
 //
-// The 'method=UpdateScale' is the name of the client function.
-// The 'verb=update' here means the client function will use 'PUT' action.
-// The 'subresource=scale' means we will use SubResource template to generate this client function.
+// The 'method=UpdateScale' is the name of the clientv2 function.
+// The 'verb=update' here means the clientv2 function will use 'PUT' action.
+// The 'subresource=scale' means we will use SubResource template to generate this clientv2 function.
 // The 'input' is the input type used for creation (function argument).
 // The 'result' (not needed in this case) is the result type returned from the
-// client function.
+// clientv2 function.
 //
 type extension struct {
 	// VerbName is the name of the custom verb (Scale, Instantiate, etc..)
@@ -162,7 +162,7 @@ type Tags struct {
 	Extensions []extension
 }
 
-// HasVerb returns true if we should include the given verb in final client interface and
+// HasVerb returns true if we should include the given verb in final clientv2 interface and
 // generate the function for it.
 func (t Tags) HasVerb(verb string) bool {
 	if len(t.SkipVerbs) == 0 {
@@ -192,9 +192,9 @@ func ParseClientGenTags(lines []string) (Tags, error) {
 	values := types.ExtractCommentTags("+", lines)
 	var value []string
 	value, ret.GenerateClient = values["genclient"]
-	// Check the old format and error when used to avoid generating client when //+genclient=false
+	// Check the old format and error when used to avoid generating clientv2 when //+genclient=false
 	if len(value) > 0 && len(value[0]) > 0 {
-		return ret, fmt.Errorf("+genclient=%s is invalid, use //+genclient if you want to generate client or omit it when you want to disable generation", value)
+		return ret, fmt.Errorf("+genclient=%s is invalid, use //+genclient if you want to generate clientv2 or omit it when you want to disable generation", value)
 	}
 	_, ret.NonNamespaced = values[genClientPrefix+"nonNamespaced"]
 	// Check the old format and error when used

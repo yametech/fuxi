@@ -1,7 +1,8 @@
-package client
+package clientv2
 
 import (
-	dyn "k8s.io/client-go/dynamic"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
+	clientv2 "k8s.io/client-go/dynamic"
 	informers "k8s.io/client-go/dynamic/dynamicinformer"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -21,7 +22,7 @@ const (
 
 var SharedCacheInformerFactory *CacheInformerFactory
 
-func buildDynamicClient(master string, config clientcmdapiv1.Config) (dyn.Interface, error) {
+func buildDynamicClient(master string, config clientcmdapiv1.Config) (clientv2.Interface, error) {
 	cfg, err := clientcmdlatest.Scheme.ConvertToVersion(&config, clientcmdapi.SchemeGroupVersion)
 	clientCfg, err := clientcmd.NewDefaultClientConfig(*(cfg.(*clientcmdapi.Config)),
 		&clientcmd.ConfigOverrides{ClusterDefaults: clientcmdapi.Cluster{Server: master}}).ClientConfig()
@@ -31,7 +32,7 @@ func buildDynamicClient(master string, config clientcmdapiv1.Config) (dyn.Interf
 
 	clientCfg.QPS = qps
 	clientCfg.Burst = burst
-	dynClient, err := dyn.NewForConfig(clientCfg)
+	dynClient, err := clientv2.NewForConfig(clientCfg)
 	if err != nil {
 		return nil, err
 	}
@@ -40,9 +41,9 @@ func buildDynamicClient(master string, config clientcmdapiv1.Config) (dyn.Interf
 }
 
 type CacheInformerFactory struct {
-	Client   dyn.Interface
-	Informer informers.DynamicSharedInformerFactory
-	stopChan chan struct{}
+	Interface clientv2.Interface
+	Informer  informers.DynamicSharedInformerFactory
+	stopChan  chan struct{}
 }
 
 func NewCacheInformerFactory(master string, config clientcmdapiv1.Config) (*CacheInformerFactory, error) {
@@ -56,7 +57,7 @@ func NewCacheInformerFactory(master string, config clientcmdapiv1.Config) (*Cach
 	stop := make(chan struct{})
 	sharedInformerFactory := informers.NewDynamicSharedInformerFactory(client, period)
 
-	for _, v := range GroupVersionResources {
+	for _, v := range types.GroupVersionResources {
 		go sharedInformerFactory.ForResource(v).Informer().Run(stop)
 	}
 

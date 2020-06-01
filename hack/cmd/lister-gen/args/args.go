@@ -35,7 +35,7 @@ func NewDefaults() (*args.GeneratorArgs, *CustomArgs) {
 	genericArgs.CustomArgs = customArgs
 
 	if pkg := codegenutil.CurrentPackage(); len(pkg) != 0 {
-		genericArgs.OutputPackagePath = path.Join(pkg, "pkg/client/listers")
+		genericArgs.OutputPackagePath = path.Join(pkg, "pkg/clientv2/listers")
 	}
 
 	return genericArgs, customArgs

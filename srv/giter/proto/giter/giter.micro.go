@@ -31,7 +31,7 @@ var _ context.Context
 var _ client.Option
 var _ server.Option
 
-// Client API for Giter service
+// Interface API for Giter service
 
 type GiterService interface {
 	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)

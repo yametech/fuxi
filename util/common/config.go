@@ -11,10 +11,9 @@ type ConfigServer struct {
 
 func NewConfigServer(address string, prefix string) *ConfigServer {
 	return &ConfigServer{
-		etcd.NewSource(
+		Source: etcd.NewSource(
 			etcd.WithAddress(address),
 			etcd.WithPrefix(prefix),
-			//etcd.StripPrefix(true),
 		),
 	}
 }

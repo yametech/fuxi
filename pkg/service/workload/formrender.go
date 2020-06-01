@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -12,5 +12,5 @@ type FormRender struct {
 // NewFormRender exported
 func NewFormRender() *FormRender {
 	return &FormRender{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceFormRender}}
+		types.ResourceFormRender}}
 }

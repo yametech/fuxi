@@ -135,8 +135,8 @@ var typeInformerPublicConstructor = `
 // New$.type|public$Informer constructs a new informer for $.type|public$ type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func New$.type|public$Informer(client $.clientSetInterface|raw$$if .namespaced$, namespace string$end$, resyncPeriod $.timeDuration|raw$, indexers $.cacheIndexers|raw$) $.cacheSharedIndexInformer|raw$ {
-	return NewFiltered$.type|public$Informer(client$if .namespaced$, namespace$end$, resyncPeriod, indexers, nil)
+func New$.type|public$Informer(clientv2 $.clientSetInterface|raw$$if .namespaced$, namespace string$end$, resyncPeriod $.timeDuration|raw$, indexers $.cacheIndexers|raw$) $.cacheSharedIndexInformer|raw$ {
+	return NewFiltered$.type|public$Informer(clientv2$if .namespaced$, namespace$end$, resyncPeriod, indexers, nil)
 }
 `
 
@@ -144,20 +144,20 @@ var typeFilteredInformerPublicConstructor = `
 // NewFiltered$.type|public$Informer constructs a new informer for $.type|public$ type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFiltered$.type|public$Informer(client $.clientSetInterface|raw$$if .namespaced$, namespace string$end$, resyncPeriod $.timeDuration|raw$, indexers $.cacheIndexers|raw$, tweakListOptions $.interfacesTweakListOptionsFunc|raw$) $.cacheSharedIndexInformer|raw$ {
+func NewFiltered$.type|public$Informer(clientv2 $.clientSetInterface|raw$$if .namespaced$, namespace string$end$, resyncPeriod $.timeDuration|raw$, indexers $.cacheIndexers|raw$, tweakListOptions $.interfacesTweakListOptionsFunc|raw$) $.cacheSharedIndexInformer|raw$ {
 	return $.cacheNewSharedIndexInformer|raw$(
 		&$.cacheListWatch|raw${
 			ListFunc: func(options $.v1ListOptions|raw$) ($.runtimeObject|raw$, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.$.group$$.version$().$.type|publicPlural$($if .namespaced$namespace$end$).List(options)
+				return clientv2.$.group$$.version$().$.type|publicPlural$($if .namespaced$namespace$end$).List(options)
 			},
 			WatchFunc: func(options $.v1ListOptions|raw$) ($.watchInterface|raw$, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.$.group$$.version$().$.type|publicPlural$($if .namespaced$namespace$end$).Watch(options)
+				return clientv2.$.group$$.version$().$.type|publicPlural$($if .namespaced$namespace$end$).Watch(options)
 			},
 		},
 		&$.type|raw${},
@@ -168,8 +168,8 @@ func NewFiltered$.type|public$Informer(client $.clientSetInterface|raw$$if .name
 `
 
 var typeInformerConstructor = `
-func (f *$.type|private$Informer) defaultInformer(client $.clientSetInterface|raw$, resyncPeriod $.timeDuration|raw$) $.cacheSharedIndexInformer|raw$ {
-	return NewFiltered$.type|public$Informer(client$if .namespaced$, f.namespace$end$, resyncPeriod, $.cacheIndexers|raw${$.cacheNamespaceIndex|raw$: $.cacheMetaNamespaceIndexFunc|raw$}, f.tweakListOptions)
+func (f *$.type|private$Informer) defaultInformer(clientv2 $.clientSetInterface|raw$, resyncPeriod $.timeDuration|raw$) $.cacheSharedIndexInformer|raw$ {
+	return NewFiltered$.type|public$Informer(clientv2$if .namespaced$, f.namespace$end$, resyncPeriod, $.cacheIndexers|raw${$.cacheNamespaceIndex|raw$: $.cacheMetaNamespaceIndexFunc|raw$}, f.tweakListOptions)
 }
 `
 

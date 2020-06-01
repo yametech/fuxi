@@ -234,7 +234,7 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for Ops service
+// Interface API for Ops service
 
 type OpsClient interface {
 	ListRepos(ctx context.Context, in *RepoRequest, opts ...grpc.CallOption) (*RepoResponse, error)

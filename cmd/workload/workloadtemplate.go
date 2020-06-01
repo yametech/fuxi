@@ -26,3 +26,5 @@ func WorkloadsTemplateList(g *gin.Context) { workloadsAPI.ListWorkloadsTemplate(
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/apis/fuxi.nip.io/v1/workloads/namespaces/{namespace}/{name} [get]
 func WorkloadsTemplateGet(g *gin.Context) { workloadsAPI.GetWorkloadsTemplate(g) }
+
+func WorkloadsTemplateCreate(g *gin.Context) { workloadsAPI.PostWorkloadsTemplate(g) }

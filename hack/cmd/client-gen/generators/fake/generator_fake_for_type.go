@@ -83,7 +83,7 @@ func hasObjectMeta(t *types.Type) bool {
 	return false
 }
 
-// GenerateType makes the body of a file implementing the individual typed client for type t.
+// GenerateType makes the body of a file implementing the individual typed clientv2 for type t.
 func (g *genFakeForType) GenerateType(c *generator.Context, t *types.Type, w io.Writer) error {
 	sw := generator.NewSnippetWriter(w, c, "$", "$")
 	pkg := filepath.Base(t.Name.Package)
@@ -107,7 +107,7 @@ func (g *genFakeForType) GenerateType(c *generator.Context, t *types.Type, w io.
 		groupName = override[0]
 	}
 
-	const pkgClientGoTesting = "k8s.io/client-go/testing"
+	const pkgClientGoTesting = "k8s.io/clientv2-go/testing"
 	m := map[string]interface{}{
 		"type":                 t,
 		"inputType":            t,
@@ -203,7 +203,7 @@ func (g *genFakeForType) GenerateType(c *generator.Context, t *types.Type, w io.
 		sw.Do(patchTemplate, m)
 	}
 
-	// generate extended client methods
+	// generate extended clientv2 methods
 	for _, e := range tags.Extensions {
 		inputType := *t
 		resultType := *t
