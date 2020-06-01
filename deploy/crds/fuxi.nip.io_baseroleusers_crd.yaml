@@ -31,14 +31,9 @@ spec:
           spec:
             description: BaseRoleUserSpec defines the desired state of BaseRoleUser
             properties:
-              creator:
-                format: int32
-                type: integer
               role_id:
                 format: int32
                 type: integer
-              statue:
-                type: string
               user_id:
                 format: int32
                 type: integer

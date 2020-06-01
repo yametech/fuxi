@@ -33,8 +33,6 @@ spec:
             properties:
               comment:
                 type: string
-              is_delete:
-                type: boolean
               name:
                 description: '[超级管理员],[运维管理,业务运维],[开发主管,业务管理,业务开发]'
                 type: string
@@ -44,7 +42,6 @@ spec:
                 type: integer
             required:
             - comment
-            - is_delete
             - name
             - value
             type: object

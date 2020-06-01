@@ -11,7 +11,6 @@ import (
 type BaseRolePermSpec struct {
 	PermissionId uint32 `json:"permission_id,omitempty"`
 	RoleId       uint32 `json:"role_id,omitempty"`
-	Statue       string `json:"statue,omitempty"`
 }
 
 // BaseRolePermStatus defines the observed state of BaseRolePerm

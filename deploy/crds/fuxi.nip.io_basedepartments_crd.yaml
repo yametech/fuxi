@@ -31,37 +31,10 @@ spec:
           spec:
             description: BaseDepartmentSpec defines the desired state of BaseDepartment
             properties:
-              creator:
-                type: integer
-              dept_full_id:
+              namespace:
                 type: string
-              dept_level:
-                format: int32
-                type: integer
-              dept_name:
-                type: string
-              description:
-                type: string
-              is_delete:
-                type: boolean
-              owner_user_id:
-                description: A UUID is a 128 bit (16 byte) Universal Unique IDentifier
-                  as defined in RFC 4122.
-                items:
-                  type: integer
-                type: array
-              parent_id:
-                format: int32
-                type: integer
             required:
-            - creator
-            - dept_full_id
-            - dept_level
-            - dept_name
-            - description
-            - is_delete
-            - owner_user_id
-            - parent_id
+            - namespace
             type: object
           status:
             description: BaseDepartmentStatus defines the observed state of BaseDepartment

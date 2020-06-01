@@ -37,8 +37,6 @@ spec:
               role_id:
                 format: int32
                 type: integer
-              statue:
-                type: string
             type: object
           status:
             description: BaseRolePermStatus defines the observed state of BaseRolePerm

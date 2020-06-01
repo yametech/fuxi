@@ -9,10 +9,8 @@ import (
 
 // BaseRoleUserSpec defines the desired state of BaseRoleUser
 type BaseRoleUserSpec struct {
-	RoleId  uint32 `json:"role_id,omitempty"`
-	UserId  uint32 `json:"user_id,omitempty"`
-	Statue  string `json:"statue,omitempty"`
-	Creator uint32 `json:"creator,omitempty"`
+	RoleId uint32 `json:"role_id,omitempty"`
+	UserId uint32 `json:"user_id,omitempty"`
 }
 
 // BaseRoleUserStatus defines the observed state of BaseRoleUser

@@ -31,15 +31,9 @@ spec:
           spec:
             description: BaseRoleSpec defines the desired state of BaseRole
             properties:
-              creator_id:
-                type: integer
-              is_delete:
-                type: boolean
               role_name:
                 type: string
             required:
-            - creator_id
-            - is_delete
             - role_name
             type: object
           status:

@@ -31,8 +31,6 @@ spec:
           spec:
             description: BaseUserSpec defines the desired state of BaseUser
             properties:
-              creator_id:
-                type: integer
               department_id:
                 type: integer
               display:
@@ -41,24 +39,17 @@ spec:
                 type: string
               is_delete:
                 type: boolean
-              last_login_time:
-                type: string
               name:
                 type: string
               password:
                 type: string
-              role_id:
-                type: integer
             required:
-            - creator_id
             - department_id
             - display
             - email
             - is_delete
-            - last_login_time
             - name
             - password
-            - role_id
             type: object
           status:
             description: BaseUserStatus defines the observed state of BaseUser

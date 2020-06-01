@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"github.com/google/uuid"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -10,14 +9,7 @@ import (
 
 // BaseDepartmentSpec defines the desired state of BaseDepartment
 type BaseDepartmentSpec struct {
-	DeptName    string    `json:"dept_name, omitempty"`
-	OwnerUserID uuid.UUID `json:"owner_user_id, omitempty"`
-	ParentID    int32     `json:"parent_id, omitempty"`
-	DeptLevel   int32     `json:"dept_level, omitempty"`
-	Creator     int       `json:"creator, omitempty"`
-	IsDelete    bool      `json:"is_delete, omitempty"`
-	DeptFullID  string    `json:"dept_full_id, omitempty"`
-	Description string    `json:"description, omitempty"`
+	Namespace string `json:"namespace, omitempty"`
 }
 
 // BaseDepartmentStatus defines the observed state of BaseDepartment
