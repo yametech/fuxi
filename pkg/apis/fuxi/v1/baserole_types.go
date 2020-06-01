@@ -9,10 +9,9 @@ import (
 
 // BaseRoleSpec defines the desired state of BaseRole
 type BaseRoleSpec struct {
-	RoleName        string `json:"role_name"`
-	RolePermGroupid int    `json:"role_perm_groupid"`
-	IsDelete        bool   `json:"is_delete"`
-	CreatorID       int    `json:"creator_id"`
+	RoleName  string `json:"role_name, omitempty"`
+	IsDelete  bool   `json:"is_delete, omitempty"`
+	CreatorID int    `json:"creator_id, omitempty"`
 }
 
 // BaseRoleStatus defines the observed state of BaseRole

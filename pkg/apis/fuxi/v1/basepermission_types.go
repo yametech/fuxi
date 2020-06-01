@@ -12,9 +12,9 @@ type BasePermissionSpec struct {
 	// [超级管理员],[运维管理,业务运维],[开发主管,业务管理,业务开发]
 	Name string `json:"name"`
 	// [777],[770,077],[077,037,007]
-	Value    uint32 `json:"value"`
-	IsDelete bool   `json:"is_delete"`
-	Comment  string `json:"comment"`
+	Value    uint32 `json:"value, omitempty"`
+	IsDelete bool   `json:"is_delete, omitempty"`
+	Comment  string `json:"comment, omitempty"`
 }
 
 // BasePermissionStatus defines the observed state of BasePermission
