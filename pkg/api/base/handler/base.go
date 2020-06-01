@@ -10,6 +10,8 @@ type BaseAPI struct {
 	basepermissions *base.BasePermission
 	baseroles       *base.BaseRole
 	baseusers       *base.BaseUser
+	baseroleusers   *base.BaseRoleUser
+	baseroleperms   *base.BaseRolePerm
 }
 
 func NewBaseAPi() *BaseAPI {
@@ -18,5 +20,7 @@ func NewBaseAPi() *BaseAPI {
 		basepermissions: base.NewBasePermission(),
 		baseroles:       base.NewBaseRole(),
 		baseusers:       base.NewBaseUser(),
+		baseroleusers:   base.NewBaseRoleUser(),
+		baseroleperms:   base.NewBaseRolePerm(),
 	}
 }

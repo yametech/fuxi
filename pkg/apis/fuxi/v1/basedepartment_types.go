@@ -9,15 +9,7 @@ import (
 
 // BaseDepartmentSpec defines the desired state of BaseDepartment
 type BaseDepartmentSpec struct {
-	DeptName    string `json:"dept_name"`
-	OwnerUserID int32  `json:"owner_user_id"`
-	ParentID    int32  `json:"parent_id"`
-	DeptLevel   int32  `json:"dept_level"`
-	RoleGroupID int32  `json:"role_group_id"`
-	Creator     int    `json:"creator"`
-	IsDelete    bool   `json:"is_delete"`
-	DeptFullID  string `json:"dept_full_id"`
-	Description string `json:"description"`
+	Namespace string `json:"namespace, omitempty"`
 }
 
 // BaseDepartmentStatus defines the observed state of BaseDepartment

@@ -86,6 +86,20 @@ func main() {
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseusers", BaseUserCreate)
 	}
 
+	// BaseRoleUser
+	{
+		group.GET("/apis/fuxi.nip.io/v1/baseroleusers", BaseRoleUserList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers/:name", BaseRoleUserGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers", BaseRoleUserCreate)
+	}
+
+	// BaseRolePerm
+	{
+		group.GET("/apis/fuxi.nip.io/v1/baseroleperms", BaseRolePermList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleperms/:name", BaseRolePermGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleperms", BaseRolePermCreate)
+	}
+
 	// Release production environment can be turned on
 	router.GET("/base/swagger/*any", swag.DisablingWrapHandler(file.Handler, "NAME_OF_ENV_VARIABLE"))
 

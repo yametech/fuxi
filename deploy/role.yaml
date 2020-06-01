@@ -78,6 +78,9 @@ rules:
   - basepermissions
   - basedepartments
   - baseusers
+  - baserolegroups
+  - baseroleperms
+  - baseroleusers
   verbs:
   - create
   - delete

@@ -1,4 +1,4 @@
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: basepermissions.fuxi.nip.io
@@ -10,50 +10,46 @@ spec:
     plural: basepermissions
     singular: basepermission
   scope: Namespaced
-  subresources:
-    status: {}
-  validation:
-    openAPIV3Schema:
-      description: BasePermission is the Schema for the basepermissions API
-      properties:
-        apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
-          type: string
-        kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
-          type: string
-        metadata:
-          type: object
-        spec:
-          description: BasePermissionSpec defines the desired state of BasePermission
-          properties:
-            comment:
-              type: string
-            is_delete:
-              type: boolean
-            name:
-              description: '[超级管理员],[运维管理,业务运维],[开发主管,业务管理,业务开发]'
-              type: string
-            value:
-              description: '[777],[770,077],[077,037,007]'
-              format: int32
-              type: integer
-          required:
-          - comment
-          - is_delete
-          - name
-          - value
-          type: object
-        status:
-          description: BasePermissionStatus defines the observed state of BasePermission
-          type: object
-      type: object
-  version: v1
   versions:
   - name: v1
+    schema:
+      openAPIV3Schema:
+        description: BasePermission is the Schema for the basepermissions API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: BasePermissionSpec defines the desired state of BasePermission
+            properties:
+              comment:
+                type: string
+              name:
+                description: '[超级管理员],[运维管理,业务运维],[开发主管,业务管理,业务开发]'
+                type: string
+              value:
+                description: '[777],[770,077],[077,037,007]'
+                format: int32
+                type: integer
+            required:
+            - comment
+            - name
+            - value
+            type: object
+          status:
+            description: BasePermissionStatus defines the observed state of BasePermission
+            type: object
+        type: object
     served: true
     storage: true
+    subresources:
+      status: {}

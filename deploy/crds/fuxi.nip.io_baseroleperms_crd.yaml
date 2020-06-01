@@ -1,20 +1,20 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: baseroles.fuxi.nip.io
+  name: baseroleperms.fuxi.nip.io
 spec:
   group: fuxi.nip.io
   names:
-    kind: BaseRole
-    listKind: BaseRoleList
-    plural: baseroles
-    singular: baserole
+    kind: BaseRolePerm
+    listKind: BaseRolePermList
+    plural: baseroleperms
+    singular: baseroleperm
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: BaseRole is the Schema for the baseroles API
+        description: BaseRolePerm is the Schema for the baseroleperms API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -29,15 +29,17 @@ spec:
           metadata:
             type: object
           spec:
-            description: BaseRoleSpec defines the desired state of BaseRole
+            description: BaseRolePermSpec defines the desired state of BaseRolePerm
             properties:
-              role_name:
-                type: string
-            required:
-            - role_name
+              permission_id:
+                format: int32
+                type: integer
+              role_id:
+                format: int32
+                type: integer
             type: object
           status:
-            description: BaseRoleStatus defines the observed state of BaseRole
+            description: BaseRolePermStatus defines the observed state of BaseRolePerm
             type: object
         type: object
     served: true
