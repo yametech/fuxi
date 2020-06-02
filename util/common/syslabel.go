@@ -4,6 +4,10 @@ package common
 const (
 	// NamespaceLabelForDepartment  eg: fuxi.kubernetes.io/department: dxp
 	NamespaceLabelForDepartment = "fuxi.kubernetes.io/department"
+
+	// NamespaceLabelForDepartment  eg: fuxi.kubernetes.io/namespce: dxp
+	// the dxp is user allow access namespaces
+	DeployResourceLabelForNamespace = "fuxi.kubernetes.io/namespce"
 )
 
 // nuwa annotations

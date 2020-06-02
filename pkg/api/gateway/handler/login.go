@@ -52,9 +52,9 @@ func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			get config need authorization
 		*/
 
-		//user := r.Header.Get("x-auth-username")
-		//if !h.Exist(user) {
-		//	writeResponse(w, http.StatusBadRequest, "{message: user not exists}")
+		//baseUser := r.Header.Get("x-auth-username")
+		//if !h.Exist(baseUser) {
+		//	writeResponse(w, http.StatusBadRequest, "{message: baseUser not exists}")
 		//	return
 		//}
 		writeResponse(w, http.StatusOK, bs)

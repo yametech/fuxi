@@ -9,6 +9,7 @@ import (
 
 // BaseRoleSpec defines the desired state of BaseRole
 type BaseRoleSpec struct {
+	Value           uint32 `json:"value"`
 	RoleName        string `json:"role_name"`
 	RolePermGroupid int    `json:"role_perm_groupid"`
 	IsDelete        bool   `json:"is_delete"`

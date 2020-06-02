@@ -13,6 +13,6 @@ type PodSecurityPolicies struct {
 // NewPodSecurityPolicies exported
 func NewPodSecurityPolicies() *PodSecurityPolicies {
 	return &PodSecurityPolicies{&common.DefaultImplWorkloadsResourceHandler{
-		types.ResourceRole,
+		types.ResourcePodSecurityPolicie,
 	}}
 }

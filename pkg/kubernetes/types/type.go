@@ -46,6 +46,7 @@ const (
 	BasePermission           ResourceName = "basepermissions"
 	BaseRole                 ResourceName = "baseroles"
 	BaseUser                 ResourceName = "baseusers"
+	PodSecurityPolicie      ResourceName = "podsecuritypolicies"
 
 	//tekton
 	Pipeline         ResourceName = "pipelines"
@@ -104,6 +105,8 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Task:             {Group: "tekton.dev", Version: "v1alpha1", Resource: "tasks"},
 	TaskRun:          {Group: "tekton.dev", Version: "v1alpha1", Resource: "taskruns"},
 	PipelineResource: {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelineresources"},
+
+	PodSecurityPolicie: {Group: "policy", Version: "v1beta1", Resource: "podsecuritypolicies"},
 }
 
 var (
@@ -152,6 +155,7 @@ var (
 	ResourceTask                     = getGvr(Task)
 	ResourceTaskRun                  = getGvr(TaskRun)
 	ResourcePipelineResource         = getGvr(PipelineResource)
+	ResourcePodSecurityPolicie      = getGvr(PodSecurityPolicie)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {

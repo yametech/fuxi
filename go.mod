@@ -38,6 +38,7 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/static v0.0.0-20191128031702-f81c604d8ac2 // indirect
 	github.com/gin-gonic/gin v1.5.0
+	github.com/go-acme/lego v2.5.0+incompatible
 	github.com/go-log/log v0.1.0
 	github.com/go-openapi/spec v0.19.6
 	github.com/go-openapi/swag v0.19.7 // indirect
@@ -114,6 +115,7 @@ require (
 	k8s.io/gengo v0.0.0-20200114144118-36b2048a9120
 	k8s.io/klog v1.0.0
 	k8s.io/kube-openapi v0.0.0-20191107075043-30be4d16710a
+	k8s.io/kubernetes v1.16.0
 	k8s.io/metrics v0.0.0
 	k8s.io/sample-controller v0.0.0-20190326030654-b8f621986e45
 	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706

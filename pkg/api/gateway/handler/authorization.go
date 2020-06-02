@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/go-acme/lego/log"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"github.com/yametech/fuxi/pkg/service/base"
 	watch "k8s.io/apimachinery/pkg/watch"
@@ -12,11 +13,24 @@ import (
 type Role struct {
 	Name      string   `json:"name"`
 	Namespace []string `json:"namespace"`
-	PermValue int32    `json:"permValue"`
+	PermValue uint32   `json:"permValue"`
+	baseDept  *base.BaseDepartment
 }
-type Roles []Role
 
-func (r Roles) search(roleName string) Role {
+func NewRole(name string, permValue uint32) *Role {
+	role := Role{
+		Name:      name,
+		PermValue: permValue,
+		baseDept:  base.NewBaseDepartment(),
+	}
+
+	//TODO 关联关系??
+	return &role
+}
+
+type Roles []*Role
+
+func (r Roles) search(roleName string) *Role {
 	sort.Slice(r, func(i, j int) bool {
 		return r[i].Name <= r[j].Name
 	})
@@ -32,13 +46,16 @@ type Authorization struct {
 	roles    Roles `json:"roles"`
 }
 
-func NewAuthorization() *Authorization {
+func NewAuthorization() (*Authorization, error) {
 	auth := &Authorization{
 		baseRole: base.NewBaseRole(),
 		mutex:    sync.RWMutex{},
-		roles:    make([]Role, 0),
+		roles:    make([]*Role, 0),
 	}
-	return auth
+	if err := auth.watch(); err != nil {
+		return nil, err
+	}
+	return auth, nil
 }
 
 func (a *Authorization) watch() error {
@@ -57,7 +74,7 @@ func (a *Authorization) watch() error {
 	}
 
 	for _, baseRole := range roleList.Items {
-		a.roles = append(a.roles, Role{
+		a.roles = append(a.roles, &Role{
 			Name: baseRole.Name,
 		})
 	}
@@ -67,38 +84,40 @@ func (a *Authorization) watch() error {
 	}
 	go func() {
 		for event := range stream {
-			switch event {
-			//Added    EventType = "ADDED"
-			//Modified EventType = "MODIFIED"
-			//Deleted  EventType = "DELETED"
-			//Bookmark EventType = "BOOKMARK"
-			//Error    EventType = "ERROR"
+			obj := event.Object.(*v1.BaseRole)
+			switch event.Type {
+			case watch.Added:
+				a.append(NewRole(obj.GetName(), obj.Spec.Value))
+			case watch.Deleted:
+				a.remove(obj.GetName())
+			case watch.Modified:
+				a.update(obj.GetName(), obj.Spec.Value)
 			}
 		}
 	}()
+
 	return nil
 }
 
-func (auth *Authorization) update(roleName string, namespaces []string, permValue int32) {
+func (auth *Authorization) update(roleName string, permValue uint32) {
 	auth.mutex.RLocker()
 	defer auth.mutex.RUnlock()
 	role := auth.roles.search(roleName)
-	role.Namespace = namespaces
 	role.PermValue = permValue
 	return
 }
 
-func (auth *Authorization) append(role Role) {
+func (auth *Authorization) append(role *Role) {
 	auth.mutex.RLocker()
 	defer auth.mutex.RUnlock()
 	auth.roles = append(auth.roles, role)
 }
 
-func (auth *Authorization) remove(role Role) {
+func (auth *Authorization) remove(roleName string) {
 	auth.mutex.RLocker()
 	defer auth.mutex.RUnlock()
 	for index, _role := range auth.roles {
-		if _role.Name == role.Name {
+		if _role.Name == roleName {
 			auth.roles = append(
 				auth.roles[:index],
 				auth.roles[index+1:]...,
@@ -108,23 +127,22 @@ func (auth *Authorization) remove(role Role) {
 }
 
 type AuthorizationStorage struct {
-	mutex sync.RWMutex
-	data  map[string]*Authorization
-	user  *base.BaseUser
-	dept  *base.BaseDepartment
+	mutex    sync.RWMutex
+	data     map[string]*Authorization
+	baseUser *base.BaseUser
 }
 
 func NewAuthorizationStorage() (*AuthorizationStorage, error) {
 	authorizationStorage := &AuthorizationStorage{
-		mutex: sync.RWMutex{},
-		data:  make(map[string]*Authorization),
-		user:  base.NewBaseUser(),
+		mutex:    sync.RWMutex{},
+		data:     make(map[string]*Authorization),
+		baseUser: base.NewBaseUser(),
 	}
 	return authorizationStorage, nil
 }
 
 func (a *AuthorizationStorage) watchUserData() error {
-	userList, err := a.user.List("", "", 0, 0, nil)
+	userList, err := a.baseUser.List("", "", 0, 0, nil)
 	if err != nil {
 		return err
 	}
@@ -139,9 +157,13 @@ func (a *AuthorizationStorage) watchUserData() error {
 	}
 
 	for _, user := range userList.Items {
-		a.data[user.GetName()] = NewAuthorization()
+		authorization, err := NewAuthorization()
+		if err != nil {
+			return err
+		}
+		a.data[user.GetName()] = authorization
 	}
-	stream, err := a.user.Watch("", userList.GetResourceVersion(), 0, nil)
+	stream, err := a.baseUser.Watch("", userList.GetResourceVersion(), 0, nil)
 	if err != nil {
 		return err
 	}
@@ -150,7 +172,11 @@ func (a *AuthorizationStorage) watchUserData() error {
 			obj := userEvent.Object.(*v1.BaseUser)
 			switch userEvent.Type {
 			case watch.Added:
-				a.add(obj.GetName(), NewAuthorization())
+				authorization, err := NewAuthorization()
+				if err != nil {
+					log.Infof("new authorization error: %s", err)
+				}
+				a.add(obj.GetName(), authorization)
 			case watch.Deleted:
 				a.remove(obj.GetName())
 			}

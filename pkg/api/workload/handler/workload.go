@@ -55,6 +55,7 @@ type WorkloadsAPI struct {
 	task                     *workloadservice.Task
 	taskrun                  *workloadservice.TaskRun
 	pipelineResource         *workloadservice.PipelineResource
+	podsecuritypolicies      *workloadservice.PodSecurityPolicies
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -96,6 +97,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		workloadsTemplate:        workloadservice.NewWorkloadsTemplate(),
 		pipeline:                 workloadservice.NewPipeline(),
 		pipelineRun:              workloadservice.NewPipelineRun(),
+		podsecuritypolicies:      workloadservice.NewPodSecurityPolicies(),
 	}
 }
 

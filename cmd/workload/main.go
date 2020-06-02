@@ -252,8 +252,8 @@ func main() {
 	// #v1beta1
 	// #podsecuritypolicies
 	{
-		group.GET("/apis/policy/v1beta1/podsecuritypolicies", RoleBindingList)
-		group.GET("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies/:name", RoleBindingGet)
+		group.GET("/apis/policy/v1beta1/podsecuritypolicies", PodSecurityPolicieList)
+		group.GET("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies/:name", PodSecurityPolicieGet)
 		group.POST("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies", workloadsAPI.Apply)
 	}
 
@@ -363,7 +363,7 @@ func main() {
 				"lensTheme":         "",
 				"userName":          "admin",
 				"token":             "",
-				"allowedNamespaces": "[dxp,xxx,yyy]",
+				"allowedNamespaces": "[]",
 				"isClusterAdmin":    true,
 				"chartEnable":       true,
 				"kubectlAccess":     true,

@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
-	v1 "k8s.io/api/rbac/v1"
+	"k8s.io/kubernetes/pkg/apis/policy"
 	"net/http"
 )
 
-// Get RoleBinding
-func (w *WorkloadsAPI) GetRoleBinding(g *gin.Context) {
+// Get PodSecurityPolicie
+func (w *WorkloadsAPI) GetPodSecurityPolicie(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.roleBinding.Get(namespace, name)
+	item, err := w.podsecuritypolicies.Get(namespace, name)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
@@ -20,23 +20,23 @@ func (w *WorkloadsAPI) GetRoleBinding(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List RoleBinding
-func (w *WorkloadsAPI) ListRoleBinding(g *gin.Context) {
-	list, err := w.roleBinding.List("", "", 0, 0, nil)
+// List PodSecurityPolicie
+func (w *WorkloadsAPI) ListPodSecurityPolicie(g *gin.Context) {
+	list, err := w.podsecuritypolicies.List("", "", 0, 0, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	roleBindingList := &v1.RoleBindingList{}
+	podSecurityPolicyList := &policy.PodSecurityPolicyList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	err = json.Unmarshal(marshalData, roleBindingList)
+	err = json.Unmarshal(marshalData, podSecurityPolicyList)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	g.JSON(http.StatusOK, roleBindingList)
+	g.JSON(http.StatusOK, podSecurityPolicyList)
 }
