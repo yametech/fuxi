@@ -8,7 +8,6 @@ import (
 	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	tektonclient "github.com/tektoncd/pipeline/pkg/client/clientset/versioned"
 	"github.com/yametech/fuxi/pkg/api/ops/handler"
-	kubeclient "github.com/yametech/fuxi/pkg/kubernetes/clientv1"
 	"github.com/yametech/fuxi/pkg/logging"
 	pri "github.com/yametech/fuxi/pkg/preinstall"
 	"github.com/yametech/fuxi/pkg/service/ops"
@@ -24,12 +23,12 @@ const (
 )
 
 func main() {
-	service, _, err := pri.InitApi(50, name, ver, "")
+	service, apiInstallConfigure, err := pri.InitApi(50, name, ver, "")
 	if err != nil {
 		logging.Log.Error(err)
 	}
 
-	tektonClient, err := tektonclient.NewForConfig(kubeclient.RestConf)
+	tektonClient, err := tektonclient.NewForConfig(apiInstallConfigure.RestConfig)
 	if err != nil {
 		logging.Log.Error("Initail tekton clientv2 error", err)
 	}

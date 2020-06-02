@@ -33,6 +33,7 @@ type BaseRole struct {
 
 	Spec   BaseRoleSpec   `json:"spec,omitempty"`
 	Status BaseRoleStatus `json:"status,omitempty"`
+	Items  interface{}
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -5,4 +5,4 @@ import (
 )
 
 // SharedK8sClient is service internal global use
-var SharedK8sClient *preinstall.ApiInstallConfigure
+var SharedK8sClient *preinstall.DefaultInstallConfigure

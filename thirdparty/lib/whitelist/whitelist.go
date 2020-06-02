@@ -53,20 +53,21 @@ func (srv *Whitelist) clean() {
 }
 
 // InitConfig
-func (srv *Whitelist) InitConfig(source source.Source, path ...string) error {
-	srv.conf = config.NewConfig()
-	err := srv.conf.Load(source)
+func InitConfig(source source.Source, path ...string) (*Whitelist, error) {
+	whileList := &Whitelist{}
+	whileList.conf = config.NewConfig()
+	err := whileList.conf.Load(source)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	srv.data = make(map[string]struct{})
-	value := srv.conf.Get(path...)
-	if err := srv.update(value); err != nil {
-		return err
+	whileList.data = make(map[string]struct{})
+	value := whileList.conf.Get(path...)
+	if err := whileList.update(value); err != nil {
+		return nil, err
 	}
-	srv.enableAutoUpdate(path...)
+	whileList.enableAutoUpdate(path...)
 
-	return nil
+	return whileList, nil
 }
 
 func (srv *Whitelist) enableAutoUpdate(path ...string) {

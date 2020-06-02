@@ -30,12 +30,12 @@ const (
 )
 
 func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsAPI) {
-	service, _, apiInstallConfigure, err := preinstall.InitApi(50, name, ver, "")
+	service, apiInstallConfigure, err := preinstall.InitApi(50, name, ver, "")
 	if err != nil {
 		panic(err)
 	}
 	router := gin.Default()
-	common.SharedK8sClient = apiInstallConfigure
+	common.SharedK8sClient = &apiInstallConfigure.DefaultInstallConfigure
 	handler.CreateSharedSessionManager(apiInstallConfigure.ClientV1, apiInstallConfigure.RestConfig)
 
 	return service, router, router.Group("/workload"), handler.NewWorkladAPI()

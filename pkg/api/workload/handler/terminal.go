@@ -31,7 +31,6 @@ import (
 	"sync"
 
 	"github.com/igm/sockjs-go/sockjs"
-	"github.com/yametech/fuxi/pkg/api/workload/template"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -119,7 +118,7 @@ type PtyHandler interface {
 }
 
 // process executed cmd in the container specified in request and connects it up with the  sessionChannels (a session)
-func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, pty PtyHandler) error {
+func (sm *sessionManager) process(request *AttachPodRequest, cmd []string, pty PtyHandler) error {
 	base := []string{"/bin/sh", "-c"}
 	base = append(base, cmd...)
 	req := sm.client.Post().
@@ -319,7 +318,7 @@ func isValidShell(validShells []string, shell string) bool {
 
 // waitForTerminal is called from pod attach api as a goroutine
 // Waits for the SockJS connection to be opened by the clientv2 the session to be bound in handleTerminalSession
-func waitForTerminal(request *template.AttachPodRequest, sessionId string) {
+func waitForTerminal(request *AttachPodRequest, sessionId string) {
 	session, exist := sharedSessionManager.get(sessionId)
 	if !exist {
 		return

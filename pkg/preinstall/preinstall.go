@@ -10,43 +10,70 @@ import (
 	"github.com/yametech/fuxi/pkg/kubernetes/clientv2"
 	"github.com/yametech/fuxi/thirdparty/lib/token"
 	"github.com/yametech/fuxi/thirdparty/lib/whitelist"
+	"github.com/yametech/fuxi/thirdparty/lib/wrapper/auth"
 	"github.com/yametech/fuxi/util/common"
 	k8sjson "k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	clientcmdapiV1 "k8s.io/client-go/tools/clientcmd/api/v1"
+	"net/http"
 	"time"
 )
 
-func NewGoMicroPlugin(name string, handlers []plugin.Handler, etcdFlag cli.StringFlag, init func(*cli.Context) error) plugin.Plugin {
-	return plugin.NewPlugin(
-		plugin.WithName(name),           // "auth"
-		plugin.WithHandler(handlers...), //auth.JWTAuthWrapper(gateWayInstall.token, gateWayInstall.whitelist)
-		plugin.WithFlag(etcdFlag),
-		plugin.WithInit(init),
-		//func(ctx *cli.Context) error {
-		//	conf := common.NewConfigServer(
-		//		ctx.String("etcd_address"),
-		//		common.ConfigPrefix,
-		//	)
-		//	if err := gateWayInstall.whitelist.InitConfig(conf, "go", "micro", "urls", "list"); err != nil {
-		//		return err
-		//	}
-		//	return gateWayInstall.token.InitConfig(conf, "go", "micro", "jwt", "key")
-		//}
-	)
-}
-
-type GateWayInstall struct {
-	token     *token.Token
-	whitelist *whitelist.Whitelist
+// defaultETCDFlag a etcd String Flag
+// dev Value:  "gz.nuwa.xyz:32428",
+func defaultETCDFlag(value string) cli.StringFlag {
+	if value == "" {
+		value = "fuxi.io:12379"
+	}
+	flag := cli.StringFlag{
+		Name:   "etcd_address",
+		Usage:  "etcd address for config K/V",
+		EnvVar: "ETCD_ADDRESS",
+		Value:  value,
+	}
+	return flag
 }
 
 //InitGateWay init a gateway
-func InitGateWayInstall(microPlugins ...plugin.Plugin) (*GateWayInstall, error) {
-	gateWayInstall := &GateWayInstall{
-		&token.Token{},
-		&whitelist.Whitelist{},
+func InitGatewayInstallConfigure(name string, loginHandle http.Handler, microPlugins ...plugin.Plugin) (*GateWayInstallConfigure, error) {
+	gwic := &GateWayInstallConfigure{
+		Token:     &token.Token{},
+		Whitelist: &whitelist.Whitelist{},
+	}
+	err := plugin.Register(
+		plugin.NewPlugin(
+			plugin.WithName("auth"),
+			plugin.WithHandler(
+				auth.JWTAuthWrapper(gwic.Token, gwic.Whitelist, loginHandle),
+			),
+			plugin.WithFlag(
+				defaultETCDFlag(""),
+			),
+			plugin.WithInit(func(ctx *cli.Context) error {
+				defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
+				if err != nil {
+					return err
+				}
+				gwic.DefaultInstallConfigure = *defaultInstallConfigure
+
+				_whileList, err := whitelist.InitConfig(gwic.SystemConfigServer, "go", "micro", "urls", "list")
+				if err != nil {
+					return err
+				}
+				gwic.Whitelist = _whileList
+
+				_token, err := token.InitConfig(gwic.SystemConfigServer, "go", "micro", "urls", "list")
+				if err != nil {
+					return err
+				}
+				gwic.Token = _token
+
+				return nil
+			}),
+		))
+	if err != nil {
+		return nil, err
 	}
 
 	for _, microPlugin := range microPlugins {
@@ -54,47 +81,18 @@ func InitGateWayInstall(microPlugins ...plugin.Plugin) (*GateWayInstall, error) 
 			return nil, err
 		}
 	}
-	return gateWayInstall, nil
+	return gwic, nil
 }
 
-// EtcdStringFlag a Etcd String Flag
-func EtcdStringFlag() cli.StringFlag {
-	return cli.StringFlag{
-		Name:   "etcd_address",
-		Usage:  "etcd address for config K/V",
-		EnvVar: "ETCD_ADDRESS",
-		//Value:  "gz.nuwa.xyz:32428",
-		Value: "fuxi.io:12379",
-	}
-}
-
-//--registry_address 10.200.100.200:2379 fuxi.io
-
-//todo:考虑把参数封装成ServiceOption struct
-//todo: RegisterTTL RegisterInterval 也基于参数的方式配置进来
 //InitApi init a api
-func InitApi(sampling int, name, version, tracingAddr string) (web.Service, *token.Token, *ApiInstallConfigure, error) {
-	// New Service
-	token := &token.Token{}
-	//gin2micro.SetSamplingFrequency(sampling)
-	//t, io, err := tracer.NewTracer(name, tracingAddr)
-	//if err != nil {
-	//	return web.NewService(), token, err
-	//}
-	//defer func() {
-	//	if err := io.Close(); err != nil {
-	//		log.Fatal(err)
-	//	}
-	//}()
-	//opentracing.SetGlobalTracer(t)
-
+func InitApi(sampling int, name, version, tracingAddr string) (web.Service, *ApiInstallConfigure, error) {
 	var apiInstallConfigure *ApiInstallConfigure
 	service := web.NewService(
 		web.Name(name),
 		web.Version(common.Version(version)),
 		web.RegisterTTL(time.Second*15),
 		web.RegisterInterval(time.Second*10),
-		web.Flags(EtcdStringFlag()),
+		web.Flags(defaultETCDFlag("")),
 		web.Action(func(ctx *cli.Context) {
 			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
 			if err != nil {
@@ -103,15 +101,12 @@ func InitApi(sampling int, name, version, tracingAddr string) (web.Service, *tok
 			apiInstallConfigure = &ApiInstallConfigure{
 				DefaultInstallConfigure: *defaultInstallConfigure,
 			}
-			token.InitConfig(apiInstallConfigure.SystemConfigServer, "go", "micro", "jwt", "key")
 		}),
 	)
-
 	if err := service.Init(); err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-
-	return service, token, apiInstallConfigure, nil
+	return service, apiInstallConfigure, nil
 }
 
 // InitService init a Service
@@ -122,8 +117,7 @@ func InitService(name, version string) (micro.Service, *ApiInstallConfigure) {
 		micro.Version(version),
 		micro.RegisterTTL(time.Second*15),
 		micro.RegisterInterval(time.Second*10),
-		//micro.WrapHandler(ocplugin.NewHandlerWrapper(opentracing.GlobalTracer())),
-		micro.Flags(EtcdStringFlag()),
+		micro.Flags(defaultETCDFlag("")),
 		micro.Action(func(ctx *cli.Context) {
 			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
 			if err != nil {
@@ -139,6 +133,8 @@ func InitService(name, version string) (micro.Service, *ApiInstallConfigure) {
 
 type GateWayInstallConfigure struct {
 	DefaultInstallConfigure
+	Token     *token.Token
+	Whitelist *whitelist.Whitelist
 }
 
 type ApiInstallConfigure struct {
