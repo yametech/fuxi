@@ -32,11 +32,9 @@ spec:
             description: BaseRoleUserSpec defines the desired state of BaseRoleUser
             properties:
               role_id:
-                format: int32
-                type: integer
+                type: string
               user_id:
-                format: int32
-                type: integer
+                type: string
             type: object
           status:
             description: BaseRoleUserStatus defines the observed state of BaseRoleUser

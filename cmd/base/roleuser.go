@@ -36,5 +36,5 @@ func BaseRoleUserGet(g *gin.Context) { baseAPI.GetBaseRoleUser(g) }
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /base/apis/fuxi.nip.io/v1/baseroleusers/{name} [post]
+// @Router /base/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers/ [post]
 func BaseRoleUserCreate(g *gin.Context) { baseAPI.CreateBaseRoleUser(g) }

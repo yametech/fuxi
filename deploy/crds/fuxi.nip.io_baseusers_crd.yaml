@@ -32,24 +32,15 @@ spec:
             description: BaseUserSpec defines the desired state of BaseUser
             properties:
               department_id:
-                type: integer
+                type: string
               display:
                 type: string
               email:
                 type: string
-              is_delete:
-                type: boolean
               name:
                 type: string
               password:
                 type: string
-            required:
-            - department_id
-            - display
-            - email
-            - is_delete
-            - name
-            - password
             type: object
           status:
             description: BaseUserStatus defines the observed state of BaseUser
