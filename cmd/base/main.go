@@ -86,6 +86,11 @@ func main() {
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers", BaseRoleUserCreate)
 	}
 
+	// Permission
+	{
+		group.GET("/permission_transfer/:value", BasePermissionTransferList)
+	}
+
 	// Release production environment can be turned on
 	router.GET("/base/swagger/*any", swag.DisablingWrapHandler(file.Handler, "NAME_OF_ENV_VARIABLE"))
 

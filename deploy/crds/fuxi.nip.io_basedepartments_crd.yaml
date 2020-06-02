@@ -32,9 +32,9 @@ spec:
             description: BaseDepartmentSpec defines the desired state of BaseDepartment
             properties:
               namespace:
-                type: string
-            required:
-            - namespace
+                items:
+                  type: string
+                type: array
             type: object
           status:
             description: BaseDepartmentStatus defines the observed state of BaseDepartment
