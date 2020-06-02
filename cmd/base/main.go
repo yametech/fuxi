@@ -69,21 +69,21 @@ func main() {
 	{
 		group.GET("/apis/fuxi.nip.io/v1/baseroles", BaseRoleList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroles/:name", BaseRoleGet)
-		group.POST("/apis/fuxi.nip.io/v1/baseroles", BaseRoleCreate)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroles", BaseRoleCreate)
 	}
 
 	// BaseUser
 	{
 		group.GET("/apis/fuxi.nip.io/v1/baseusers", BaseUserList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseusers/:name", BaseUserGet)
-		group.POST("/apis/fuxi.nip.io/v1/baseusers", BaseUserCreate)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseusers", BaseUserCreate)
 	}
 
 	// BaseRoleUser
 	{
 		group.GET("/apis/fuxi.nip.io/v1/baseroleusers", BaseRoleUserList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers/:name", BaseRoleUserGet)
-		group.POST("/apis/fuxi.nip.io/v1/baseroleusers", BaseRoleUserCreate)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers", BaseRoleUserCreate)
 	}
 
 	// Release production environment can be turned on

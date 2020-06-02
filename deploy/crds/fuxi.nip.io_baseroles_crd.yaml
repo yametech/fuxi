@@ -33,14 +33,10 @@ spec:
             properties:
               comment:
                 type: string
-              role_name:
-                type: string
               value:
                 format: int32
                 type: integer
             required:
-            - comment
-            - role_name
             - value
             type: object
           status:
