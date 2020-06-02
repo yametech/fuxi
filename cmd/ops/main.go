@@ -1,18 +1,14 @@
 package main
 
 import (
-	"github.com/afex/hystrix-go/hystrix"
 	"github.com/gin-gonic/gin"
-	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/util/log"
-	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	tektonclient "github.com/tektoncd/pipeline/pkg/client/clientset/versioned"
 	"github.com/yametech/fuxi/pkg/api/ops/handler"
 	"github.com/yametech/fuxi/pkg/logging"
 	pri "github.com/yametech/fuxi/pkg/preinstall"
+	"github.com/yametech/fuxi/pkg/service/common"
 	"github.com/yametech/fuxi/pkg/service/ops"
-	"github.com/yametech/fuxi/pkg/tekton"
-	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
 	"k8s.io/sample-controller/pkg/signals"
 	"time"
 )
@@ -28,25 +24,18 @@ func main() {
 		logging.Log.Error(err)
 	}
 
+	common.SharedK8sClient = &apiInstallConfigure.DefaultInstallConfigure
+
 	tektonClient, err := tektonclient.NewForConfig(apiInstallConfigure.RestConfig)
 	if err != nil {
 		logging.Log.Error("Initail tekton clientv2 error", err)
 	}
-	tekton.TektonClient = tektonClient
-
-	hystrix.DefaultTimeout = 5000
-	wrapper := hystrixplugin.NewClientWrapper()
-	_ = wrapper
+	ops.TektonClient = tektonClient
 
 	router := gin.Default()
-	router.Use(gin2micro.TracerWrapper)
+	//router.Use(gin2micro.TracerWrapper)
 
 	group := router.Group("/ops")
-	hystrix.DefaultTimeout = 5000
-	sClient := hystrixplugin.NewClientWrapper()(service.Options().Service.Client())
-	sClient.Init(
-		client.Retries(3),
-	)
 
 	resyncDur := time.Second * 30
 	op := ops.NewOps(resyncDur)

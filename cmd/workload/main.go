@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/yametech/fuxi/pkg/service/common"
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
 	"github.com/micro/go-micro/web"
 	"github.com/yametech/fuxi/pkg/api/workload/handler"
 	"github.com/yametech/fuxi/pkg/preinstall"
+	"github.com/yametech/fuxi/pkg/service/common"
+	"net/http"
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"

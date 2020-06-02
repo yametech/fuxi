@@ -3,9 +3,7 @@ package ops
 import (
 	pipelineClient "github.com/tektoncd/pipeline/pkg/client/clientset/versioned/typed/pipeline/v1alpha1"
 	informers "github.com/tektoncd/pipeline/pkg/client/informers/externalversions"
-	"github.com/yametech/fuxi/pkg/db"
 	"github.com/yametech/fuxi/pkg/gits"
-	"github.com/yametech/fuxi/pkg/tekton"
 	"time"
 )
 
@@ -27,9 +25,9 @@ type Ops struct {
 
 func NewOps(defaultResync time.Duration) *Ops {
 	return &Ops{
-		client:   tekton.TektonClient.TektonV1alpha1(),
+		client:   TektonClient.TektonV1alpha1(),
 		log:      new(Logger),
-		informer: informers.NewSharedInformerFactory(tekton.TektonClient, defaultResync),
+		informer: informers.NewSharedInformerFactory(TektonClient, defaultResync),
 	}
 }
 
@@ -42,20 +40,22 @@ var _ OpsService = (*Ops)(nil)
 
 //ListRepo according username and dep to select all repos
 func (o *Ops) ListRepos(username, namespace string) ([]string, error) {
-	uid, err := db.FindUserIdByName(username)
-	if err != nil {
-		return nil, err
-	}
-	git, err := db.FindGitByUserId(uid)
-	if err != nil {
-		return nil, err
-	}
-	gitArgs := &gits.GitArgs{
-		Username: git.Username,
-		ApiToken: git.Token,
-		Url:      git.Url,
-	}
-	c := gits.NewGiteaClient(gitArgs)
+	// TODO need fix
+	//uid, err := db.FindUserIdByName(username)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//git, err := db.FindGitByUserId(uid)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//gitArgs := &gits.GitArgs{
+	//	Username: git.Username,
+	//	ApiToken: git.Token,
+	//	Url:      git.Url,
+	//}
+	//c := gits.NewGiteaClient(gitArgs)
+	c := gits.NewGiteaClient(nil)
 
 	repos, err := c.ListRepositories(namespace)
 	if err != nil {
@@ -71,19 +71,20 @@ func (o *Ops) ListRepos(username, namespace string) ([]string, error) {
 
 //ListBranch  according username and repo name select all branch name
 func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
-	uid, err := db.FindUserIdByName(username)
-	if err != nil {
-		return nil, err
-	}
-	git, err := db.FindGitByUserId(uid)
-	if err != nil {
-		return nil, err
-	}
-	c := gits.NewGiteaClient(&gits.GitArgs{
-		Username: git.Username,
-		ApiToken: git.Token,
-		Url:      git.Url,
-	})
+	//uid, err := db.FindUserIdByName(username)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//git, err := db.FindGitByUserId(uid)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//c := gits.NewGiteaClient(&gits.GitArgs{
+	//	Username: git.Username,
+	//	ApiToken: git.Token,
+	//	Url:      git.Url,
+	//})
+	c := gits.NewGiteaClient(nil)
 
 	branchs, err := c.ListBranchs(namespace)
 	if err != nil {

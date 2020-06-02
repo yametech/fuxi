@@ -1,4 +1,4 @@
-package client
+package types
 
 import "k8s.io/apimachinery/pkg/runtime/schema"
 
@@ -46,7 +46,7 @@ const (
 	BasePermission           ResourceName = "basepermissions"
 	BaseRole                 ResourceName = "baseroles"
 	BaseUser                 ResourceName = "baseusers"
-	PodSecurityPolicie      ResourceName = "podsecuritypolicies"
+	PodSecurityPolicie       ResourceName = "podsecuritypolicies"
 	BaseRoleUser             ResourceName = "baseroleusers"
 
 	//tekton
@@ -156,7 +156,7 @@ var (
 	ResourceTask                     = getGvr(Task)
 	ResourceTaskRun                  = getGvr(TaskRun)
 	ResourcePipelineResource         = getGvr(PipelineResource)
-	ResourcePodSecurityPolicie      = getGvr(PodSecurityPolicie)
+	ResourcePodSecurityPolicie       = getGvr(PodSecurityPolicie)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {
