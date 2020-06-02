@@ -31,10 +31,17 @@ spec:
           spec:
             description: BaseRoleSpec defines the desired state of BaseRole
             properties:
+              comment:
+                type: string
               role_name:
                 type: string
+              value:
+                format: int32
+                type: integer
             required:
+            - comment
             - role_name
+            - value
             type: object
           status:
             description: BaseRoleStatus defines the observed state of BaseRole

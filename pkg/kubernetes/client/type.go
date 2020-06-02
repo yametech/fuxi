@@ -35,7 +35,6 @@ const (
 	ClusterRole              ResourceName = "clusterroles"
 	RoleBinding              ResourceName = "rolebindings"
 	Namespace                ResourceName = "namesapces"
-	FormRender               ResourceName = "formrenders"
 	ClusterRoleBinding       ResourceName = "clusterrolebindings"
 	WorkloadsTemplate        ResourceName = "workloads"
 	Endpoint                 ResourceName = "endpoints"
@@ -43,11 +42,9 @@ const (
 	Form                     ResourceName = "forms"
 	Field                    ResourceName = "fields"
 	BaseDepartment           ResourceName = "basedepartments"
-	BasePermission           ResourceName = "basepermissions"
 	BaseRole                 ResourceName = "baseroles"
 	BaseUser                 ResourceName = "baseusers"
 	BaseRoleUser             ResourceName = "baseroleusers"
-	BaseRolePerm             ResourceName = "baseroleperms"
 
 	//tekton
 	Pipeline         ResourceName = "pipelines"
@@ -89,18 +86,15 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
 	ClusterRoleBinding:       {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterrolebindings"},
 	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
-	FormRender:               {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
 	Endpoint:                 {Group: "", Version: "v1", Resource: "endpoints"},
 	WorkloadsTemplate:        {Group: "fuxi.nip.io", Version: "v1", Resource: "workloads"},
 	Page:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "pages"},
 	Form:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "forms"},
 	Field:                    {Group: "fuxi.nip.io", Version: "v1", Resource: "fields"},
 	BaseDepartment:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basedepartments"},
-	BasePermission:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basepermissions"},
 	BaseRole:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
 	BaseUser:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
 	BaseRoleUser:             {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleusers"},
-	BaseRolePerm:             {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleperms"},
 
 	// tekton.dev resource view
 	Pipeline:         {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelines"},
@@ -139,7 +133,6 @@ var (
 	ResourceRole                     = getGvr(Role)
 	ResourceRoleBinding              = getGvr(RoleBinding)
 	ResourceNamespace                = getGvr(Namespace)
-	ResourceFormRender               = getGvr(FormRender)
 	ResourceEndpoint                 = getGvr(Endpoint)
 	ResourceClusterRoleBinding       = getGvr(ClusterRoleBinding)
 	ResourceWorkloadsTemplate        = getGvr(WorkloadsTemplate)
@@ -148,11 +141,9 @@ var (
 	ResourceForm                     = getGvr(Form)
 	ResourceField                    = getGvr(Field)
 	ResourceBaseDepartment           = getGvr(BaseDepartment)
-	ResourceBasePermission           = getGvr(BasePermission)
 	ResourceBaseRole                 = getGvr(BaseRole)
 	ResourceBaseUser                 = getGvr(BaseUser)
 	ResourceBaseRoleUser             = getGvr(BaseRoleUser)
-	ResourceBaseRolePerm             = getGvr(BaseRolePerm)
 	ResourcePieline                  = getGvr(Pipeline)
 	ResourcePipelineRun              = getGvr(PipelineRun)
 	ResourceTask                     = getGvr(Task)

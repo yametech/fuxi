@@ -70,16 +70,6 @@ spec:
                     type: string
                   ui:widget:
                     type: string
-                required:
-                - default
-                - description
-                - max
-                - min
-                - prefix
-                - select
-                - suffix
-                - title
-                - ui:widget
                 type: object
               props_schema:
                 additionalProperties:
@@ -114,18 +104,6 @@ spec:
                       type: string
                     ui:widget:
                       type: string
-                  required:
-                  - default
-                  - description
-                  - enum
-                  - enumNames
-                  - max
-                  - min
-                  - prefix
-                  - suffix
-                  - title
-                  - type
-                  - ui:widget
                   type: object
                 type: object
             required:

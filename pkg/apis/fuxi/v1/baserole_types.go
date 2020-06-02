@@ -10,6 +10,8 @@ import (
 // BaseRoleSpec defines the desired state of BaseRole
 type BaseRoleSpec struct {
 	RoleName string `json:"role_name, omitempty"`
+	Value    uint32 `json:"value, omitempty"`
+	Comment  string `json:"comment, omitempty"`
 }
 
 // BaseRoleStatus defines the observed state of BaseRole

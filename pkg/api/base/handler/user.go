@@ -53,7 +53,7 @@ func (b *BaseAPI) CreateBaseUser(g *gin.Context) {
 		return
 	}
 
-	obj := v1.BasePermission{}
+	obj := v1.BaseUser{}
 	err = json.Unmarshal(rawData, &obj)
 	if err != nil {
 		common.ToRequestParamsError(g, err)

@@ -65,39 +65,25 @@ func main() {
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/basedepartments", BaseDepartmentCreate)
 	}
 
-	// BasePermission
-	{
-		group.GET("/apis/fuxi.nip.io/v1/basepermissions", BasePermissionList)
-		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/basepermissions/:name", BasePermissionGet)
-		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/basepermissions", BasePermissionCreate)
-	}
-
 	// BaseRole
 	{
 		group.GET("/apis/fuxi.nip.io/v1/baseroles", BaseRoleList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroles/:name", BaseRoleGet)
-		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroles", BaseRoleCreate)
+		group.POST("/apis/fuxi.nip.io/v1/baseroles", BaseRoleCreate)
 	}
 
 	// BaseUser
 	{
 		group.GET("/apis/fuxi.nip.io/v1/baseusers", BaseUserList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseusers/:name", BaseUserGet)
-		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseusers", BaseUserCreate)
+		group.POST("/apis/fuxi.nip.io/v1/baseusers", BaseUserCreate)
 	}
 
 	// BaseRoleUser
 	{
 		group.GET("/apis/fuxi.nip.io/v1/baseroleusers", BaseRoleUserList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers/:name", BaseRoleUserGet)
-		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers", BaseRoleUserCreate)
-	}
-
-	// BaseRolePerm
-	{
-		group.GET("/apis/fuxi.nip.io/v1/baseroleperms", BaseRolePermList)
-		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleperms/:name", BaseRolePermGet)
-		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleperms", BaseRolePermCreate)
+		group.POST("/apis/fuxi.nip.io/v1/baseroleusers", BaseRoleUserCreate)
 	}
 
 	// Release production environment can be turned on

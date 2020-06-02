@@ -13,35 +13,55 @@ type SelectStore struct {
 }
 
 type FormDataConfig struct {
-	Title       string `json:"title, omitempty"`
+	// +optional
+	Title string `json:"title, omitempty"`
+	// +optional
 	Description string `json:"description, omitempty"`
 	// For String
+	// +optional
 	Select []SelectStore `json:"select, omitempty" bson:",omitempty"`
 	// For Number
+	// +optional
 	Min uint32 `json:"min, omitempty" bson:",omitempty"`
 	// For Number
+	// +optional
 	Max uint32 `json:"max, omitempty" bson:",omitempty"`
 	// For Bool
-	Default  bool   `json:"default, omitempty" bson:",omitempty"`
+	// +optional
+	Default bool `json:"default, omitempty" bson:",omitempty"`
+	// +optional
 	UiWidget string `json:"ui:widget, omitempty" bson:",omitempty"`
-	Prefix   string `json:"prefix, omitempty" bson:",omitempty"`
-	Suffix   string `json:"suffix, omitempty" bson:",omitempty"`
+	// +optional
+	Prefix string `json:"prefix, omitempty" bson:",omitempty"`
+	// +optional
+	Suffix string `json:"suffix, omitempty" bson:",omitempty"`
 }
 
 type PropsSchema struct {
-	Title       string   `json:"title, omitempty"`
-	Type        string   `json:"type, omitempty"`
-	Enum        []string `json:"enum, omitempty"`
-	EnumNames   []string `json:"enumNames, omitempty"`
-	Description string   `json:"description, omitempty"`
-	Min         uint32   `json:"min, omitempty" bson:",omitempty"`
+	// +optional
+	Title string `json:"title, omitempty"`
+	// +optional
+	Type string `json:"type, omitempty"`
+	// +optional
+	Enum []string `json:"enum"`
+	// +optional
+	EnumNames []string `json:"enumNames"`
+	// +optional
+	Description string `json:"description, omitempty"`
+	// +optional
+	Min uint32 `json:"min, omitempty" bson:",omitempty"`
 	// For Number
+	// +optional
 	Max uint32 `json:"max, omitempty" bson:",omitempty"`
 	// For Bool
-	Default  bool   `json:"default, omitempty" bson:",omitempty"`
+	// +optional
+	Default bool `json:"default, omitempty" bson:",omitempty"`
+	// +optional
 	UiWidget string `json:"ui:widget, omitempty" bson:",omitempty"`
-	Prefix   string `json:"prefix, omitempty" bson:",omitempty"`
-	Suffix   string `json:"suffix, omitempty" bson:",omitempty"`
+	// +optional
+	Prefix string `json:"prefix, omitempty" bson:",omitempty"`
+	// +optional
+	Suffix string `json:"suffix, omitempty" bson:",omitempty"`
 }
 
 // FieldSpec defines the desired state of Field

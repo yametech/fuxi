@@ -36,5 +36,5 @@ func BaseDepartmentGet(g *gin.Context) { baseAPI.GetBaseDepartment(g) }
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/basedepartments/{name} [post]
+// @Router /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/basedepartments/ [post]
 func BaseDepartmentCreate(g *gin.Context) { baseAPI.CreateBaseDepartment(g) }
