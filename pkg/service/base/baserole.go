@@ -1,7 +1,7 @@
 package base
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -12,6 +12,6 @@ type BaseRole struct {
 
 func NewBaseRole() *BaseRole {
 	return &BaseRole{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceBaseRole,
+		types.ResourceBaseRole,
 	}}
 }

@@ -5,8 +5,39 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
 )
+
+func (w *WorkloadsAPI) PostWorkloadsTemplate(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	workloads := &v1.Workloads{}
+	err = json.Unmarshal(rawData, workloads)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&workloads)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	unstructuredStruct := &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}
+	newObj, err := w.workloadsTemplate.Apply("fuxi", workloads.Name, unstructuredStruct)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	g.JSON(http.StatusOK, newObj)
+}
 
 // Get WorkloadsTemplate
 func (w *WorkloadsAPI) GetWorkloadsTemplate(g *gin.Context) {

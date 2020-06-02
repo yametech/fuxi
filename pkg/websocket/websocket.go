@@ -26,7 +26,7 @@ func (clients Clients) Upgrade(g *gin.Context, rsize, wsize int, deadline time.T
 	if err != nil {
 		return nil, err
 	}
-	// Register our new client
+	// Register our new clientv2
 	clients[conn] = struct{}{}
 
 	go func() {

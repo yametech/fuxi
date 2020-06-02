@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
-	"github.com/yametech/fuxi/pkg/api/workload/template"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/remotecommand"
 	"net/http"
@@ -85,13 +84,21 @@ func (w *WorkloadsAPI) ListPod(g *gin.Context) {
 	g.JSON(http.StatusOK, podList)
 }
 
+type AttachPodRequest struct {
+	Namespace string `json:"namespace"`
+	Name      string `json:"name"`
+	Container string `json:"container"`
+	Shell     string `json:"shell"`
+}
+
 // AttachPod request and backend pod pty bing
 func (w *WorkloadsAPI) AttachPod(g *gin.Context) {
-	attachPodRequest := &template.AttachPodRequest{}
-	attachPodRequest.Namespace = g.Param("namespace")
-	attachPodRequest.Name = g.Param("name")
-	attachPodRequest.Container = g.Param("container")
-	attachPodRequest.Shell = g.Query("shell")
+	attachPodRequest := &AttachPodRequest{
+		Namespace: g.Param("namespace"),
+		Name:      g.Param("name"),
+		Container: g.Param("container"),
+		Shell:     g.Query("shell"),
+	}
 
 	sessionId, _ := generateTerminalSessionId()
 	sharedSessionManager.set(sessionId,

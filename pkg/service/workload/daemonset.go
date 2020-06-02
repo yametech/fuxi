@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -12,5 +12,5 @@ type DaemonSet struct {
 
 // NewDaemonSet exported
 func NewDaemonSet() *DaemonSet {
-	return &DaemonSet{&common.DefaultImplWorkloadsResourceHandler{dyn.ResourceDaemonSet}}
+	return &DaemonSet{&common.DefaultImplWorkloadsResourceHandler{types.ResourceDaemonSet}}
 }

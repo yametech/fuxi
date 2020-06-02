@@ -25,7 +25,7 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 
 	for bodyKey, bodyValue := range bodyMap {
 		req := common.SharedK8sClient.
-			ClientSetV1.
+			ClientV1.
 			CoreV1().
 			RESTClient().
 			Get().
@@ -58,7 +58,7 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 func (m *Metrics) GetPodMetrics(namespace, name string, pods *metrics.PodMetrics) error {
 	uri := fmt.Sprintf("apis/metrics.k8s.io/v1beta1/%s/%s/pods", namespace, name)
 	data, err := common.SharedK8sClient.
-		ClientSetV1.
+		ClientV1.
 		RESTClient().
 		Get().
 		AbsPath(uri).
@@ -75,7 +75,7 @@ func (m *Metrics) GetPodMetricsList(namespace string, pods *metrics.PodMetricsLi
 		uri = fmt.Sprintf("apis/metrics.k8s.io/v1beta1/namespaces/%s/pods", namespace)
 	}
 	data, err := common.SharedK8sClient.
-		ClientSetV1.
+		ClientV1.
 		RESTClient().
 		Get().
 		AbsPath(uri).
@@ -88,7 +88,7 @@ func (m *Metrics) GetPodMetricsList(namespace string, pods *metrics.PodMetricsLi
 
 func (m *Metrics) GetNodeMetricsList(nodes *metrics.NodeMetricsList) error {
 	data, err := common.SharedK8sClient.
-		ClientSetV1.
+		ClientV1.
 		RESTClient().
 		Get().
 		AbsPath("apis/metrics.k8s.io/v1beta1/nodes").

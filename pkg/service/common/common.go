@@ -43,13 +43,6 @@ type ResourceApply interface {
 	Delete(namespace, name string) error
 }
 
-// History history resource interface
-type History interface {
-	HistoryGet(namespace, name string) (*fv1.Workloads, error)
-	HistorySave(namespace string, workloads *fv1.Workloads) error
-	HistoryList(namespace string, selector labels.Selector, limit int) (WorkloadsSlice, error)
-}
-
 type WorkloadsResourceVersion interface {
 	SetGroupVersionResource(schema.GroupVersionResource)
 	GetGroupVersionResource() schema.GroupVersionResource
@@ -57,7 +50,6 @@ type WorkloadsResourceVersion interface {
 
 // WorkloadsResourceHandler all needed interface defined
 type WorkloadsResourceHandler interface {
-	History
 	ResourceQuery
 	ResourceApply
 	WorkloadsResourceVersion
@@ -76,46 +68,6 @@ func (d *DefaultImplWorkloadsResourceHandler) GetGroupVersionResource() schema.G
 func (d *DefaultImplWorkloadsResourceHandler) SetGroupVersionResource(g schema.GroupVersionResource) {
 	d.GroupVersionResource = g
 }
-
-func (d *DefaultImplWorkloadsResourceHandler) HistoryGet(namespace, name string) (*fv1.Workloads, error) {
-	//return SharedK8sClient.
-	//	clientSet.
-	//	client.
-	//	FuxiV1().
-	//	Workloadses(namespace).
-	//	Get(name, metav1.GetOptions{})
-	return nil, nil
-}
-
-func (d *DefaultImplWorkloadsResourceHandler) HistorySave(namespace string, workloads *fv1.Workloads) error {
-	return nil
-}
-
-func (d *DefaultImplWorkloadsResourceHandler) HistoryList(namespace string, selector labels.Selector, limit int) (
-	WorkloadsSlice, error,
-) {
-	//list, err := SharedK8sClient.
-	//	clientSet.
-	//	informer.
-	//	Fuxi().
-	//	V1().
-	//	Workloadses().
-	//	Lister().
-	//	Workloadses(namespace).
-	//	List(selector)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//workloads := WorkloadsSlice(list)
-	//sort.Sort(workloads)
-	//
-	//if limit > 0 && len(workloads) <= limit {
-	//	workloads = workloads[0 : limit-1]
-	//}
-
-	return nil, nil
-}
-
 func (d *DefaultImplWorkloadsResourceHandler) List(
 	namespace,
 	flag string,
@@ -146,8 +98,8 @@ func (d *DefaultImplWorkloadsResourceHandler) List(
 		opts.Limit = size + pos
 	}
 	items, err = SharedK8sClient.
-		CacheInformer.
-		Client.
+		ClientV2.
+		Interface.
 		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
 		List(opts)
@@ -162,7 +114,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Get(namespace, name string) (
 	runtime.Object, error,
 ) {
 	object, err := SharedK8sClient.
-		CacheInformer.
+		ClientV2.
 		Informer.
 		ForResource(d.GetGroupVersionResource()).
 		Lister().
@@ -176,8 +128,8 @@ func (d *DefaultImplWorkloadsResourceHandler) Get(namespace, name string) (
 
 func (d *DefaultImplWorkloadsResourceHandler) RemoteGet(namespace, name string, subresources ...string) (runtime.Object, error) {
 	object, err := SharedK8sClient.
-		CacheInformer.
-		Client.
+		ClientV2.
+		Interface.
 		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
 		Get(name, metav1.GetOptions{}, subresources...)
@@ -204,8 +156,8 @@ func (d *DefaultImplWorkloadsResourceHandler) Watch(
 		opts.ResourceVersion = resourceVersion
 	}
 	recv, err := SharedK8sClient.
-		CacheInformer.
-		Client.
+		ClientV2.
+		Interface.
 		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
 		Watch(opts)
@@ -223,15 +175,15 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(
 	retryErr = retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		resource := d.GetGroupVersionResource()
 		getObj, getErr := SharedK8sClient.
-			CacheInformer.
-			Client.
+			ClientV2.
+			Interface.
 			Resource(resource).
 			Namespace(namespace).
 			Get(name, metav1.GetOptions{})
 		if errors.IsNotFound(getErr) {
 			newObj, createErr := SharedK8sClient.
-				CacheInformer.
-				Client.
+				ClientV2.
+				Interface.
 				Resource(d.GetGroupVersionResource()).
 				Namespace(namespace).
 				Create(obj, metav1.CreateOptions{})
@@ -251,8 +203,8 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(
 		}
 
 		newObj, updateErr := SharedK8sClient.
-			CacheInformer.
-			Client.
+			ClientV2.
+			Interface.
 			Resource(resource).
 			Namespace(namespace).
 			Update(getObj, metav1.UpdateOptions{})
@@ -270,8 +222,8 @@ func (d *DefaultImplWorkloadsResourceHandler) Patch(namespace, name string, path
 		return nil, err
 	}
 	return SharedK8sClient.
-		CacheInformer.
-		Client.
+		ClientV2.
+		Interface.
 		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
 		Patch(name, types.StrategicMergePatchType, ptBytes, metav1.PatchOptions{})
@@ -280,8 +232,8 @@ func (d *DefaultImplWorkloadsResourceHandler) Patch(namespace, name string, path
 func (d *DefaultImplWorkloadsResourceHandler) Delete(namespace, name string) error {
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		return SharedK8sClient.
-			CacheInformer.
-			Client.
+			ClientV2.
+			Interface.
 			Resource(d.GetGroupVersionResource()).
 			Namespace(namespace).
 			Delete(name, &metav1.DeleteOptions{})

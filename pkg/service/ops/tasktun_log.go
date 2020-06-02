@@ -21,9 +21,8 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
-	kubeclient "github.com/yametech/fuxi/pkg/k8s/client"
+	"github.com/yametech/fuxi/pkg/service/common"
 	"github.com/yametech/fuxi/pkg/service/ops/pods"
-	"github.com/yametech/fuxi/pkg/tekton"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -45,7 +44,7 @@ func (s *step) hasStarted() bool {
 }
 
 func (log *Logger) readTaskLog(name, ns string) (<-chan Log, <-chan error, error) {
-	tr, err := tekton.TektonClient.TektonV1alpha1().TaskRuns(ns).Get(name, metav1.GetOptions{})
+	tr, err := TektonClient.TektonV1alpha1().TaskRuns(ns).Get(name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("%s: %s", MsgTRNotFoundErr, err)
 	}
@@ -85,7 +84,7 @@ func (log *Logger) readLiveTaskLogs() (<-chan Log, <-chan error, error) {
 
 	var (
 		podName = tr.Status.PodName
-		kube    = kubeclient.K8sClient
+		kube    = common.SharedK8sClient.ClientV1
 	)
 	//New -> NewWithDefaults
 	p := pods.NewWithDefaults(podName, log.ns, kube)
@@ -159,7 +158,7 @@ func (log *Logger) waitUntilTaskPodNameAvailable(timeout time.Duration) (*v1alph
 		FieldSelector: fields.OneTermEqualSelector("metadata.name", log.run).String(),
 	}
 
-	run, err := tekton.TektonClient.TektonV1alpha1().TaskRuns(log.ns).Get(log.run, metav1.GetOptions{})
+	run, err := TektonClient.TektonV1alpha1().TaskRuns(log.ns).Get(log.run, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +167,7 @@ func (log *Logger) waitUntilTaskPodNameAvailable(timeout time.Duration) (*v1alph
 		return run, nil
 	}
 
-	watchRun, err := tekton.TektonClient.TektonV1alpha1().TaskRuns(log.ns).Watch(opts)
+	watchRun, err := TektonClient.TektonV1alpha1().TaskRuns(log.ns).Watch(opts)
 	if err != nil {
 		return nil, err
 	}

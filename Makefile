@@ -76,6 +76,3 @@ generate:
 
 up: generate
 	operator-sdk up local
-
-gen-crd-client:
-	hack/generate-groups.sh all github.com/yametech/fuxi/pkg/client github.com/yametech/fuxi/pkg/apis fuxi:v1

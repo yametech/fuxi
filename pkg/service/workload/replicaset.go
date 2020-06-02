@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -13,6 +13,6 @@ type ReplicaSet struct {
 // NewReplicaSet exported
 func NewReplicaSet() *ReplicaSet {
 	return &ReplicaSet{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceReplicaSet,
+		types.ResourceReplicaSet,
 	}}
 }

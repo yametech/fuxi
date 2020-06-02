@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -11,5 +11,5 @@ type Job struct {
 
 // NewJob exported
 func NewJob() *Job {
-	return &Job{&common.DefaultImplWorkloadsResourceHandler{dyn.ResourceJob}}
+	return &Job{&common.DefaultImplWorkloadsResourceHandler{types.ResourceJob}}
 }

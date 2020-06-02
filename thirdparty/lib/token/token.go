@@ -40,20 +40,21 @@ func (srv *Token) put(newKey []byte) {
 }
 
 // InitConfig
-func (srv *Token) InitConfig(source source.Source, path ...string) error {
-	srv.conf = config.NewConfig()
-	err := srv.conf.Load(source)
+func InitConfig(source source.Source, path ...string) (*Token, error) {
+	token := &Token{}
+	token.conf = config.NewConfig()
+	err := token.conf.Load(source)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	value := srv.conf.Get(path...).Bytes()
+	value := token.conf.Get(path...).Bytes()
 	if len(value) == 0 {
-		return errors.New("jwt key acquisition failed")
+		return nil, errors.New("jwt key acquisition failed")
 	}
-	srv.put(value)
-	srv.enableAutoUpdate(path...)
+	token.put(value)
+	token.enableAutoUpdate(path...)
 
-	return nil
+	return token, nil
 }
 
 func (srv *Token) enableAutoUpdate(path ...string) {

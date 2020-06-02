@@ -1,0 +1,82 @@
+version: '3.1'
+
+services:
+  etcd:
+    image: quay.io/coreos/etcd:latest
+    command: etcd -name etcd1 -advertise-clientv2-urls=http://0.0.0.0:2379  -listen-clientv2-urls=http://0.0.0.0:2379 -initial-cluster-state new
+    ports:
+      - "2379:2379"
+    volumes:
+      - "./etcd-data:/etcd-data"
+    networks:
+      - fuxi-net
+      
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./data/mysql:/data"
+    networks:
+      - fuxi-net
+
+ ####监控####
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - fuxi-net
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  ####hystrix熔断仪表盘####
+  hystrix-dashboard:
+    image: mlabouardy/hystrix-dashboard
+    ports:
+      - "8081:9002"
+    networks:
+      - fuxi-net
+
+  ####jaeger链路追踪###
+  jaeger:
+    image: jaegertracing/all-in-one:1.6
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "9411:9411"
+    networks:
+      - fuxi-net
+
+  micro:
+    command: --registry_address=etcd:2379 api --handler=rpc
+    image: microhq/micro:latest
+    links:
+      - etcd
+      - mysql
+      - jaeger
+      - hystrix-dashboard
+      - prometheus
+    ports:
+      - "8080:8080"
+    networks:
+      - fuxi-net
+
+  # you_app:
+  #   build: ./bin/srv-ops
+  #   command: --registry_address=etcd:2379
+  #   links:
+  #     - etcd
+  #     - mysql
+  #   networks:
+  #     - fuxi-net
+
+networks:
+    fuxi-net:
+        driver: bridge

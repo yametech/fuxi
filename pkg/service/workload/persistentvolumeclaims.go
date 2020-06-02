@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -13,6 +13,6 @@ type PersistentVolumeClaims struct {
 // NewPersistentVolumeClaims exported
 func NewPersistentVolumeClaims() *PersistentVolumeClaims {
 	return &PersistentVolumeClaims{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourcePersistentVolumeClaims,
+		types.ResourcePersistentVolumeClaims,
 	}}
 }

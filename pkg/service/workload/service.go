@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -13,6 +13,6 @@ type Service struct {
 // NewService exported
 func NewService() *Service {
 	return &Service{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceService,
+		types.ResourceService,
 	}}
 }

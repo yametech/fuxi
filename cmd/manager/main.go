@@ -9,8 +9,8 @@ import (
 	"os"
 	"runtime"
 
-	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
-	//_ "k8s.io/client-go/plugin/pkg/client/auth"
+	// Import all Kubernetes clientv2 auth plugins (e.g. Azure, GCP, OIDC, etc.)
+	//_ "k8s.io/clientv2-go/plugin/pkg/clientv2/auth"
 	"k8s.io/client-go/rest"
 
 	"github.com/yametech/fuxi/pkg/apis"

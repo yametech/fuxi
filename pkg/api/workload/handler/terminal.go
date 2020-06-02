@@ -31,7 +31,6 @@ import (
 	"sync"
 
 	"github.com/igm/sockjs-go/sockjs"
-	"github.com/yametech/fuxi/pkg/api/workload/template"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -76,7 +75,7 @@ func CreateSharedSessionManager(clientSet *kubernetes.Clientset, restCfg *rest.C
 	}
 }
 
-// sessionManager manager external client connect to kubernetes pod terminal session
+// sessionManager manager external clientv2 connect to kubernetes pod terminal session
 type sessionManager struct {
 	client   rest.Interface
 	restCfg  *rest.Config
@@ -98,7 +97,7 @@ func (sm *sessionManager) set(sessionId string, channel *sessionChannels) {
 	sm.channels[sessionId] = channel
 }
 
-// close shuts down the SockJS connection and sends the status code and reason to the client
+// close shuts down the SockJS connection and sends the status code and reason to the clientv2
 // Can happen if the process exits or if there is an error starting up the process
 // For now the status code is unused and reason is shown to the user (unless "")
 func (sm *sessionManager) close(sessionID string, status uint32, reason string) {
@@ -119,7 +118,7 @@ type PtyHandler interface {
 }
 
 // process executed cmd in the container specified in request and connects it up with the  sessionChannels (a session)
-func (sm *sessionManager) process(request *template.AttachPodRequest, cmd []string, pty PtyHandler) error {
+func (sm *sessionManager) process(request *AttachPodRequest, cmd []string, pty PtyHandler) error {
 	base := []string{"/bin/sh", "-c"}
 	base = append(base, cmd...)
 	req := sm.client.Post().
@@ -238,8 +237,8 @@ func (s *sessionChannels) Read(p []byte) (n int, err error) {
 	switch msg.Op {
 	case STDIN:
 		return copy(p, msg.Data), nil
-	case INEXIT: // exit from client event
-		return 0, fmt.Errorf("client exit")
+	case INEXIT: // exit from clientv2 event
+		return 0, fmt.Errorf("clientv2 exit")
 	case RESIZE:
 		s.sizeChan <- remotecommand.TerminalSize{
 			Width:  msg.Cols,
@@ -280,7 +279,7 @@ func HandleTerminalSession(session sockjs.Session) {
 				Data: "connection session expired, please close and reconnect",
 			})
 		if err := session.Send(string(bs)); err != nil {
-			log.Printf("send session message to client error \r\n")
+			log.Printf("send session message to clientv2 error \r\n")
 		}
 		return
 	}
@@ -294,9 +293,9 @@ func HandleTerminalSession(session sockjs.Session) {
 }
 
 // generateTerminalSessionId generates a random session ID string. The format is not really interesting.
-// This ID is used to identify the session when the client opens the SockJS connection.
+// This ID is used to identify the session when the clientv2 opens the SockJS connection.
 // Not the same as the SockJS session id! We can't use that as that is generated
-// on the client side and we don't have it yet at this point.
+// on the clientv2 side and we don't have it yet at this point.
 func generateTerminalSessionId() (string, error) {
 	bytes := make([]byte, 16)
 	if _, err := rand.Read(bytes); err != nil {
@@ -318,8 +317,8 @@ func isValidShell(validShells []string, shell string) bool {
 }
 
 // waitForTerminal is called from pod attach api as a goroutine
-// Waits for the SockJS connection to be opened by the client the session to be bound in handleTerminalSession
-func waitForTerminal(request *template.AttachPodRequest, sessionId string) {
+// Waits for the SockJS connection to be opened by the clientv2 the session to be bound in handleTerminalSession
+func waitForTerminal(request *AttachPodRequest, sessionId string) {
 	session, exist := sharedSessionManager.get(sessionId)
 	if !exist {
 		return

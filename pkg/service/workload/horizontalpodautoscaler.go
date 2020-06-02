@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -13,5 +13,5 @@ type HorizontalPodAutoscaler struct {
 // NewHorizontalPodAutoscaler exported
 func NewHorizontalPodAutoscaler() *HorizontalPodAutoscaler {
 	return &HorizontalPodAutoscaler{&common.DefaultImplWorkloadsResourceHandler{
-		dyn.ResourceHorizontalPodAutoscaler}}
+		types.ResourceHorizontalPodAutoscaler}}
 }

@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -12,5 +12,5 @@ type ConfigMaps struct {
 
 // NewConfigMaps exported
 func NewConfigMaps() *ConfigMaps {
-	return &ConfigMaps{&common.DefaultImplWorkloadsResourceHandler{dyn.ResourceConfigMaps}}
+	return &ConfigMaps{&common.DefaultImplWorkloadsResourceHandler{types.ResourceConfigMaps}}
 }

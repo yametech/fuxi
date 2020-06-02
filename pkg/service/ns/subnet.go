@@ -2,7 +2,6 @@ package ns
 
 import (
 	ovnv1 "github.com/alauda/kube-ovn/pkg/apis/kubeovn/v1"
-	ovnclient "github.com/yametech/fuxi/pkg/ovn"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -35,7 +34,7 @@ type SubNet struct {
 //CreateSubnet one cluster only one default subnet if Default set to true
 func (ns *NSService) CreateSubnet(sn SubNet) error {
 
-	_, err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Create(&ovnv1.Subnet{
+	_, err := KubeOvnClient.KubeovnV1().Subnets().Create(&ovnv1.Subnet{
 		ObjectMeta: v1.ObjectMeta{Name: sn.Name},
 		Spec: ovnv1.SubnetSpec{
 			Default:      sn.IsDefault,
@@ -62,7 +61,7 @@ func (ns *NSService) CreateSubnet(sn SubNet) error {
 //SubNetDelete delete a subnet
 func (ns *NSService) SubNetDelete(name string) error {
 
-	err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Delete(name, &metav1.DeleteOptions{})
+	err := KubeOvnClient.KubeovnV1().Subnets().Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		return err
 	}
@@ -72,7 +71,7 @@ func (ns *NSService) SubNetDelete(name string) error {
 //SubNetUpdate update a subnet config
 func (ns *NSService) SubNetUpdate(sn SubNet) error {
 
-	_, err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Update(
+	_, err := KubeOvnClient.KubeovnV1().Subnets().Update(
 		&ovnv1.Subnet{
 			ObjectMeta: v1.ObjectMeta{Name: sn.Name},
 			Spec: ovnv1.SubnetSpec{
@@ -124,7 +123,7 @@ func (ns *NSService) SubNetList() ([]*SubNet, error) {
 
 //GetSubNet get subnet
 func (ns *NSService) GetSubNet(name string) (*SubNet, error) {
-	subnet, err := ovnclient.KubeOvnClient.KubeovnV1().Subnets().Get(name, metav1.GetOptions{})
+	subnet, err := KubeOvnClient.KubeovnV1().Subnets().Get(name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}

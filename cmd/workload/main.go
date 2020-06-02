@@ -2,23 +2,13 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/yametech/fuxi/pkg/service/common"
-
-	//"log"
-	"net/http"
-
-	"github.com/afex/hystrix-go/hystrix"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
 	"github.com/micro/go-micro/web"
-	hystrixplugin "github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	"github.com/yametech/fuxi/pkg/api/workload/handler"
-	"github.com/yametech/fuxi/pkg/k8s/client"
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
 	"github.com/yametech/fuxi/pkg/preinstall"
-	"github.com/yametech/fuxi/thirdparty/lib/wrapper/tracer/opentracing/gin2micro"
-
+	"github.com/yametech/fuxi/pkg/service/common"
+	"net/http"
 	// swagger doc
 	file "github.com/swaggo/files"
 	swag "github.com/swaggo/gin-swagger"
@@ -40,24 +30,13 @@ const (
 )
 
 func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsAPI) {
-	service, _, err := preinstall.InitApi(50, name, ver, "")
+	service, apiInstallConfigure, err := preinstall.InitApi(50, name, ver, "")
 	if err != nil {
 		panic(err)
 	}
-
-	hystrix.DefaultTimeout = 5000
-	wrapper := hystrixplugin.NewClientWrapper()
-	_ = wrapper
-
 	router := gin.Default()
-	router.Use(gin2micro.TracerWrapper)
-
-	err = common.NewK8sClientSet(dyn.SharedCacheInformerFactory, client.K8sClient, client.RestConf)
-	if err != nil {
-		panic(err)
-	}
-
-	handler.CreateSharedSessionManager(client.K8sClient, client.RestConf)
+	common.SharedK8sClient = &apiInstallConfigure.DefaultInstallConfigure
+	handler.CreateSharedSessionManager(apiInstallConfigure.ClientV1, apiInstallConfigure.RestConfig)
 
 	return service, router, router.Group("/workload"), handler.NewWorkladAPI()
 }
@@ -273,8 +252,8 @@ func main() {
 	// #v1beta1
 	// #podsecuritypolicies
 	{
-		group.GET("/apis/policy/v1beta1/podsecuritypolicies", RoleBindingList)
-		group.GET("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies/:name", RoleBindingGet)
+		group.GET("/apis/policy/v1beta1/podsecuritypolicies", PodSecurityPolicieList)
+		group.GET("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies/:name", PodSecurityPolicieGet)
 		group.POST("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies", workloadsAPI.Apply)
 	}
 
@@ -334,6 +313,7 @@ func main() {
 	{
 		group.GET("/apis/fuxi.nip.io/v1/workloads", WorkloadsTemplateList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/workloads/:name", WorkloadsTemplateGet)
+		group.POST("/apis/fuxi.nip.io/v1/workloads", WorkloadsTemplateCreate)
 	}
 
 	// Field

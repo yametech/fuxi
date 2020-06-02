@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetRoleBinding(g *gin.Context) {
 
 // List RoleBinding
 func (w *WorkloadsAPI) ListRoleBinding(g *gin.Context) {
-	list, err := w.roleBinding.List("", "", 0, 10000, nil)
+	list, err := w.roleBinding.List("", "", 0, 0, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

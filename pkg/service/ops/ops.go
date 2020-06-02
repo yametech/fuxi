@@ -3,9 +3,7 @@ package ops
 import (
 	pipelineClient "github.com/tektoncd/pipeline/pkg/client/clientset/versioned/typed/pipeline/v1alpha1"
 	informers "github.com/tektoncd/pipeline/pkg/client/informers/externalversions"
-	"github.com/yametech/fuxi/pkg/db"
 	"github.com/yametech/fuxi/pkg/gits"
-	"github.com/yametech/fuxi/pkg/tekton"
 	"time"
 )
 
@@ -27,9 +25,9 @@ type Ops struct {
 
 func NewOps(defaultResync time.Duration) *Ops {
 	return &Ops{
-		client:   tekton.TektonClient.TektonV1alpha1(),
+		client:   TektonClient.TektonV1alpha1(),
 		log:      new(Logger),
-		informer: informers.NewSharedInformerFactory(tekton.TektonClient, defaultResync),
+		informer: informers.NewSharedInformerFactory(TektonClient, defaultResync),
 	}
 }
 
@@ -42,20 +40,22 @@ var _ OpsService = (*Ops)(nil)
 
 //ListRepo according username and dep to select all repos
 func (o *Ops) ListRepos(username, namespace string) ([]string, error) {
-	uid, err := db.FindUserIdByName(username)
-	if err != nil {
-		return nil, err
-	}
-	git, err := db.FindGitByUserId(uid)
-	if err != nil {
-		return nil, err
-	}
-	gitArgs := &gits.GitArgs{
-		Username: git.Username,
-		ApiToken: git.Token,
-		Url:      git.Url,
-	}
-	c := gits.NewGiteaClient(gitArgs)
+	// TODO need fix
+	//uid, err := db.FindUserIdByName(username)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//git, err := db.FindGitByUserId(uid)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//gitArgs := &gits.GitArgs{
+	//	Username: git.Username,
+	//	ApiToken: git.Token,
+	//	Url:      git.Url,
+	//}
+	//c := gits.NewGiteaClient(gitArgs)
+	c := gits.NewGiteaClient(nil)
 
 	repos, err := c.ListRepositories(namespace)
 	if err != nil {
@@ -71,19 +71,20 @@ func (o *Ops) ListRepos(username, namespace string) ([]string, error) {
 
 //ListBranch  according username and repo name select all branch name
 func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
-	uid, err := db.FindUserIdByName(username)
-	if err != nil {
-		return nil, err
-	}
-	git, err := db.FindGitByUserId(uid)
-	if err != nil {
-		return nil, err
-	}
-	c := gits.NewGiteaClient(&gits.GitArgs{
-		Username: git.Username,
-		ApiToken: git.Token,
-		Url:      git.Url,
-	})
+	//uid, err := db.FindUserIdByName(username)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//git, err := db.FindGitByUserId(uid)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//c := gits.NewGiteaClient(&gits.GitArgs{
+	//	Username: git.Username,
+	//	ApiToken: git.Token,
+	//	Url:      git.Url,
+	//})
+	c := gits.NewGiteaClient(nil)
 
 	branchs, err := c.ListBranchs(namespace)
 	if err != nil {
@@ -154,7 +155,7 @@ func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
 //}
 //
 //func (ops *Ops) getPipelineResources(name, namesapce string) (*v1alpha1.PipelineResource, error) {
-//	res, err := ops.client.PipelineResources(namesapce).
+//	res, err := ops.clientv2.PipelineResources(namesapce).
 //		Get(name, v1.GetOptions{})
 //	if err != nil {
 //		return res, err
@@ -341,9 +342,9 @@ func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
 //
 //	oldGitPipelineResource, err := ops.getPipelineResources(typeName, ops.namesapce)
 //	if err != nil {
-//		//todo:need to create secretparam by kube  client
+//		//todo:need to create secretparam by kube  clientv2
 //		if errors.IsNotFound(err) {
-//			_, err := ops.client.PipelineResources(ops.namesapce).Create(toPipelineResource(resourceParams, resourceType, typeName))
+//			_, err := ops.clientv2.PipelineResources(ops.namesapce).Create(toPipelineResource(resourceParams, resourceType, typeName))
 //			if err != nil {
 //				return err
 //			}
@@ -357,7 +358,7 @@ func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
 //		newGitPipelineResource := toPipelineResource(resourceParams, v1alpha1.PipelineResourceTypeGit, typeName)
 //		if !reflect.DeepEqual(oldGitPipelineResource.Spec, newGitPipelineResource.Spec) {
 //			oldGitPipelineResource.Spec = newGitPipelineResource.Spec
-//			_, err = ops.client.PipelineResources(ops.namesapce).Update(oldGitPipelineResource)
+//			_, err = ops.clientv2.PipelineResources(ops.namesapce).Update(oldGitPipelineResource)
 //			if err != nil {
 //				return err
 //			}
@@ -418,10 +419,10 @@ func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
 //		},
 //	}
 //
-//	oldTask, err := ops.client.Tasks(ops.namesapce).Get(ops.taskName, v1.GetOptions{})
+//	oldTask, err := ops.clientv2.Tasks(ops.namesapce).Get(ops.taskName, v1.GetOptions{})
 //	if err != nil {
 //		if errors.IsNotFound(err) {
-//			_, err := ops.client.Tasks(ops.namesapce).Create(toTask(taskInputResource,
+//			_, err := ops.clientv2.Tasks(ops.namesapce).Create(toTask(taskInputResource,
 //				paramSpecs, taskOutPutResource, buildStep, ops.taskName))
 //			if err != nil {
 //				return err
@@ -437,7 +438,7 @@ func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
 //
 //		if reflect.DeepEqual(oldTask.Spec, newTask.Spec) {
 //			oldTask.Spec = newTask.Spec
-//			_, err = ops.client.Tasks(ops.namesapce).Update(oldTask)
+//			_, err = ops.clientv2.Tasks(ops.namesapce).Update(oldTask)
 //			if err != nil {
 //				return err
 //			}
@@ -480,12 +481,12 @@ func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
 //	}
 //	ps = append(ps, pm)
 //	pipelineResourceBinding := "builtImage"
-//	oldTaskRun, err := ops.client.TaskRuns(ops.namesapce).Get(taskRunName, v1.GetOptions{})
+//	oldTaskRun, err := ops.clientv2.TaskRuns(ops.namesapce).Get(taskRunName, v1.GetOptions{})
 //	if err != nil {
 //		if errors.IsNotFound(err) {
 //			taskRun := toTaskRun(taskResourceBinding,
 //				ps, pipelineResourceBinding, imageName, taskRunName, ops.taskName)
-//			_, err = ops.client.TaskRuns(ops.namesapce).Create(taskRun)
+//			_, err = ops.clientv2.TaskRuns(ops.namesapce).Create(taskRun)
 //			if err != nil {
 //				return err
 //			}
@@ -495,7 +496,7 @@ func (o *Ops) ListBranchs(username, namespace string) ([]string, error) {
 //		}
 //	}
 //
-//	err = ops.client.TaskRuns(ops.namesapce).Delete(oldTaskRun.Name, nil)
+//	err = ops.clientv2.TaskRuns(ops.namesapce).Delete(oldTaskRun.Name, nil)
 //	if err != nil {
 //		return err
 //	}

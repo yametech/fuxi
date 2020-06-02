@@ -1,7 +1,7 @@
 package workload
 
 import (
-	dyn "github.com/yametech/fuxi/pkg/kubernetes/client"
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 )
 
@@ -14,7 +14,7 @@ type Pipeline struct {
 func NewPipeline() *Pipeline {
 	return &Pipeline{
 		&common.DefaultImplWorkloadsResourceHandler{
-			dyn.ResourcePieline,
+			types.ResourcePieline,
 		},
 	}
 }

@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	go run main.go  --registry etcd --registry_address fuxi.io:12379 --cors-allowed-origins=* api --handler=http
+	go run main.go --registry etcd --registry_address fuxi.io:12379 api --handler=http
 
 .PHONY: test
 test:

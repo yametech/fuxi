@@ -2,7 +2,6 @@ package ns
 
 import (
 	informers "github.com/alauda/kube-ovn/pkg/client/informers/externalversions"
-	ovnclient "github.com/yametech/fuxi/pkg/ovn"
 	"time"
 )
 
@@ -15,7 +14,7 @@ type NSService struct {
 
 func NewNS(defaultResync time.Duration) *NSService {
 	return &NSService{
-		informer: informers.NewSharedInformerFactory(ovnclient.KubeOvnClient, defaultResync),
+		informer: informers.NewSharedInformerFactory(KubeOvnClient, defaultResync),
 	}
 }
 

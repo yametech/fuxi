@@ -30,8 +30,8 @@ spec:
         - etcd
         - -name
         - etcd1
-        - -advertise-client-urls=http://0.0.0.0:2379
-        - -listen-client-urls=http://0.0.0.0:2379
+        - -advertise-clientv2-urls=http://0.0.0.0:2379
+        - -listen-clientv2-urls=http://0.0.0.0:2379
         - -initial-cluster-state
         - new
         image: quay.io/coreos/etcd:latest

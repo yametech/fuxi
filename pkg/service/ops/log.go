@@ -5,9 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
-	"github.com/yametech/fuxi/pkg/k8s/client"
 	"github.com/yametech/fuxi/pkg/logging"
-	"github.com/yametech/fuxi/pkg/tekton"
+	"github.com/yametech/fuxi/pkg/service/common"
 	corev1 "k8s.io/api/core/v1"
 	"sync"
 
@@ -68,7 +67,7 @@ func (ops *Ops) GetTaskRunLog(name, namespace string) (*TaskRunLog, error) {
 		return nil, errors.New("cloud not get task run")
 	}
 
-	pod, err := client.K8sClient.CoreV1().Pods(namespace).Get(taskRun.Status.PodName, metav1.GetOptions{})
+	pod, err := common.SharedK8sClient.ClientV1.CoreV1().Pods(namespace).Get(taskRun.Status.PodName, metav1.GetOptions{})
 	if err != nil {
 		return nil, errors.New("cloud not get pod")
 	}
@@ -85,7 +84,7 @@ func (ops *Ops) makeTaskRunLog(pod *v1.Pod) *TaskRunLog {
 		for _, container := range containers {
 			buf.Reset()
 			step := LogContainer{Name: container.Name}
-			req := client.K8sClient.CoreV1().Pods(pod.GetNamespace()).GetLogs(pod.Name, &v1.PodLogOptions{Container: container.Name})
+			req := common.SharedK8sClient.ClientV1.CoreV1().Pods(pod.GetNamespace()).GetLogs(pod.Name, &v1.PodLogOptions{Container: container.Name})
 			if req.URL().Path == "" {
 				continue
 			}
@@ -132,7 +131,7 @@ func (ops *Ops) GetPipelineRunLog(name, namespace string) (PipelineRunLog, error
 	var pipelineRunLogs PipelineRunLog
 	for _, taskrunstatus := range pipelinerun.Status.TaskRuns {
 		podname := taskrunstatus.Status.PodName
-		pod, err := client.K8sClient.CoreV1().Pods(namespace).Get(podname, metav1.GetOptions{})
+		pod, err := common.SharedK8sClient.ClientV1.CoreV1().Pods(namespace).Get(podname, metav1.GetOptions{})
 		if err != nil {
 			continue
 		}
@@ -151,7 +150,7 @@ func (ops *Ops) GetTaskRealLog(name, namespace string, logs chan []string) error
 
 	for _, taskrunstatus := range pipelinerun.Status.TaskRuns {
 		podname := taskrunstatus.Status.PodName
-		pod, err := client.K8sClient.CoreV1().Pods(namespace).Get(podname, metav1.GetOptions{})
+		pod, err := common.SharedK8sClient.ClientV1.CoreV1().Pods(namespace).Get(podname, metav1.GetOptions{})
 		if err != nil {
 			continue
 		}
@@ -159,7 +158,7 @@ func (ops *Ops) GetTaskRealLog(name, namespace string, logs chan []string) error
 		buf := new(bytes.Buffer)
 		if pod.Spec.Containers != nil {
 			for _, container := range pod.Spec.Containers {
-				req := client.K8sClient.CoreV1().Pods(pod.GetNamespace()).GetLogs(pod.Name, &v1.PodLogOptions{Container: container.Name})
+				req := common.SharedK8sClient.ClientV1.CoreV1().Pods(pod.GetNamespace()).GetLogs(pod.Name, &v1.PodLogOptions{Container: container.Name})
 				if req.URL().Path == "" {
 					continue
 				}
@@ -194,7 +193,7 @@ func (ops *Ops) ReadLivePipelineLogs(name, namespace string, tasks []string) (<-
 		defer close(logC)
 		defer close(errC)
 
-		prTracker := NewTracker(name, namespace, tekton.TektonClient)
+		prTracker := NewTracker(name, namespace, TektonClient)
 		if tasks == nil {
 			tasks = make([]string, 0)
 		}
