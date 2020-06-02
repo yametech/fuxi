@@ -8,9 +8,9 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 type DataNode struct {
-	Title    string     `json:"title,omitempty"`
-	Key      string     `json:"key,omitempty"`
-	NodeType string     `json:"node_type,omitempty"`
+	Title    string     `json:"title, omitempty"`
+	Key      string     `json:"key, omitempty"`
+	NodeType string     `json:"node_type, omitempty"`
 	Children []DataNode `json:"children, omitempty"`
 }
 

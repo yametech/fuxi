@@ -264,13 +264,11 @@ func main() {
 		group.GET("/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions", CustomResourceDefinitionList)
 
 		ignores := []string{
-			"fuxi.nip.io/v1/formrenders",
 			"fuxi.nip.io/v1/workloads",
 			"fuxi.nip.io/v1/fields",
 			"fuxi.nip.io/v1/forms",
 			"fuxi.nip.io/v1/pages",
 			"fuxi.nip.io/v1/basedepartments",
-			"fuxi.nip.io/v1/basepermissions",
 			"fuxi.nip.io/v1/baseroles",
 			"fuxi.nip.io/v1/baseusers",
 			"nuwa.nip.io/v1/statefulsets",
@@ -308,13 +306,6 @@ func main() {
 		// other resource  api/apis resource
 		group.DELETE("/api/v1/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
-	}
-
-	// fuxi.nip.io
-	// FormRender
-	{
-		group.GET("/apis/fuxi.nip.io/v1/formrenders", FormRenderList)
-		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/formrenders/:name", FormRenderGet)
 	}
 
 	// fuxi.nip.io

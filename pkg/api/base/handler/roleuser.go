@@ -10,12 +10,12 @@ import (
 	"net/http"
 )
 
-// Get BaseUser
-func (b *BaseAPI) GetBaseUser(g *gin.Context) {
+// Get BaseRoleUser
+func (b *BaseAPI) GetBaseRoleUser(g *gin.Context) {
 
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := b.baseusers.Get(namespace, name)
+	item, err := b.baseroleusers.Get(namespace, name)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return
@@ -23,37 +23,37 @@ func (b *BaseAPI) GetBaseUser(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List BaseUser
-func (b *BaseAPI) ListBaseUser(g *gin.Context) {
+// List BaseRoleUser
+func (b *BaseAPI) ListBaseRoleUser(g *gin.Context) {
 
-	list, err := b.baseusers.List("", "", 0, 0, nil)
+	list, err := b.baseroleusers.List("", "", 0, 0, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	baseUserList := &v1.BaseUserList{}
+	baseRoleList := &v1.BaseRoleUserList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	err = json.Unmarshal(marshalData, baseUserList)
+	err = json.Unmarshal(marshalData, baseRoleList)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	g.JSON(http.StatusOK, baseUserList)
+	g.JSON(http.StatusOK, baseRoleList)
 }
 
-// Create BaseUser
-func (b *BaseAPI) CreateBaseUser(g *gin.Context) {
+// Create BaseRoleUser
+func (b *BaseAPI) CreateBaseRoleUser(g *gin.Context) {
 	rawData, err := g.GetRawData()
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return
 	}
 
-	obj := v1.BaseUser{}
+	obj := v1.BaseRoleUser{}
 	err = json.Unmarshal(rawData, &obj)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
@@ -69,7 +69,7 @@ func (b *BaseAPI) CreateBaseUser(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := b.baseusers.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	newObj, err := b.baseroleusers.Apply(obj.Namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

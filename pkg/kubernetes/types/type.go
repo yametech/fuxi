@@ -1,4 +1,4 @@
-package types
+package client
 
 import "k8s.io/apimachinery/pkg/runtime/schema"
 
@@ -47,6 +47,7 @@ const (
 	BaseRole                 ResourceName = "baseroles"
 	BaseUser                 ResourceName = "baseusers"
 	PodSecurityPolicie      ResourceName = "podsecuritypolicies"
+	BaseRoleUser             ResourceName = "baseroleusers"
 
 	//tekton
 	Pipeline         ResourceName = "pipelines"
@@ -88,7 +89,6 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Role:                     {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "roles"},
 	ClusterRoleBinding:       {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterrolebindings"},
 	RoleBinding:              {Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "rolebindings"},
-	FormRender:               {Group: "fuxi.nip.io", Version: "v1", Resource: "formrenders"},
 	Endpoint:                 {Group: "", Version: "v1", Resource: "endpoints"},
 	WorkloadsTemplate:        {Group: "fuxi.nip.io", Version: "v1", Resource: "workloads"},
 	Page:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "pages"},
@@ -98,6 +98,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	BasePermission:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basepermissions"},
 	BaseRole:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
 	BaseUser:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
+	BaseRoleUser:             {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleusers"},
 
 	// tekton.dev resource view
 	Pipeline:         {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelines"},
@@ -138,7 +139,6 @@ var (
 	ResourceRole                     = getGvr(Role)
 	ResourceRoleBinding              = getGvr(RoleBinding)
 	ResourceNamespace                = getGvr(Namespace)
-	ResourceFormRender               = getGvr(FormRender)
 	ResourceEndpoint                 = getGvr(Endpoint)
 	ResourceClusterRoleBinding       = getGvr(ClusterRoleBinding)
 	ResourceWorkloadsTemplate        = getGvr(WorkloadsTemplate)
@@ -150,6 +150,7 @@ var (
 	ResourceBasePermission           = getGvr(BasePermission)
 	ResourceBaseRole                 = getGvr(BaseRole)
 	ResourceBaseUser                 = getGvr(BaseUser)
+	ResourceBaseRoleUser             = getGvr(BaseRoleUser)
 	ResourcePieline                  = getGvr(Pipeline)
 	ResourcePipelineRun              = getGvr(PipelineRun)
 	ResourceTask                     = getGvr(Task)

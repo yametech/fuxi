@@ -9,15 +9,14 @@ import (
 
 // BaseUserSpec defines the desired state of BaseUser
 type BaseUserSpec struct {
-	Name          *string `json:"name"`
-	Password      *string `json:"password"`
-	RoleId        int     `json:"role_id"`
-	DepartmentId  int     `json:"department_id"`
-	IsDelete      bool    `json:"is_delete"`
-	Email         string  `json:"email"`
-	Display       string  `json:"display"`
-	CreatorId     int     `json:"creator_id"`
-	LastLoginTime string  `json:"last_login_time"`
+	Name     *string `json:"name,omitempty"`
+	Password *string `json:"password,omitempty"`
+	// +optional
+	DepartmentId string `json:"department_id,omitempty"`
+	// +optional
+	Email string `json:"email,omitempty"`
+	// +optional
+	Display string `json:"display,omitempty"`
 }
 
 // BaseUserStatus defines the observed state of BaseUser

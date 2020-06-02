@@ -9,11 +9,9 @@ import (
 
 // BaseRoleSpec defines the desired state of BaseRole
 type BaseRoleSpec struct {
-	Value           uint32 `json:"value"`
-	RoleName        string `json:"role_name"`
-	RolePermGroupid int    `json:"role_perm_groupid"`
-	IsDelete        bool   `json:"is_delete"`
-	CreatorID       int    `json:"creator_id"`
+	Value uint32 `json:"value, omitempty"`
+	// +optional
+	Comment string `json:"comment, omitempty"`
 }
 
 // BaseRoleStatus defines the observed state of BaseRole
@@ -34,7 +32,6 @@ type BaseRole struct {
 
 	Spec   BaseRoleSpec   `json:"spec,omitempty"`
 	Status BaseRoleStatus `json:"status,omitempty"`
-	Items  interface{}
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

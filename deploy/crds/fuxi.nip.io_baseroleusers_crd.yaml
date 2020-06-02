@@ -1,20 +1,20 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: pages.fuxi.nip.io
+  name: baseroleusers.fuxi.nip.io
 spec:
   group: fuxi.nip.io
   names:
-    kind: Page
-    listKind: PageList
-    plural: pages
-    singular: page
+    kind: BaseRoleUser
+    listKind: BaseRoleUserList
+    plural: baseroleusers
+    singular: baseroleuser
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: Page is the Schema for the pages API
+        description: BaseRoleUser is the Schema for the baseroleusers API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -29,23 +29,15 @@ spec:
           metadata:
             type: object
           spec:
-            description: PageSpec defines the desired state of Page
+            description: BaseRoleUserSpec defines the desired state of BaseRoleUser
             properties:
-              form_list:
-                items:
-                  type: string
-                type: array
-              id:
-                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                  Important: Run "operator-sdk generate k8s" to regenerate code after
-                  modifying this file Add custom validation using kubebuilder tags:
-                  https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
+              role_id:
                 type: string
-            required:
-            - id
+              user_id:
+                type: string
             type: object
           status:
-            description: PageStatus defines the observed state of Page
+            description: BaseRoleUserStatus defines the observed state of BaseRoleUser
             type: object
         type: object
     served: true

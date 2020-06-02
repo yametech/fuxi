@@ -70,14 +70,14 @@ rules:
   - fuxi.nip.io
   resources:
   - '*'
-  - formrenders
   - pages
   - forms
   - fields
   - baseroles
-  - basepermissions
   - basedepartments
   - baseusers
+  - baserolegroups
+  - baseroleusers
   verbs:
   - create
   - delete
