@@ -4,6 +4,7 @@ import (
 	"github.com/micro/micro/plugin"
 	"github.com/yametech/fuxi/thirdparty/lib/token"
 	"github.com/yametech/fuxi/thirdparty/lib/whitelist"
+	"github.com/yametech/fuxi/util/common"
 	"net/http"
 )
 
@@ -19,30 +20,24 @@ func JWTAuthWrapper(token *token.Token, whitelist *whitelist.Whitelist, loginHan
 			_ = whitelist
 
 			//var tokenHeader string
-			if r.URL.Path == "/login" {
-				loginHandler.ServeHTTP(w, r)
-				return
-			}
-			if r.URL.Path == "/config" {
+			if r.URL.Path == "/user-login" {
 				loginHandler.ServeHTTP(w, r)
 				return
 			}
 
-			//tokenHeader = r.Header.Get("Authorization")
-			//userFromToken, e := token.Decode(tokenHeader)
-			//if e != nil {
-			//	w.WriteHeader(http.StatusUnauthorized)
-			//	return
-			//}
-			//
-			//r.Header.Set("x-auth-username", userFromToken.UserName)
+			tokenHeader := r.Header.Get("Authorization")
+			userFromToken, e := token.Decode(tokenHeader)
+			if e != nil {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
 
+			r.Header.Set(common.HttpRequestUserHeaderKey, userFromToken.UserName)
 			// Config
-			if r.URL.Path == "/config" {
+			if r.Method == http.MethodGet && r.URL.Path == "/config" {
 				loginHandler.ServeHTTP(w, r)
 				return
 			}
-
 			h.ServeHTTP(w, r)
 		})
 	}

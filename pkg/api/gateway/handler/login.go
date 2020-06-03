@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/yametech/fuxi/util/common"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -13,25 +15,53 @@ type LoginHandle struct {
 	AuthorizationStorage
 }
 
-func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var username string
-	var password string
+type userAuth struct {
+	UserName string `json:"username"`
+	Password string `json:"password"`
+}
 
-	if r.Method == http.MethodPost && r.URL.Path == "/login" {
-		ok, err := h.Auth(username, password)
-		if !ok || err != nil {
+func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	username := r.Header.Get(common.HttpRequestUserHeaderKey)
+	userAuth := &userAuth{}
+	if username == "" {
+		bs, err := ioutil.ReadAll(r.Body)
+		if err != nil {
 			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		if err := json.Unmarshal(bs, userAuth); err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		if userAuth.UserName == "" || userAuth.Password == "" {
+			writeResponse(w, http.StatusBadRequest, "you are bug user")
+			return
+		}
+	} else {
+		userAuth.UserName = username
+	}
+
+	if r.Method == http.MethodPost && r.URL.Path == "/user-login" {
+		// TODO login
+		//ok, err := h.Auth(userAuth.UserName, userAuth.Password)
+		//if !ok || err != nil {
+		//	writeResponse(w, http.StatusBadRequest, err.Error())
+		//	return
+		//}
+
+		if userAuth.UserName != "admin" || userAuth.Password != "admin" {
+			writeResponse(w, http.StatusUnauthorized, "you not ....")
 			return
 		}
 
 		expireTime := time.Now().Add(time.Hour * 24).Unix()
-		tokenStr, err := h.Encode("go.micro.gateway.auth", username, expireTime)
+		tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
 		if err != nil {
 			writeResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		config := newUserConfig(username, tokenStr, []string{})
+		config := newUserConfig(userAuth.UserName, tokenStr, []string{})
 		bytesData, err := json.Marshal(config)
 		if err != nil {
 			writeResponse(w, http.StatusBadRequest, err.Error())
