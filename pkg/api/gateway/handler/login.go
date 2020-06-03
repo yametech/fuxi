@@ -3,66 +3,51 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"time"
+
+	"github.com/yametech/fuxi/thirdparty/lib/token"
 )
 
-type config struct {
-	LensVersion       string   `json:"lensVersion"`
-	LensTheme         string   `json:"lensTheme"`
-	UserName          string   `json:"userName"`
-	Token             string   `json:"Token"`
-	AllowedNamespaces []string `json:"allowedNamespaces"`
-	IsClusterAdmin    bool     `json:"isClusterAdmin"`
-	ChartEnable       bool     `json:"chartEnable"`
-	KubectlAccess     bool     `json:"kubectlAccess"`
-}
-
-func newConfig(user string, token string, allowedNamespaces []string) *config {
-	isClusterAdmin := false
-	if user == "admin" {
-		isClusterAdmin = true
-	}
-	return &config{
-		LensVersion:       "1.0",
-		LensTheme:         "",
-		UserName:          user,
-		Token:             token,
-		AllowedNamespaces: allowedNamespaces,
-		IsClusterAdmin:    isClusterAdmin,
-		ChartEnable:       true,
-		KubectlAccess:     true,
-	}
-}
-
 type LoginHandle struct {
-	*AuthorizationStorage
+	*token.Token
+	AuthorizationStorage
 }
 
 func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	bs, err := json.Marshal(newConfig("admin", "", []string{}))
-	if err != nil {
-		writeResponse(w, http.StatusBadRequest, err.Error())
+	var username string
+	var password string
+
+	if r.Method == http.MethodPost && r.URL.Path == "/login" {
+		ok, err := h.Auth(username, password)
+		if !ok || err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		expireTime := time.Now().Add(time.Hour * 24).Unix()
+		tokenStr, err := h.Encode("go.micro.gateway.auth", username, expireTime)
+		if err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		config := newUserConfig(username, tokenStr, []string{})
+		bytesData, err := json.Marshal(config)
+		if err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		writeResponse(w, http.StatusOK, bytesData)
 		return
 	}
-	switch r.Method {
-	case http.MethodPost:
-		writeResponse(w, http.StatusOK, bs)
-		return
-	case http.MethodGet:
-		/*
-			get config need authorization
-		*/
 
-		//baseUser := r.Header.Get("x-auth-username")
-		//if !h.Exist(baseUser) {
-		//	writeResponse(w, http.StatusBadRequest, "{message: baseUser not exists}")
-		//	return
-		//}
-		writeResponse(w, http.StatusOK, bs)
+	if r.Method == http.MethodGet && r.URL.Path == "/config" {
+		writeResponse(w, http.StatusOK, []byte{})
 		return
-	default:
 	}
 
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(http.StatusUnauthorized)
 }
 
 func writeResponse(w http.ResponseWriter, status int, data interface{}) {

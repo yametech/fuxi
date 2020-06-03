@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"sort"
+	"sync"
+
 	"github.com/go-acme/lego/log"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"github.com/yametech/fuxi/pkg/service/base"
 	watch "k8s.io/apimachinery/pkg/watch"
-	"sort"
-	"sync"
 )
 
 type Role struct {
@@ -43,6 +45,7 @@ func (r Roles) search(roleName string) *Role {
 type Authorization struct {
 	baseRole *base.BaseRole
 	mutex    sync.RWMutex
+	password string
 	roles    Roles `json:"roles"`
 }
 
@@ -141,6 +144,17 @@ func NewAuthorizationStorage() (*AuthorizationStorage, error) {
 	return authorizationStorage, nil
 }
 
+func (a *AuthorizationStorage) Auth(username string, password string) (bool, error) {
+	auth := a.get(username)
+	if auth == nil {
+		return false, fmt.Errorf("%s", "user does not exist")
+	}
+	if auth.password != password {
+		return false, fmt.Errorf("%s", "user password does not match")
+	}
+	return true, nil
+}
+
 func (a *AuthorizationStorage) watchUserData() error {
 	userList, err := a.baseUser.List("", "", 0, 0, nil)
 	if err != nil {
@@ -185,7 +199,17 @@ func (a *AuthorizationStorage) watchUserData() error {
 	return nil
 }
 
-func (a *AuthorizationStorage) Exist(user string) bool {
+func (a *AuthorizationStorage) get(name string) *Authorization {
+	a.mutex.RLocker()
+	defer a.mutex.RUnlock()
+	author, ok := a.data[name]
+	if !ok {
+		return nil
+	}
+	return author
+}
+
+func (a *AuthorizationStorage) exist(user string) bool {
 	a.mutex.RLocker()
 	defer a.mutex.RUnlock()
 	if _, ok := (a.data)[user]; !ok {

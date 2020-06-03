@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	loginHandler.AuthorizationStorage = authorStorage
+	loginHandler.IAuthorStorage = authorStorage
 
 	cmd.Init()
 }
