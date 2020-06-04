@@ -23,9 +23,7 @@ func (w *WorkloadsAPI) LogPod(g *gin.Context) {
 	name := g.Param("name")
 	lq := &logRequest{}
 	if err := g.Bind(lq); err != nil || namespace == "" || name == "" {
-		g.JSON(http.StatusBadRequest,
-			gin.H{
-				"code": http.StatusBadRequest, "data": "", "msg": err.Error(), "status": "Request bad parameter"})
+		common.ToRequestParamsError(g, err)
 		return
 	}
 

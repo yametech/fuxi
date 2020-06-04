@@ -120,12 +120,14 @@ func toPodContainer(deployItems ...deployMetadataItem) []corev1.Container {
 			ImagePullPolicy: corev1.PullPolicy(item.ImagePullPolicy),
 			Resources: corev1.ResourceRequirements{
 				Limits: corev1.ResourceList{
-					corev1.ResourceName("cpu"):    resource.MustParse(fmt.Sprintf("%f", item.Resource.Limits.CPU)),
-					corev1.ResourceName("memory"): resource.MustParse(fmt.Sprintf("%d", item.Resource.Limits.Memory)),
+					corev1.ResourceName("cpu"): resource.MustParse(
+						fmt.Sprintf("%f", item.Resource.Limits.CPU),
+					),
+					corev1.ResourceName("memory"): resource.MustParse(fmt.Sprintf("%d", item.Resource.Limits.Memory*1024*1024)),
 				},
 				Requests: corev1.ResourceList{
 					corev1.ResourceName("cpu"):    resource.MustParse(fmt.Sprintf("%f", item.Resource.Requests.CPU)),
-					corev1.ResourceName("memory"): resource.MustParse(fmt.Sprintf("%d", item.Resource.Requests.Memory)),
+					corev1.ResourceName("memory"): resource.MustParse(fmt.Sprintf("%d", item.Resource.Requests.Memory*1024*1024)),
 				},
 			},
 		}
@@ -208,12 +210,18 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 			common.ToRequestParamsError(g, err)
 			return
 		}
+
 		annotations := namespace.GetAnnotations()
-		limits, ok := annotations[constraint.NamespaceAnnotationForNodeResource]
-		if !ok {
-			common.ToRequestParamsError(g, err)
+		if annotations == nil {
+			common.ToRequestParamsError(g, fmt.Errorf("the namespace is not allow deploy resource"))
 			return
 		}
+		limits, ok := annotations[constraint.NamespaceAnnotationForNodeResource]
+		if !ok {
+			common.ToRequestParamsError(g, fmt.Errorf("the namespace is not allow deploy resource"))
+			return
+		}
+
 		cds := make(nuwav1.Coordinates, 0)
 		err = json.Unmarshal([]byte(limits), &cds)
 		if err != nil {

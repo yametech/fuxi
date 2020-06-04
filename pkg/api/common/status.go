@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -23,7 +24,7 @@ func ToRequestParamsError(g *gin.Context, err error) {
 		gin.H{
 			code:   http.StatusBadRequest,
 			data:   "",
-			msg:    "Request bad error",
+			msg:    fmt.Sprintf("%s: %s", "Status bad request", err.Error()),
 			status: err.Error(),
 		},
 	)
@@ -35,7 +36,7 @@ func ToInternalServerError(g *gin.Context, runtimeData interface{}, err error) {
 		gin.H{
 			code:   http.StatusInternalServerError,
 			data:   runtimeData,
-			msg:    "",
+			msg:    fmt.Sprintf("%s: %s", "Status internal server error", err.Error()),
 			status: err.Error(),
 		},
 	)
