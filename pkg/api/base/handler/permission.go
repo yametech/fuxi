@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	"net/http"
@@ -189,18 +191,35 @@ func CheckPermission(user uint32, has ...func(uint32) bool) bool {
 }
 
 // Convert  Chinese expression to int32 type
-func PermissionAuthorizeValue(config []interface{}) uint32 {
+func (b *BaseAPI) PermissionAuthorizeValue(g *gin.Context) {
 
+	var config = make([]map[string]string, 0)
+
+	raw, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+	}
+
+	err = json.Unmarshal(raw, &config)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+	}
+	fmt.Print(config)
 	var r uint32 = 0
 	for i := range config {
-		s, exists := ShardingResourceList.Get(config[i].(map[string]interface{})["name"].(string))
+		s, exists := ShardingResourceList.Get(config[i]["value"])
 		if exists {
 			var v uint32 = 0
 			v = v | (1 << s)
 			r += v
 		}
 	}
-	return r
+	g.JSON(http.StatusOK, r)
+}
+
+func (b *BaseAPI) PermissionList(g *gin.Context) {
+
+	g.JSON(http.StatusOK, MergeResourceConstList())
 }
 
 func (b *BaseAPI) PermissionTransfer(g *gin.Context) {
@@ -212,7 +231,7 @@ func (b *BaseAPI) PermissionTransfer(g *gin.Context) {
 	}
 
 	permValue := uint32(p)
-	var transfer []string
+	var transfer []string = make([]string, 0)
 	ResourceConstList := MergeResourceConstList()
 
 	hasPer := func(v uint32, bit uint32) bool {

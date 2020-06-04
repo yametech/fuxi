@@ -73,6 +73,8 @@ func main() {
 	// Permission
 	{
 		group.GET("/permission_transfer/:value", BasePermissionTransferList)
+		group.GET("/permission_list", BasePermissionList)
+		group.POST("/permission_auth_value", BasePermissionAuthorizeValue)
 	}
 
 	// Release production environment can be turned on
