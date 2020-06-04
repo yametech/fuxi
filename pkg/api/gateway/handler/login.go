@@ -73,7 +73,22 @@ func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodGet && r.URL.Path == "/config" {
-		writeResponse(w, http.StatusOK, []byte{})
+		if userAuth.UserName == "admin" {
+			expireTime := time.Now().Add(time.Hour * 24).Unix()
+			tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
+			if err != nil {
+				writeResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+
+			config := newUserConfig(userAuth.UserName, tokenStr, []string{})
+			bytesData, err := json.Marshal(config)
+			if err != nil {
+				writeResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			writeResponse(w, http.StatusOK, bytesData)
+		}
 		return
 	}
 
