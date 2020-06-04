@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	"net/http"
@@ -126,12 +125,12 @@ func init() {
 		keyValuePair{SRV_DELETE, SRV_DELETE_BIT},
 		// PERMISSION
 		keyValuePair{PERMISSION_VIEW, PERMISSION_VIEW_BIT},
-		keyValuePair{PERMISSION_UPDATE, PERMISSION_CREATE_BIT},
+		keyValuePair{PERMISSION_UPDATE, PERMISSION_UPDATE_BIT},
 		keyValuePair{PERMISSION_CREATE, PERMISSION_CREATE_BIT},
 		keyValuePair{PERMISSION_DELETE, PERMISSION_DELETE_BIT},
 		// NS
 		keyValuePair{NS_VIEW, NS_VIEW_BIT},
-		keyValuePair{NS_UPDATE, NS_CREATE_BIT},
+		keyValuePair{NS_UPDATE, NS_UPDATE_BIT},
 		keyValuePair{NS_CREATE, NS_CREATE_BIT},
 		keyValuePair{NS_DELETE, NS_DELETE_BIT},
 	)
@@ -204,7 +203,7 @@ func (b *BaseAPI) PermissionAuthorizeValue(g *gin.Context) {
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 	}
-	fmt.Print(config)
+
 	var r uint32 = 0
 	for i := range config {
 		s, exists := ShardingResourceList.Get(config[i]["value"])
