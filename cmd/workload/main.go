@@ -303,6 +303,8 @@ func main() {
 		// all resource apply
 		group.POST("/stack", workloadsAPI.Apply)
 
+		// workloads deploy post request
+		group.POST("/deploy", workloadsAPI.Deploy)
 		// other resource  api/apis resource
 		group.DELETE("/api/v1/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
 		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
