@@ -43,7 +43,6 @@ require (
 	github.com/go-stomp/stomp v2.0.3+incompatible // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
-	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/google/go-containerregistry v0.0.0-20191108172333-79629ba8e9a1 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
@@ -78,7 +77,6 @@ require (
 	github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da // indirect
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/smartystreets/assertions v1.0.1 // indirect
-	github.com/smartystreets/goconvey v0.0.0-20190710185942-9d28bd7c0945 // indirect
 	github.com/sony/gobreaker v0.4.1 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.4.0 // indirect
@@ -91,17 +89,14 @@ require (
 	github.com/uber/jaeger-client-go v2.17.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.0.0+incompatible // indirect
 	github.com/vishvananda/netns v0.0.0-20190625233234-7109fa855b0f // indirect
-	github.com/yametech/nuwa v0.0.0-20200219064746-d12d48ec2e6e
+	github.com/yametech/nuwa v0.0.0
 	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/ratelimit v0.1.0 // indirect
 	go.uber.org/zap v1.10.0
 	gocloud.dev/pubsub/rabbitpubsub v0.17.0 // indirect
-	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
 	golang.org/x/tools v0.0.0-20200305224536-de023d59a5d1 // indirect
-	gonum.org/v1/gonum v0.0.0-20190710053202-4340aa3071a0 // indirect
 	google.golang.org/api v0.13.0 // indirect
 	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
-	google.golang.org/grpc v1.25.1 // indirect
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0 // indirect
 	gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a // indirect
 	gopkg.in/gcfg.v1 v1.2.3 // indirect
@@ -109,30 +104,30 @@ require (
 	gopkg.in/jcmturner/gokrb5.v7 v7.3.0 // indirect
 	gopkg.in/ldap.v3 v3.1.0 // indirect
 	gopkg.in/redis.v3 v3.6.4 // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/api v0.18.3
-	k8s.io/apiextensions-apiserver v0.0.0
+	k8s.io/apiextensions-apiserver v0.18.2
 	k8s.io/apimachinery v0.18.3
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/code-generator v0.0.0 // indirect
-	k8s.io/gengo v0.0.0-20191010091904-7fa3014cb28f // indirect
 	k8s.io/klog v1.0.0 // indirect
-	k8s.io/kube-openapi v0.0.0-20191107075043-30be4d16710a
-	k8s.io/kubernetes v1.16.2
+	k8s.io/kube-openapi v0.0.0-20200410145947-61e04a5be9a6
+	k8s.io/kubernetes v1.18.3 // indirect
 	k8s.io/metrics v0.0.0
 	k8s.io/sample-controller v0.0.0-20190326030654-b8f621986e45
 	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706
-	sigs.k8s.io/controller-runtime v0.4.0
+	sigs.k8s.io/controller-runtime v0.6.0
 )
 
 replace (
 	github.com/docker/distribution => github.com/docker/distribution v2.7.1+incompatible
+	github.com/docker/docker => github.com/moby/moby v0.7.3-0.20190826074503-38ab9da00309
 	github.com/docker/go-connections => github.com/docker/go-connections v0.3.0
 	github.com/docker/go-units => github.com/docker/go-units v0.3.3
 	github.com/docker/libnetwork => github.com/docker/libnetwork v0.0.0-20180830151422-a9cd636e3789
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.1
 	github.com/micro/go-micro => github.com/micro/go-micro v1.16.0
+	github.com/yametech/nuwa => github.com/yametech/nuwa v1.0.1-0.20200602142225-f13837e897ae
 	k8s.io/api => k8s.io/api v0.0.0-20191114100237-2cd11237263f // 1.15.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20190918201827-3de75813f604
 	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20191004115701-31ade1b30762 // 1.15.6
@@ -155,5 +150,4 @@ replace (
 	k8s.io/metrics => k8s.io/metrics v0.0.0-20191016113814-3b1a734dba6e
 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.0.0-20191016112829-06bb3c9d77c9
 	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.3.0
-	github.com/docker/docker => github.com/moby/moby v0.7.3-0.20190826074503-38ab9da00309
 )
