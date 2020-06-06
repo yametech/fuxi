@@ -36,23 +36,17 @@ func parseForApiUrl(apiUrl string) (gvr *schema.GroupVersionResource, namespace 
 		return nil, "", "", fmt.Errorf("parse url error")
 	}
 	switch paths[0] {
-	case "api":
+	case "api": // eg: /api/v1/watch/namespaces/{namespaces}/pods
 		gvr.Group = ""
 		gvr.Version = paths[1]
 		gvr.Resource = paths[2]
-		// /api/v1/watch/namespaces/{namespaces}/pods
 		if len(paths) >= 6 && paths[3] == "namespaces" {
 			namespace = paths[4]
 		}
-	case "apis":
-		if paths[1] == "crd" {
-			// /apis/crd/nuwa.nip.io/v1/waters?watch=1&resourceVersion=5738162
-			remove(paths, 1)
-		}
+	case "apis": // eg: /apis/apps/v1/watch/namespaces/{namespaces}/deployments
 		gvr.Group = paths[1]
 		gvr.Version = paths[2]
 		gvr.Resource = paths[3]
-		// /apis/apps/v1/watch/namespaces/{namespaces}/deployments
 		if len(paths) >= 7 && paths[4] == "namespaces" {
 			namespace = paths[5]
 		}

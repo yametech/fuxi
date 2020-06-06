@@ -20,7 +20,8 @@ func (w *WorkloadsAPI) GetDeployment(g *gin.Context) {
 }
 
 func (w *WorkloadsAPI) ListDeployment(g *gin.Context) {
-	list, err := w.deployments.List("", "", 0, 0, nil)
+	namespace := g.Param("namespace")
+	list, err := w.deployments.List(namespace, "", 0, 0, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

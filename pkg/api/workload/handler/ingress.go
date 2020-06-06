@@ -23,7 +23,7 @@ func (w *WorkloadsAPI) GetIngress(g *gin.Context) {
 
 // List Ingress
 func (w *WorkloadsAPI) ListIngress(g *gin.Context) {
-	list, err := w.ingress.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.ingress)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

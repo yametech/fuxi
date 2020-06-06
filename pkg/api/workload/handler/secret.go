@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetSecret(g *gin.Context) {
 
 // List Secret
 func (w *WorkloadsAPI) ListSecret(g *gin.Context) {
-	list, err := w.secret.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.secret)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

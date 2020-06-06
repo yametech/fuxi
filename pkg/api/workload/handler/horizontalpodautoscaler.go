@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetHorizontalPodAutoscaler(g *gin.Context) {
 
 // List HorizontalPodAutoscaler
 func (w *WorkloadsAPI) ListHorizontalPodAutoscaler(g *gin.Context) {
-	list, err := w.horizontalPodAutoscaler.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.horizontalPodAutoscaler)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

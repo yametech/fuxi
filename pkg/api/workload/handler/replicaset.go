@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetReplicaSet(g *gin.Context) {
 
 // List ReplicaSet
 func (w *WorkloadsAPI) ListReplicaSet(g *gin.Context) {
-	list, err := w.replicaSet.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.replicaSet)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

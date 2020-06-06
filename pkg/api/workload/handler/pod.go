@@ -63,7 +63,7 @@ func (w *WorkloadsAPI) GetPod(g *gin.Context) {
 
 // List Pods
 func (w *WorkloadsAPI) ListPod(g *gin.Context) {
-	list, err := w.pod.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.pod)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

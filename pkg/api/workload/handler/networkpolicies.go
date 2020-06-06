@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetNetworkPolicy(g *gin.Context) {
 
 // List NetworkPolicy
 func (w *WorkloadsAPI) ListNetworkPolicy(g *gin.Context) {
-	list, err := w.networkPolicy.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.networkPolicy)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

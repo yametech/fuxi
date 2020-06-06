@@ -26,3 +26,4 @@ func DeploymentList(g *gin.Context) { workloadsAPI.ListDeployment(g) }
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/v1/:ns/deployment/:name/get [get]
 func DeploymentGet(g *gin.Context) { workloadsAPI.GetDeployment(g) }
+

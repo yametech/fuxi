@@ -32,7 +32,7 @@ func (w *WorkloadsAPI) DeletePersistentVolume(g *gin.Context) {
 
 // List PersistentVolume
 func (w *WorkloadsAPI) ListPersistentVolume(g *gin.Context) {
-	list, err := w.persistentVolume.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.persistentVolume)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

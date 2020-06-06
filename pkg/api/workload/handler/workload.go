@@ -2,14 +2,21 @@ package handler
 
 import (
 	"fmt"
-	"net/http"
-	"strings"
-	"github.com/yametech/fuxi/pkg/api/common"
 	"github.com/gin-gonic/gin"
+	"github.com/yametech/fuxi/pkg/api/common"
+	service_common "github.com/yametech/fuxi/pkg/service/common"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"net/http"
+	"strings"
 )
+
+func resourceList(g *gin.Context, rq service_common.ResourceQuery) (list *unstructured.UnstructuredList, err error) {
+	namespace := g.Param("namespace")
+	list, err = rq.List(namespace, "", 0, 0, nil)
+	return
+}
 
 // WorkloadsAPI all resource operate
 type WorkloadsAPI struct {
@@ -53,6 +60,9 @@ type WorkloadsAPI struct {
 	taskrun                  *workloadservice.TaskRun
 	pipelineResource         *workloadservice.PipelineResource
 	podsecuritypolicies      *workloadservice.PodSecurityPolicies
+	stone                    *workloadservice.Stone
+	water                    *workloadservice.Water
+	injector                 *workloadservice.Injector
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -94,6 +104,9 @@ func NewWorkladAPI() *WorkloadsAPI {
 		pipeline:                 workloadservice.NewPipeline(),
 		pipelineRun:              workloadservice.NewPipelineRun(),
 		podsecuritypolicies:      workloadservice.NewPodSecurityPolicies(),
+		stone:                    workloadservice.NewStone(),
+		water:                    workloadservice.NewWater(),
+		injector:                 workloadservice.NewInjector(),
 	}
 }
 

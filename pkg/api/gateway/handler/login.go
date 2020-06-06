@@ -20,6 +20,11 @@ type userAuth struct {
 	Password string `json:"password"`
 }
 
+var dataBase = map[string]string{
+	"admin": "admin",
+	"dev":   "dev",
+}
+
 func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	username := r.Header.Get(common.HttpRequestUserHeaderKey)
 	userAuth := &userAuth{}
@@ -49,11 +54,13 @@ func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		//	return
 		//}
 
-		if userAuth.UserName != "admin" || userAuth.Password != "admin" {
-			writeResponse(w, http.StatusUnauthorized, "you not ....")
+		if pwd, exist := dataBase[userAuth.UserName]; !exist {
+			writeResponse(w, http.StatusUnauthorized, "{message: user not exist}")
+			return
+		} else if pwd != userAuth.Password {
+			writeResponse(w, http.StatusUnauthorized, "{message: password incorrect}")
 			return
 		}
-
 		expireTime := time.Now().Add(time.Hour * 24).Unix()
 		tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
 		if err != nil {

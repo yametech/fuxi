@@ -24,6 +24,7 @@ func (w *WorkloadsAPI) GetEvent(g *gin.Context) {
 // List Event
 func (w *WorkloadsAPI) ListEvent(g *gin.Context) {
 	limit := g.Param("limit")
+	namespace := g.Param("namespace")
 	limitNum := int64(10000)
 	var err error
 	if limit != "" {
@@ -33,7 +34,7 @@ func (w *WorkloadsAPI) ListEvent(g *gin.Context) {
 			return
 		}
 	}
-	list, err := w.event.List("", "", 0, limitNum, nil)
+	list, err := w.event.List(namespace, "", 0, limitNum, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
