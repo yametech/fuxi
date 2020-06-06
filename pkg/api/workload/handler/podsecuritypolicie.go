@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
-	"k8s.io/kubernetes/pkg/apis/policy"
 	"net/http"
 )
 
@@ -27,16 +25,5 @@ func (w *WorkloadsAPI) ListPodSecurityPolicie(g *gin.Context) {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	podSecurityPolicyList := &policy.PodSecurityPolicyList{}
-	marshalData, err := json.Marshal(list)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	err = json.Unmarshal(marshalData, podSecurityPolicyList)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	g.JSON(http.StatusOK, podSecurityPolicyList)
+	g.JSON(http.StatusOK, list)
 }

@@ -2,67 +2,97 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/yametech/fuxi/util/common"
+	"io/ioutil"
 	"net/http"
+	"time"
+
+	"github.com/yametech/fuxi/thirdparty/lib/token"
 )
 
-type config struct {
-	LensVersion       string   `json:"lensVersion"`
-	LensTheme         string   `json:"lensTheme"`
-	UserName          string   `json:"userName"`
-	Token             string   `json:"Token"`
-	AllowedNamespaces []string `json:"allowedNamespaces"`
-	IsClusterAdmin    bool     `json:"isClusterAdmin"`
-	ChartEnable       bool     `json:"chartEnable"`
-	KubectlAccess     bool     `json:"kubectlAccess"`
-}
-
-func newConfig(user string, token string, allowedNamespaces []string) *config {
-	isClusterAdmin := false
-	if user == "admin" {
-		isClusterAdmin = true
-	}
-	return &config{
-		LensVersion:       "1.0",
-		LensTheme:         "",
-		UserName:          user,
-		Token:             token,
-		AllowedNamespaces: allowedNamespaces,
-		IsClusterAdmin:    isClusterAdmin,
-		ChartEnable:       true,
-		KubectlAccess:     true,
-	}
-}
-
 type LoginHandle struct {
-	*AuthorizationStorage
+	*token.Token
+	AuthorizationStorage
+}
+
+type userAuth struct {
+	UserName string `json:"username"`
+	Password string `json:"password"`
 }
 
 func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	bs, err := json.Marshal(newConfig("admin", "", []string{}))
-	if err != nil {
-		writeResponse(w, http.StatusBadRequest, err.Error())
-		return
+	username := r.Header.Get(common.HttpRequestUserHeaderKey)
+	userAuth := &userAuth{}
+	if username == "" {
+		bs, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		if err := json.Unmarshal(bs, userAuth); err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		if userAuth.UserName == "" || userAuth.Password == "" {
+			writeResponse(w, http.StatusBadRequest, "you are bug user")
+			return
+		}
+	} else {
+		userAuth.UserName = username
 	}
-	switch r.Method {
-	case http.MethodPost:
-		writeResponse(w, http.StatusOK, bs)
-		return
-	case http.MethodGet:
-		/*
-			get config need authorization
-		*/
 
-		//baseUser := r.Header.Get("x-auth-username")
-		//if !h.Exist(baseUser) {
-		//	writeResponse(w, http.StatusBadRequest, "{message: baseUser not exists}")
+	if r.Method == http.MethodPost && r.URL.Path == "/user-login" {
+		// TODO login
+		//ok, err := h.Auth(userAuth.UserName, userAuth.Password)
+		//if !ok || err != nil {
+		//	writeResponse(w, http.StatusBadRequest, err.Error())
 		//	return
 		//}
-		writeResponse(w, http.StatusOK, bs)
+
+		if userAuth.UserName != "admin" || userAuth.Password != "admin" {
+			writeResponse(w, http.StatusUnauthorized, "you not ....")
+			return
+		}
+
+		expireTime := time.Now().Add(time.Hour * 24).Unix()
+		tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
+		if err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		config := newUserConfig(userAuth.UserName, tokenStr, []string{})
+		bytesData, err := json.Marshal(config)
+		if err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		writeResponse(w, http.StatusOK, bytesData)
 		return
-	default:
 	}
 
-	w.WriteHeader(http.StatusBadRequest)
+	if r.Method == http.MethodGet && r.URL.Path == "/config" {
+		if userAuth.UserName == "admin" {
+			expireTime := time.Now().Add(time.Hour * 24).Unix()
+			tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
+			if err != nil {
+				writeResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+
+			config := newUserConfig(userAuth.UserName, tokenStr, []string{})
+			bytesData, err := json.Marshal(config)
+			if err != nil {
+				writeResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			writeResponse(w, http.StatusOK, bytesData)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
 }
 
 func writeResponse(w http.ResponseWriter, status int, data interface{}) {

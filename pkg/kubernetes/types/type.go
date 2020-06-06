@@ -43,7 +43,7 @@ const (
 	Form                     ResourceName = "forms"
 	Field                    ResourceName = "fields"
 	BaseDepartment           ResourceName = "basedepartments"
-	BasePermission           ResourceName = "basepermissions"
+	//BasePermission           ResourceName = "basepermissions"
 	BaseRole                 ResourceName = "baseroles"
 	BaseUser                 ResourceName = "baseusers"
 	PodSecurityPolicie       ResourceName = "podsecuritypolicies"
@@ -95,7 +95,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Form:                     {Group: "fuxi.nip.io", Version: "v1", Resource: "forms"},
 	Field:                    {Group: "fuxi.nip.io", Version: "v1", Resource: "fields"},
 	BaseDepartment:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basedepartments"},
-	BasePermission:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basepermissions"},
+	//BasePermission:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basepermissions"},
 	BaseRole:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
 	BaseUser:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
 	BaseRoleUser:             {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleusers"},
@@ -147,7 +147,7 @@ var (
 	ResourceForm                     = getGvr(Form)
 	ResourceField                    = getGvr(Field)
 	ResourceBaseDepartment           = getGvr(BaseDepartment)
-	ResourceBasePermission           = getGvr(BasePermission)
+	//ResourceBasePermission           = getGvr(BasePermission)
 	ResourceBaseRole                 = getGvr(BaseRole)
 	ResourceBaseUser                 = getGvr(BaseUser)
 	ResourceBaseRoleUser             = getGvr(BaseRoleUser)

@@ -20,7 +20,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	loginHandler.AuthorizationStorage = authorStorage
+	loginHandler.AuthorizationStorage = *authorStorage
+	loginHandler.Token = gatewayInstallConfigure.Token
 
 	cmd.Init()
 }

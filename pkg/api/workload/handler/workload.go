@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
 	"github.com/yametech/fuxi/pkg/api/common"
-
 	"github.com/gin-gonic/gin"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -99,6 +97,22 @@ func NewWorkladAPI() *WorkloadsAPI {
 	}
 }
 
+var ignoreList = []string{
+	"namespaces",
+	"subnets",
+	"clusterroles",
+	"clusterrolebindings",
+}
+
+var in = func(item string) bool {
+	for _, ignoreItem := range ignoreList {
+		if ignoreItem == item {
+			return true
+		}
+	}
+	return false
+}
+
 // /api/:version/:resource/:name
 // /api/:version/namespaces/:namespace/:resource/:name
 // /apis/:group/:version/namespaces/:namespace
@@ -126,22 +140,6 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 		return
 	}
 	g.JSON(http.StatusOK, nil)
-}
-
-var ignoreList = []string{
-	"namespaces",
-	"subnets",
-	"clusterroles",
-	"clusterrolebindings",
-}
-
-var in = func(item string) bool {
-	for _, ignoreItem := range ignoreList {
-		if ignoreItem == item {
-			return true
-		}
-	}
-	return false
 }
 
 func (w *WorkloadsAPI) Apply(g *gin.Context) {

@@ -48,3 +48,15 @@ func NamespaceDelete(g *gin.Context) { workloadsAPI.DeleteNamespace(g) }
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/api/v1/namespaces/:name [post]
 func NamespaceCreate(g *gin.Context) { workloadsAPI.CreateNamespace(g) }
+
+// Namespaces doc
+// @Summary workload namespaces patch node limit
+// @Description workload service for  workload namespaces patch node limit
+// @Tags Namespaces
+// @Accept mpfd
+// @Produce json
+// @Param namespace query string true "namespace"
+// @Success 200 {string} string "{"msg": "Success"}"
+// @Failure 400 {string} string "{"msg": "Failed"}"
+// @Router /workload/api/v1/namespaces [patch]
+func NamespacePatchAnnotateNode(g *gin.Context) { workloadsAPI.PatchAnnotateNodeNamespace(g) }
