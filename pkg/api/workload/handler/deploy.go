@@ -192,10 +192,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 	}
 
 	var runtimeObj runtime.Object
-	objectMetadata := metav1.ObjectMeta{
-		Name:      deployTemplate.AppName,
-		Namespace: deployTemplate.Namespace.Value,
-	}
+
 	var runtimeClassGVR schema.GroupVersionResource
 	switch *workloads.Spec.ResourceType {
 	case "Stone":
@@ -211,14 +208,19 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 			return
 		}
 
+		notResourceAllocatedError := fmt.Errorf("node resources are not allocated in this namespace, please contact the administrator")
 		annotations := namespace.GetAnnotations()
 		if annotations == nil {
-			common.ToRequestParamsError(g, fmt.Errorf("the namespace is not allow deploy resource"))
+			common.ToRequestParamsError(g,
+				notResourceAllocatedError,
+			)
 			return
 		}
 		limits, ok := annotations[constraint.NamespaceAnnotationForNodeResource]
 		if !ok {
-			common.ToRequestParamsError(g, fmt.Errorf("the namespace is not allow deploy resource"))
+			common.ToRequestParamsError(g,
+				notResourceAllocatedError,
+			)
 			return
 		}
 
@@ -241,12 +243,20 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 				Kind:       "Stone",
 				APIVersion: "nuwa.nip.io/v1",
 			},
-			ObjectMeta: objectMetadata,
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      deployTemplate.AppName,
+				Namespace: deployTemplate.Namespace.Value,
+				Labels: map[string]string{
+					"app": deployTemplate.AppName,
+				},
+			},
 			Spec: nuwav1.StoneSpec{
 				Template: corev1.PodTemplateSpec{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:   deployTemplate.AppName,
-						Labels: map[string]string{"app": deployTemplate.AppName},
+						Name: deployTemplate.AppName,
+						Labels: map[string]string{
+							"app": deployTemplate.AppName,
+						},
 					},
 					Spec: corev1.PodSpec{
 						Containers: toPodContainer(deployItems...),
