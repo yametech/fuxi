@@ -141,12 +141,11 @@ func (w *WorkloadsAPI) DeleteNamespace(g *gin.Context) {
 // Get Namespace
 func (w *WorkloadsAPI) GetNamespace(g *gin.Context) {
 	namespaceName := g.Param("namespace")
-	item, err := w.namespace.Get("", namespaceName)
+	item, err := w.namespace.RemoteGet("", namespaceName)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return
 	}
-
 	g.JSON(http.StatusOK, item)
 }
 

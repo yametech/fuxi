@@ -23,7 +23,7 @@ func (w *WorkloadsAPI) GetJob(g *gin.Context) {
 
 // List Job
 func (w *WorkloadsAPI) ListJob(g *gin.Context) {
-	list, err := w.job.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.job)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

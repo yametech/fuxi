@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetService(g *gin.Context) {
 
 // List Service
 func (w *WorkloadsAPI) ListService(g *gin.Context) {
-	list, err := w.service.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.service)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetServiceAccount(g *gin.Context) {
 
 // List ServiceAccount
 func (w *WorkloadsAPI) ListServiceAccount(g *gin.Context) {
-	list, err := w.serviceAccount.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.serviceAccount)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

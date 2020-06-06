@@ -23,7 +23,7 @@ func (w *WorkloadsAPI) GetRole(g *gin.Context) {
 
 // List ClusterRole
 func (w *WorkloadsAPI) ListRole(g *gin.Context) {
-	list, err := w.role.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.role)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

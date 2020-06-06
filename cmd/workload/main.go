@@ -64,6 +64,7 @@ func main() {
 		router.GET("/workload/shell/pod/*path", serveHttp)
 		group.GET("/attach/namespace/:namespace/pod/:name/container/:container", PodAttach)
 		group.GET("/api/v1/pods", PodList)
+		group.GET("/api/v1/namespaces/:namespace/pods", PodList)
 		group.GET("/api/v1/namespaces/:namespace/pods/:name", PodGet)
 		group.GET("/api/v1/namespaces/:namespace/pods/:name/log", PodLog)
 	}
@@ -84,18 +85,21 @@ func main() {
 	// PersistentVolumeClaims
 	{
 		group.GET("/api/v1/persistentvolumeclaims", PersistentVolumeClaimsList)
+		group.GET("/api/v1/namespaces/:namespace/persistentvolumeclaims", PersistentVolumeClaimsList)
 		group.GET("/api/v1/namespaces/:namespace/persistentvolumeclaims/:name", PersistentVolumeClaimsGet)
 	}
 
 	// Event
 	{
 		group.GET("/api/v1/events", EventList)
-		group.GET("/api/v1/namespace/:namespace/event/:name", EventGet)
+		group.GET("/api/v1/namespaces/:namespace/events", EventList)
+		group.GET("/api/v1/namespaces/:namespace/events/:name", EventGet)
 	}
 
 	// ResourceQuota
 	{
 		group.GET("/api/v1/resourcequotas", ResourceQuotaList)
+		group.GET("/api/v1/namespaces/:namespace/resourcequotas", ResourceQuotaList)
 		group.GET("/api/v1/namespaces/:namespace/resourcequotas/:name", ResourceQuotaGet)
 		group.POST("/api/v1/namespaces/:namespace/resourcequotas", workloadsAPI.Apply)
 	}
@@ -103,12 +107,14 @@ func main() {
 	// Service
 	{
 		group.GET("/api/v1/services", ServiceList)
+		group.GET("/api/v1/namespaces/:namespace/services", ServiceList)
 		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
 	}
 
 	// Endpoint
 	{
 		group.GET("/api/v1/endpoints", EndpointList)
+		group.GET("/api/v1/namespaces/:namespace/endpoints", EndpointList)
 		group.GET("/api/v1/namespaces/:namespace/endpoints/:name", EndpointGet)
 	}
 
@@ -122,12 +128,14 @@ func main() {
 	// ConfigMaps
 	{
 		group.GET("/api/v1/configmaps", ConfigMapsList)
+		group.GET("/api/v1/namespaces/:namespace/configmaps", ConfigMapsList)
 		group.GET("/api/v1/namespaces/:namespace/configmaps/:name", ConfigMapsGet)
 	}
 
 	// Secret
 	{
 		group.GET("/api/v1/secrets", SecretList)
+		group.GET("/api/v1/namespaces/:namespace/secrets", SecretList)
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
 		group.POST("/api/v1/namespaces/:namespace/secrets", workloadsAPI.Apply)
 	}
@@ -137,6 +145,7 @@ func main() {
 	// Deployment
 	{
 		group.GET("/apis/apps/v1/deployments", DeploymentList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/deployments", DeploymentList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name", DeploymentGet)
 		// deployment scale
 		group.GET("/apis/apps/v1/namespaces/:namespace/deployments/:name/scale", workloadsAPI.GetDeploymentScale)
@@ -146,24 +155,48 @@ func main() {
 	// ReplicaSet
 	{
 		group.GET("/apis/apps/v1/replicasets", ReplicaSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets", ReplicaSetList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/replicasets/:name", ReplicaSetGet)
 	}
 
 	// StatefulSet
 	{
 		group.GET("/apis/apps/v1/statefulsets", StatefulSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/statefulsets", StatefulSetList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/statefulsets/:name", StatefulSetGet)
+	}
+
+	// Stone
+	{
+		group.GET("/apis/nuwa.nip.io/v1/stones", StoneList)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/stones", StoneList)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/stones/:name", StoneGet)
+	}
+
+	// Water
+	{
+		group.GET("/apis/nuwa.nip.io/v1/waters", WaterList)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/waters", WaterList)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/waters/:name", WaterGet)
+	}
+
+	{
+		group.GET("/apis/nuwa.nip.io/v1/injectors", InjectorList)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/injectors", InjectorList)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/injectors/:name", InjectorGet)
 	}
 
 	// StatefulSet1
 	{
 		group.GET("/apis/nuwa.nip.io/v1/statefulsets", StatefulSet1List)
+		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/statefulsets", StatefulSet1List)
 		group.GET("/apis/nuwa.nip.io/v1/namespaces/:namespace/statefulsets/:name", StatefulSet1Get)
 	}
 
 	// DaemonSet
 	{
 		group.GET("/apis/apps/v1/daemonsets", DaemonSetList)
+		group.GET("/apis/apps/v1/namespaces/:namespace/daemonsets", DaemonSetList)
 		group.GET("/apis/apps/v1/namespaces/:namespace/daemonsets/:name", DaemonSetGet)
 	}
 
@@ -173,6 +206,7 @@ func main() {
 	// CronJob
 	{
 		group.GET("/apis/batch/v1beta1/cronjobs", CronJobList)
+		group.GET("/apis/batch/v1beta1/namespaces/:namespace/cronjobs", CronJobList)
 		group.GET("/apis/batch/v1beta1/namespaces/:namespace/cronjobs/:name", CronJobGet)
 	}
 
@@ -180,7 +214,8 @@ func main() {
 
 	// Job
 	{
-		group.GET("/apis/batch/v1/jobs", JobList) //TODO fix route
+		group.GET("/apis/batch/v1/jobs", JobList)
+		group.GET("/apis/batch/v1/namespaces/:namespace/jobs", JobList)
 		group.GET("/apis/batch/v1/namespaces/:namespace/jobs/:name", JobGet)
 	}
 
@@ -190,6 +225,7 @@ func main() {
 	// Ingress
 	{
 		group.GET("/apis/extensions/v1beta1/ingresses", IngressList)
+		group.GET("/apis/extensions/v1beta1/namespaces/:namespace/ingresses", IngressList)
 		group.GET("/apis/extensions/v1beta1/namespaces/:namespace/ingresses/:name", IngressGet)
 	}
 
@@ -199,6 +235,7 @@ func main() {
 	// NetworkPolicy
 	{
 		group.GET("/apis/networking.k8s.io/v1/networkpolicies", NetworkPolicyList)
+		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies", NetworkPolicyList)
 		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
 	}
 
@@ -214,6 +251,7 @@ func main() {
 	// HorizontalPodAutoscaler
 	{
 		group.GET("/apis/autoscaling/v2beta1/horizontalpodautoscalers", HorizontalPodAutoscalerList)
+		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers", HorizontalPodAutoscalerList)
 		group.GET("/apis/autoscaling/v2beta1/namespaces/:namespace/horizontalpodautoscalers/:name", HorizontalPodAutoscalerGet)
 	}
 
@@ -223,6 +261,7 @@ func main() {
 	// Roles
 	{
 		group.GET("/apis/rbac.authorization.k8s.io/v1/roles", RoleList)
+		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/roles", RoleList)
 		group.GET("/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/roles/:name", RoleGet)
 	}
 	// #rbac.authorization.k8s.io
@@ -272,6 +311,9 @@ func main() {
 			"fuxi.nip.io/v1/baseroles",
 			"fuxi.nip.io/v1/baseusers",
 			"nuwa.nip.io/v1/statefulsets",
+			"nuwa.nip.io/v1/stones",
+			"nuwa.nip.io/v1/waters",
+			"nuwa.nip.io/v1/injectors",
 			"tekton.dev/v1alpha1/pipelines",
 			"tekton.dev/v1alpha1/pipelineruns",
 			"tekton.dev/v1alpha1/pipelineresources",

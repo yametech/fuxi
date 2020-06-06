@@ -24,7 +24,7 @@ func (w *WorkloadsAPI) GetCronJob(g *gin.Context) {
 
 // List CronJob
 func (w *WorkloadsAPI) ListCronJob(g *gin.Context) {
-	list, err := w.cronJob.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.cronJob)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

@@ -2,18 +2,18 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/yametech/fuxi/pkg/api/common"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-	v1 "k8s.io/api/core/v1"
+	"github.com/yametech/fuxi/pkg/api/common"
+	nuwav1 "github.com/yametech/nuwa/api/v1"
+	"net/http"
 )
 
-// Get ConfigMaps
-func (w *WorkloadsAPI) GetConfigMaps(g *gin.Context) {
+// Get Injector
+func (w *WorkloadsAPI) GetInjector(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.configMaps.Get(namespace, name)
+
+	item, err := w.statefulSet1.Get(namespace, name)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
@@ -21,23 +21,23 @@ func (w *WorkloadsAPI) GetConfigMaps(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List ConfigMaps
-func (w *WorkloadsAPI) ListConfigMaps(g *gin.Context) {
-	list, err := resourceList(g, w.configMaps)
+// List StatefulSet
+func (w *WorkloadsAPI) ListInjector(g *gin.Context) {
+	list, err := resourceList(g, w.injector)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	configMapList := &v1.ConfigMapList{}
+	statefulSetList := &nuwav1.StatefulSetList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	err = json.Unmarshal(marshalData, configMapList)
+	err = json.Unmarshal(marshalData, statefulSetList)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	g.JSON(http.StatusOK, configMapList)
+	g.JSON(http.StatusOK, statefulSetList)
 }

@@ -34,7 +34,7 @@ func (w *WorkloadsAPI) DeletePersistentVolumeClaims(g *gin.Context) {
 
 // List PersistentVolumeClaims
 func (w *WorkloadsAPI) ListPersistentVolumeClaims(g *gin.Context) {
-	list, err := w.persistentVolumeClaims.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.persistentVolumeClaims)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

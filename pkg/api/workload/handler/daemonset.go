@@ -23,7 +23,7 @@ func (w *WorkloadsAPI) GetDaemonSet(g *gin.Context) {
 
 // List DaemonSet
 func (w *WorkloadsAPI) ListDaemonSet(g *gin.Context) {
-	list, err := w.daemonSet.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.daemonSet)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

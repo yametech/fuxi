@@ -15,6 +15,8 @@ func newUserConfig(user string, token string, allowedNamespaces []string) *UserC
 	isClusterAdmin := false
 	if user == "admin" {
 		isClusterAdmin = true
+	} else {
+		allowedNamespaces = []string{"dxp", "dxp2"}
 	}
 	return &UserConfig{
 		LensVersion:       "1.0",

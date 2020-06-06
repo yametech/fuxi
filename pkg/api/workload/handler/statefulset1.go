@@ -23,7 +23,7 @@ func (w *WorkloadsAPI) GetStatefulSet1(g *gin.Context) {
 
 // List StatefulSet
 func (w *WorkloadsAPI) ListStatefulSet1(g *gin.Context) {
-	list, err := w.statefulSet1.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.statefulSet1)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

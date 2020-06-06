@@ -21,7 +21,7 @@ func (w *WorkloadsAPI) GetStorageClass(g *gin.Context) {
 
 // List StorageClass
 func (w *WorkloadsAPI) ListStorageClass(g *gin.Context) {
-	list, err := w.storageClass.List("", "", 0, 1000, nil)
+	list, err := w.storageClass.List("", "", 0, 0, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

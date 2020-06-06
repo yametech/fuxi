@@ -172,7 +172,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 		common.ToRequestParamsError(g, err)
 		return
 	}
-	obj, err := w.workloadsTemplate.Get(constraint.WorkloadsDeployTemplateNamespace, deployTemplate.TemplateName)
+	obj, err := w.workloadsTemplate.RemoteGet(constraint.WorkloadsDeployTemplateNamespace, deployTemplate.TemplateName)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return
