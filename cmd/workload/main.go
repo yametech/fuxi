@@ -99,6 +99,7 @@ func main() {
 	// ResourceQuota
 	{
 		group.GET("/api/v1/resourcequotas", ResourceQuotaList)
+		group.GET("/api/v1/namespaces/:namespace/resourcequotas", ResourceQuotaList)
 		group.GET("/api/v1/namespaces/:namespace/resourcequotas/:name", ResourceQuotaGet)
 		group.POST("/api/v1/namespaces/:namespace/resourcequotas", workloadsAPI.Apply)
 	}
@@ -106,12 +107,14 @@ func main() {
 	// Service
 	{
 		group.GET("/api/v1/services", ServiceList)
+		group.GET("/api/v1/namespaces/:namespace/services", ServiceList)
 		group.GET("/api/v1/namespaces/:namespace/services/:name", ServiceGet)
 	}
 
 	// Endpoint
 	{
 		group.GET("/api/v1/endpoints", EndpointList)
+		group.GET("/api/v1/namespaces/:namespace/endpoints", EndpointList)
 		group.GET("/api/v1/namespaces/:namespace/endpoints/:name", EndpointGet)
 	}
 
@@ -125,12 +128,14 @@ func main() {
 	// ConfigMaps
 	{
 		group.GET("/api/v1/configmaps", ConfigMapsList)
+		group.GET("/api/v1/namespaces/:namespace/configmaps", ConfigMapsList)
 		group.GET("/api/v1/namespaces/:namespace/configmaps/:name", ConfigMapsGet)
 	}
 
 	// Secret
 	{
 		group.GET("/api/v1/secrets", SecretList)
+		group.GET("/api/v1/namespaces/:namespace/secrets", SecretList)
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
 		group.POST("/api/v1/namespaces/:namespace/secrets", workloadsAPI.Apply)
 	}
@@ -230,6 +235,7 @@ func main() {
 	// NetworkPolicy
 	{
 		group.GET("/apis/networking.k8s.io/v1/networkpolicies", NetworkPolicyList)
+		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies", NetworkPolicyList)
 		group.GET("/apis/networking.k8s.io/v1/namespaces/:namespace/networkpolicies/:name", NetworkPolicyGet)
 	}
 

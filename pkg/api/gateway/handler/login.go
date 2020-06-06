@@ -61,6 +61,7 @@ func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeResponse(w, http.StatusUnauthorized, "{message: password incorrect}")
 			return
 		}
+
 		expireTime := time.Now().Add(time.Hour * 24).Unix()
 		tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
 		if err != nil {

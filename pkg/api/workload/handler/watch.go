@@ -36,19 +36,24 @@ func parseForApiUrl(apiUrl string) (gvr *schema.GroupVersionResource, namespace 
 		return nil, "", "", fmt.Errorf("parse url error")
 	}
 	switch paths[0] {
-	case "api": // eg: /api/v1/watch/namespaces/{namespaces}/pods
+	case "api": //  eg: /api/v1/pods
 		gvr.Group = ""
 		gvr.Version = paths[1]
 		gvr.Resource = paths[2]
+
 		if len(paths) >= 6 && paths[3] == "namespaces" {
+			//  eg: /api/v1/namespaces/{namespaces}/pods
+			gvr.Resource = paths[5]
 			namespace = paths[4]
 		}
-	case "apis": // eg: /apis/apps/v1/watch/namespaces/{namespaces}/deployments
+	case "apis": // eg: /apis/apps/v1/deployments
 		gvr.Group = paths[1]
 		gvr.Version = paths[2]
 		gvr.Resource = paths[3]
-		if len(paths) >= 7 && paths[4] == "namespaces" {
-			namespace = paths[5]
+		// /apis/apps/v1/namespaces/{namespaces}/deployments
+		if len(paths) >= 6 && paths[3] == "namespaces" {
+			gvr.Resource = paths[5]
+			namespace = paths[4]
 		}
 
 	default:

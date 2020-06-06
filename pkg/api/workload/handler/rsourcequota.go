@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetResourceQuota(g *gin.Context) {
 
 // List ResourceQuota
 func (w *WorkloadsAPI) ListResourceQuota(g *gin.Context) {
-	list, err := w.resourceQuota.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.resourceQuota)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

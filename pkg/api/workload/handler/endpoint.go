@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetEndpoint(g *gin.Context) {
 
 // List Endpoint
 func (w *WorkloadsAPI) ListEndpoint(g *gin.Context) {
-	list, err := w.endpoint.List("", "", 0, 0, nil)
+	list, err := resourceList(g, w.endpoint)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
