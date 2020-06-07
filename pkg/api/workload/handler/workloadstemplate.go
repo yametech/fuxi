@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
+	consts "github.com/yametech/fuxi/util/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -49,6 +51,30 @@ func (w *WorkloadsAPI) GetWorkloadsTemplate(g *gin.Context) {
 		return
 	}
 	g.JSON(http.StatusOK, item)
+}
+
+// list Shared WorkloadsTemplate
+func (w *WorkloadsAPI) ListShareNamespacedWorkloadsTemplate(g *gin.Context) {
+	namespace := g.Param("namespace")
+	labelSelector := fmt.Sprintf("namespace=%s", namespace)
+
+	list, err := w.workloadsTemplate.SharedNamespaceList(consts.WorkloadsDeployTemplateNamespace, labelSelector)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	workloadList := &v1.WorkloadsList{}
+	marshalData, err := json.Marshal(list)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	err = json.Unmarshal(marshalData, workloadList)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	g.JSON(http.StatusOK, workloadList)
 }
 
 // List WorkloadsTemplate

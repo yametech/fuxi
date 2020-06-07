@@ -27,4 +27,8 @@ func WorkloadsTemplateList(g *gin.Context) { workloadsAPI.ListWorkloadsTemplate(
 // @Router /workload/apis/fuxi.nip.io/v1/workloads/namespaces/{namespace}/{name} [get]
 func WorkloadsTemplateGet(g *gin.Context) { workloadsAPI.GetWorkloadsTemplate(g) }
 
+func WorkloadsTemplateListSharedNamespace(g *gin.Context) {
+	workloadsAPI.ListShareNamespacedWorkloadsTemplate(g)
+}
+
 func WorkloadsTemplateCreate(g *gin.Context) { workloadsAPI.PostWorkloadsTemplate(g) }
