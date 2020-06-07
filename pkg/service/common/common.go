@@ -33,6 +33,7 @@ type ResourceQuery interface {
 	List(namespace, flag string, pos, size int64, selector interface{}) (*unstructured.UnstructuredList, error)
 	Get(namespace, name string) (runtime.Object, error)
 	RemoteGet(namespace, name string, subresources ...string) (runtime.Object, error)
+	SharedNamespaceList(namespace string, selector interface{}) (*unstructured.UnstructuredList, error)
 	Watch(namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector) (<-chan watch.Event, error)
 }
 
@@ -68,6 +69,7 @@ func (d *DefaultImplWorkloadsResourceHandler) GetGroupVersionResource() schema.G
 func (d *DefaultImplWorkloadsResourceHandler) SetGroupVersionResource(g schema.GroupVersionResource) {
 	d.GroupVersionResource = g
 }
+
 func (d *DefaultImplWorkloadsResourceHandler) List(
 	namespace,
 	flag string,
@@ -110,16 +112,45 @@ func (d *DefaultImplWorkloadsResourceHandler) List(
 	return items, nil
 }
 
+func (d *DefaultImplWorkloadsResourceHandler) SharedNamespaceList(namespace string, selector interface{}) (*unstructured.UnstructuredList, error) {
+	var err error
+	var items *unstructured.UnstructuredList
+	opts := metav1.ListOptions{}
+
+	if selector == nil || selector == "" {
+		selector = labels.Everything()
+	}
+	switch selector.(type) {
+	case labels.Selector:
+		opts.LabelSelector = selector.(labels.Selector).String()
+	case string:
+		if selector != "" {
+			opts.LabelSelector = selector.(string)
+		}
+	}
+	gvr := d.GetGroupVersionResource()
+	items, err = SharedK8sClient.
+		ClientV2.
+		Interface.
+		Resource(gvr).
+		Namespace(namespace).
+		List(opts)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 func (d *DefaultImplWorkloadsResourceHandler) Get(namespace, name string) (
 	runtime.Object, error,
 ) {
+	gvr := d.GetGroupVersionResource()
 	object, err := SharedK8sClient.
 		ClientV2.
-		Informer.
-		ForResource(d.GetGroupVersionResource()).
-		Lister().
-		ByNamespace(namespace).
-		Get(name)
+		Interface.
+		Resource(gvr).
+		Namespace(namespace).
+		Get(name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}

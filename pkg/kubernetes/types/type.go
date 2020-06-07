@@ -44,10 +44,10 @@ const (
 	Field                    ResourceName = "fields"
 	BaseDepartment           ResourceName = "basedepartments"
 	//BasePermission           ResourceName = "basepermissions"
-	BaseRole                 ResourceName = "baseroles"
-	BaseUser                 ResourceName = "baseusers"
-	PodSecurityPolicie       ResourceName = "podsecuritypolicies"
-	BaseRoleUser             ResourceName = "baseroleusers"
+	BaseRole           ResourceName = "baseroles"
+	BaseUser           ResourceName = "baseusers"
+	PodSecurityPolicie ResourceName = "podsecuritypolicies"
+	BaseRoleUser       ResourceName = "baseroleusers"
 
 	//tekton
 	Pipeline         ResourceName = "pipelines"
@@ -96,9 +96,9 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	Field:                    {Group: "fuxi.nip.io", Version: "v1", Resource: "fields"},
 	BaseDepartment:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basedepartments"},
 	//BasePermission:           {Group: "fuxi.nip.io", Version: "v1", Resource: "basepermissions"},
-	BaseRole:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
-	BaseUser:                 {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
-	BaseRoleUser:             {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleusers"},
+	BaseRole:     {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
+	BaseUser:     {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
+	BaseRoleUser: {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleusers"},
 
 	// tekton.dev resource view
 	Pipeline:         {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelines"},
@@ -148,15 +148,15 @@ var (
 	ResourceField                    = getGvr(Field)
 	ResourceBaseDepartment           = getGvr(BaseDepartment)
 	//ResourceBasePermission           = getGvr(BasePermission)
-	ResourceBaseRole                 = getGvr(BaseRole)
-	ResourceBaseUser                 = getGvr(BaseUser)
-	ResourceBaseRoleUser             = getGvr(BaseRoleUser)
-	ResourcePieline                  = getGvr(Pipeline)
-	ResourcePipelineRun              = getGvr(PipelineRun)
-	ResourceTask                     = getGvr(Task)
-	ResourceTaskRun                  = getGvr(TaskRun)
-	ResourcePipelineResource         = getGvr(PipelineResource)
-	ResourcePodSecurityPolicie       = getGvr(PodSecurityPolicie)
+	ResourceBaseRole           = getGvr(BaseRole)
+	ResourceBaseUser           = getGvr(BaseUser)
+	ResourceBaseRoleUser       = getGvr(BaseRoleUser)
+	ResourcePieline            = getGvr(Pipeline)
+	ResourcePipelineRun        = getGvr(PipelineRun)
+	ResourceTask               = getGvr(Task)
+	ResourceTaskRun            = getGvr(TaskRun)
+	ResourcePipelineResource   = getGvr(PipelineResource)
+	ResourcePodSecurityPolicie = getGvr(PodSecurityPolicie)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {

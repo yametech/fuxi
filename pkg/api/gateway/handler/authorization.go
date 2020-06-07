@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yametech/fuxi/pkg/service/workload"
 	"sort"
 	"sync"
 
@@ -130,18 +131,28 @@ func (auth *Authorization) remove(roleName string) {
 }
 
 type AuthorizationStorage struct {
-	mutex    sync.RWMutex
-	data     map[string]*Authorization
-	baseUser *base.BaseUser
+	mutex     sync.RWMutex
+	data      map[string]*Authorization
+	baseUser  *base.BaseUser
+	namespace *workload.Namespace
 }
 
 func NewAuthorizationStorage() (*AuthorizationStorage, error) {
 	authorizationStorage := &AuthorizationStorage{
-		mutex:    sync.RWMutex{},
-		data:     make(map[string]*Authorization),
-		baseUser: base.NewBaseUser(),
+		mutex:     sync.RWMutex{},
+		data:      make(map[string]*Authorization),
+		baseUser:  base.NewBaseUser(),
+		namespace: workload.NewNamespace(),
 	}
 	return authorizationStorage, nil
+}
+
+// TODO 查找用户可以访问的空间
+func (a *Authorization) UserAllowNamespace(user string) []string {
+	if user == "admin" {
+
+	}
+	return []string{}
 }
 
 func (a *AuthorizationStorage) Auth(username string, password string) (bool, error) {

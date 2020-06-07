@@ -92,6 +92,10 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 			return
 		}
 		event.SetGroupVersionResource(*gvr)
+		if rv == "" {
+			log.Printf("watch for gvr: %s stream error: %s for api request %s \r\n", gvr, err, api)
+			continue
+		}
 		k8sWatchChan, err := event.Watch(ns, rv, 0, nil)
 		if err != nil {
 			log.Printf("watch for gvr: %s stream error: %s for api request %s \r\n", gvr, err, api)
