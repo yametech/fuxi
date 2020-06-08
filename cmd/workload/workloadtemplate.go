@@ -32,3 +32,5 @@ func WorkloadsTemplateListSharedNamespace(g *gin.Context) {
 }
 
 func WorkloadsTemplateCreate(g *gin.Context) { workloadsAPI.PostWorkloadsTemplate(g) }
+
+func WorkloadsTemplateMatedataLabelUpdate(g *gin.Context) { workloadsAPI.PutWorkloadsTemplateMetadataLabels(g) }
