@@ -3,44 +3,37 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	consts "github.com/yametech/fuxi/util/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"net/http"
 )
 
 func (w *WorkloadsAPI) PutWorkloadsTemplateMetadataLabels(g *gin.Context) {
+	name := g.Param("name")
+	if name == "" {
+		common.ToRequestParamsError(g, fmt.Errorf("request name is nil"))
+		return
+	}
 	rawData, err := g.GetRawData()
+	var pathData = make(map[string]interface{})
+
+	err = json.Unmarshal(rawData, &pathData)
 	if err != nil {
-		common.ToRequestParamsError(g, err)
+		common.ToRequestParamsError(g, fmt.Errorf("request patch data bad"))
 		return
 	}
-	workloads := &v1.Workloads{}
-	err = json.Unmarshal(rawData, workloads)
-	if err != nil {
-		common.ToRequestParamsError(g, err)
-		return
-	}
-	namespaceValue, exist := workloads.Labels["namespace"]
-	if !exist {
-		common.ToRequestParamsError(g, fmt.Errorf("metatdata lables namespace not exists"))
-		return
-	}
-	pathData := map[string]interface{}{
-		"metadata": map[string]interface{}{
-			"labels": map[string]string{
-				"namespace": namespaceValue,
-			},
-		},
-	}
-	newObj, err := w.workloadsTemplate.Patch("fuxi", workloads.Name, pathData)
+
+	newObj, err := w.workloadsTemplate.Patch(consts.WorkloadsDeployTemplateNamespace, name, pathData)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
+
 	g.JSON(http.StatusOK, newObj)
 }
 
