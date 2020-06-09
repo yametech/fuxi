@@ -366,6 +366,11 @@ func (in *BaseUserSpec) DeepCopyInto(out *BaseUserSpec) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.Roles != nil {
+		in, out := &in.Roles, &out.Roles
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
