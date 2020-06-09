@@ -10,6 +10,8 @@ import (
 // BaseDepartmentSpec defines the desired state of BaseDepartment
 type BaseDepartmentSpec struct {
 	Namespace []string `json:"namespace,omitempty"`
+	// +optional
+	DefaultNamespace string `json:"defaultNamespace,omitempty"`
 }
 
 // BaseDepartmentStatus defines the observed state of BaseDepartment
