@@ -13,30 +13,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func (w *WorkloadsAPI) PutWorkloadsTemplateMetadataLabels(g *gin.Context) {
-	name := g.Param("name")
-	if name == "" {
-		common.ToRequestParamsError(g, fmt.Errorf("request name is nil"))
-		return
-	}
-	rawData, err := g.GetRawData()
-	var pathData = make(map[string]interface{})
-
-	err = json.Unmarshal(rawData, &pathData)
-	if err != nil {
-		common.ToRequestParamsError(g, fmt.Errorf("request patch data bad"))
-		return
-	}
-
-	newObj, err := w.workloadsTemplate.Patch(consts.WorkloadsDeployTemplateNamespace, name, pathData)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-
-	g.JSON(http.StatusOK, newObj)
-}
-
 func (w *WorkloadsAPI) PostWorkloadsTemplate(g *gin.Context) {
 	rawData, err := g.GetRawData()
 	if err != nil {

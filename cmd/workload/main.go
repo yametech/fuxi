@@ -360,7 +360,6 @@ func main() {
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/workloads", WorkloadsTemplateListSharedNamespace)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/workloads/:name", WorkloadsTemplateGet)
 		group.POST("/apis/fuxi.nip.io/v1/workloads", WorkloadsTemplateCreate)
-		group.PUT("/apis/fuxi.nip.io/v1/namespaces/:namespace/workloads/:name", WorkloadsTemplateMatedataLabelUpdate)
 	}
 
 	// Field

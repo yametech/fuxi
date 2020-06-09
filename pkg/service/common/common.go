@@ -227,11 +227,13 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(
 			return getErr
 		}
 
-		if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
+		if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) &&
+			reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
 			result = getObj
 			return nil
 		} else {
 			getObj.Object["spec"] = obj.Object["spec"]
+			getObj.Object["metadata"] = obj.Object["metadata"]
 		}
 
 		newObj, updateErr := SharedK8sClient.
