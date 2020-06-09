@@ -17,6 +17,8 @@ type BaseUserSpec struct {
 	Email string `json:"email,omitempty"`
 	// +optional
 	Display string `json:"display,omitempty"`
+	// +optional
+	Roles []string `json:"roles,omitempty"`
 }
 
 // BaseUserStatus defines the observed state of BaseUser
