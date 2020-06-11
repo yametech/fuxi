@@ -31,14 +31,7 @@ type deployTemplate struct {
 
 func workloadsTemplateToServiceSpec(wt *workloadsTemplate) (*corev1.ServiceSpec, error) {
 	serviceSpec := &corev1.ServiceSpec{
-		Ports: []corev1.ServicePort{
-			corev1.ServicePort{
-				Protocol:   corev1.ProtocolTCP,
-				Port:       80,
-				TargetPort: intstr.Parse("80"),
-			},
-		},
-		Type: corev1.ServiceType("NodePort"),
+		Type: corev1.ServiceType(wt.Service.Type),
 	}
 	for _, item := range wt.Service.Ports {
 		port, err := strconv.ParseInt(item.Port, 10, 32)
