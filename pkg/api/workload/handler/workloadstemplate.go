@@ -3,13 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
-	consts "github.com/yametech/fuxi/util/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
+	consts "github.com/yametech/fuxi/util/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"net/http"
 )
 
 func (w *WorkloadsAPI) PostWorkloadsTemplate(g *gin.Context) {

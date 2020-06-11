@@ -15,6 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"net/http"
 	"strconv"
 )
@@ -247,7 +248,8 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 				Name:      deployTemplate.AppName,
 				Namespace: deployTemplate.Namespace.Value,
 				Labels: map[string]string{
-					"app": deployTemplate.AppName,
+					"app":               deployTemplate.AppName,
+					"app-template-name": deployTemplate.TemplateName,
 				},
 			},
 			Spec: nuwav1.StoneSpec{
@@ -255,7 +257,8 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 					ObjectMeta: metav1.ObjectMeta{
 						Name: deployTemplate.AppName,
 						Labels: map[string]string{
-							"app": deployTemplate.AppName,
+							"app":               deployTemplate.AppName,
+							"app-template-name": deployTemplate.TemplateName,
 						},
 					},
 					Spec: corev1.PodSpec{
@@ -265,7 +268,14 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 				Strategy:    "Release", // TODO
 				Coordinates: cgs,
 				Service: corev1.ServiceSpec{
-					Type: corev1.ServiceType("ClusterIP"),
+					Ports: []corev1.ServicePort{
+						corev1.ServicePort{
+							Protocol:   corev1.ProtocolTCP,
+							Port:       80,
+							TargetPort: intstr.Parse("80"),
+						},
+					},
+					Type: corev1.ServiceType("NodePort"),
 				},
 			},
 		}

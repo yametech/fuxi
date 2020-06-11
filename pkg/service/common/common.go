@@ -2,6 +2,8 @@ package common
 
 import (
 	"encoding/json"
+	"reflect"
+
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -12,7 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/util/retry"
-	"reflect"
 	//"sort"
 )
 
@@ -226,11 +227,13 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(
 			return getErr
 		}
 
-		if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
+		if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) &&
+			reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
 			result = getObj
 			return nil
 		} else {
 			getObj.Object["spec"] = obj.Object["spec"]
+			getObj.Object["metadata"] = obj.Object["metadata"]
 		}
 
 		newObj, updateErr := SharedK8sClient.
@@ -252,20 +255,32 @@ func (d *DefaultImplWorkloadsResourceHandler) Patch(namespace, name string, path
 	if err != nil {
 		return nil, err
 	}
-	return SharedK8sClient.
-		ClientV2.
-		Interface.
-		Resource(d.GetGroupVersionResource()).
-		Namespace(namespace).
-		Patch(name, types.StrategicMergePatchType, ptBytes, metav1.PatchOptions{})
+	gvr := d.GetGroupVersionResource()
+	var result *unstructured.Unstructured
+	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		var err error
+		result, err = SharedK8sClient.
+			ClientV2.
+			Interface.
+			Resource(gvr).
+			Namespace(namespace).
+			Patch(name, types.StrategicMergePatchType, ptBytes, metav1.PatchOptions{})
+		if err != nil {
+			return err
+		}
+		return nil
+	},
+	)
+	return result, retryErr
 }
 
 func (d *DefaultImplWorkloadsResourceHandler) Delete(namespace, name string) error {
+	gvr := d.GetGroupVersionResource()
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		return SharedK8sClient.
 			ClientV2.
 			Interface.
-			Resource(d.GetGroupVersionResource()).
+			Resource(gvr).
 			Namespace(namespace).
 			Delete(name, &metav1.DeleteOptions{})
 	})

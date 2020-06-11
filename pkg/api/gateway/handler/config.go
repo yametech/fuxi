@@ -9,14 +9,17 @@ type UserConfig struct {
 	IsClusterAdmin    bool     `json:"isClusterAdmin"`
 	ChartEnable       bool     `json:"chartEnable"`
 	KubectlAccess     bool     `json:"kubectlAccess"`
+	DefaultNamespace  string   `json:"defaultNamespace"`
 }
 
 func newUserConfig(user string, token string, allowedNamespaces []string) *UserConfig {
 	isClusterAdmin := false
+	defaultNamespace := "default"
 	if user == "admin" {
 		isClusterAdmin = true
 	} else {
 		allowedNamespaces = []string{"dxp", "dxp2"}
+		defaultNamespace = "dxp"
 	}
 	return &UserConfig{
 		LensVersion:       "1.0",
@@ -27,5 +30,6 @@ func newUserConfig(user string, token string, allowedNamespaces []string) *UserC
 		IsClusterAdmin:    isClusterAdmin,
 		ChartEnable:       true,
 		KubectlAccess:     true,
+		DefaultNamespace:  defaultNamespace,
 	}
 }
