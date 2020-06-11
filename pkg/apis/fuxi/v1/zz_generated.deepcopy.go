@@ -957,6 +957,11 @@ func (in *WorkloadsSpec) DeepCopyInto(out *WorkloadsSpec) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.Service != nil {
+		in, out := &in.Service, &out.Service
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 

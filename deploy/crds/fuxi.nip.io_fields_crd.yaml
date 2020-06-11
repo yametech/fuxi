@@ -1,4 +1,4 @@
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: fields.fuxi.nip.io
@@ -10,112 +10,113 @@ spec:
     plural: fields
     singular: field
   scope: Namespaced
-  versions:
-  - name: v1
-    schema:
-      openAPIV3Schema:
-        description: Field is the Schema for the fields API
-        properties:
-          apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
-            type: string
-          kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
-            type: string
-          metadata:
-            type: object
-          spec:
-            description: FieldSpec defines the desired state of Field
-            properties:
-              field_type:
-                description: FormRender Type
-                type: string
-              form_data_config:
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: Field is the Schema for the fields API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: FieldSpec defines the desired state of Field
+          properties:
+            field_type:
+              description: FormRender Type
+              type: string
+            form_data_config:
+              properties:
+                default:
+                  description: For Bool
+                  type: boolean
+                description:
+                  type: string
+                max:
+                  description: For Number
+                  format: int32
+                  type: integer
+                min:
+                  description: For Number
+                  format: int32
+                  type: integer
+                prefix:
+                  type: string
+                select:
+                  description: For String
+                  items:
+                    properties:
+                      key:
+                        type: string
+                      value:
+                        type: string
+                    required:
+                    - key
+                    - value
+                    type: object
+                  type: array
+                suffix:
+                  type: string
+                title:
+                  type: string
+                ui:widget:
+                  type: string
+              type: object
+            props_schema:
+              additionalProperties:
                 properties:
                   default:
                     description: For Bool
                     type: boolean
                   description:
                     type: string
+                  enum:
+                    items:
+                      type: string
+                    type: array
+                  enumNames:
+                    items:
+                      type: string
+                    type: array
                   max:
                     description: For Number
                     format: int32
                     type: integer
                   min:
-                    description: For Number
                     format: int32
                     type: integer
                   prefix:
                     type: string
-                  select:
-                    description: For String
-                    items:
-                      properties:
-                        key:
-                          type: string
-                        value:
-                          type: string
-                      required:
-                      - key
-                      - value
-                      type: object
-                    type: array
                   suffix:
                     type: string
                   title:
                     type: string
+                  type:
+                    type: string
                   ui:widget:
                     type: string
                 type: object
-              props_schema:
-                additionalProperties:
-                  properties:
-                    default:
-                      description: For Bool
-                      type: boolean
-                    description:
-                      type: string
-                    enum:
-                      items:
-                        type: string
-                      type: array
-                    enumNames:
-                      items:
-                        type: string
-                      type: array
-                    max:
-                      description: For Number
-                      format: int32
-                      type: integer
-                    min:
-                      format: int32
-                      type: integer
-                    prefix:
-                      type: string
-                    suffix:
-                      type: string
-                    title:
-                      type: string
-                    type:
-                      type: string
-                    ui:widget:
-                      type: string
-                  type: object
-                type: object
-            required:
-            - field_type
-            - form_data_config
-            - props_schema
-            type: object
-          status:
-            description: FieldStatus defines the observed state of Field
-            type: object
-        type: object
+              type: object
+          required:
+          - field_type
+          - form_data_config
+          - props_schema
+          type: object
+        status:
+          description: FieldStatus defines the observed state of Field
+          type: object
+      type: object
+  version: v1
+  versions:
+  - name: v1
     served: true
     storage: true
-    subresources:
-      status: {}
