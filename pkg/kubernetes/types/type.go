@@ -48,6 +48,8 @@ const (
 	BaseUser           ResourceName = "baseusers"
 	PodSecurityPolicie ResourceName = "podsecuritypolicies"
 	BaseRoleUser       ResourceName = "baseroleusers"
+	IP                 ResourceName = "ips"
+	SubNet             ResourceName = "subnets"
 
 	//tekton
 	Pipeline         ResourceName = "pipelines"
@@ -99,6 +101,8 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	BaseRole:     {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroles"},
 	BaseUser:     {Group: "fuxi.nip.io", Version: "v1", Resource: "baseusers"},
 	BaseRoleUser: {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleusers"},
+	IP:           {Group: "kubeovn.io", Version: "v1", Resource: "ips"},
+	SubNet:       {Group: "kubeovn.io", Version: "v1", Resource: "subnets"},
 
 	// tekton.dev resource view
 	Pipeline:         {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelines"},
@@ -151,6 +155,8 @@ var (
 	ResourceBaseRole           = getGvr(BaseRole)
 	ResourceBaseUser           = getGvr(BaseUser)
 	ResourceBaseRoleUser       = getGvr(BaseRoleUser)
+	ResourceIP                 = getGvr(IP)
+	ResourceSubNet             = getGvr(SubNet)
 	ResourcePieline            = getGvr(Pipeline)
 	ResourcePipelineRun        = getGvr(PipelineRun)
 	ResourceTask               = getGvr(Task)
