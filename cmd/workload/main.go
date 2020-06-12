@@ -296,6 +296,21 @@ func main() {
 		group.POST("/apis/policy/v1beta1/namespaces/:namespace/podsecuritypolicies", workloadsAPI.Apply)
 	}
 
+	// #ovn
+	// #v1
+	// #ips
+	{
+		group.GET("/apis/kubeovn.io/v1/ips", IPList)
+		group.GET("/apis/kubeovn.io/v1/namespaces/:namespace/ips/:name", IPGet)
+	}
+
+	// #subnets
+	{
+		group.GET("/apis/kubeovn.io/v1/subnets", SubNetList)
+		group.GET("/apis/kubeovn.io/v1/namespaces/:namespace/subnets/:name", SubNetGet)
+		group.POST("apis/kubeovn.io/v1/namespaces/:namespace/subnets/:name", SubNetCreate)
+	}
+
 	// #apiextensions.k8s.io/v1beta1
 	// #v1beta1
 	// CustomResourceDefinition
@@ -319,6 +334,8 @@ func main() {
 			"tekton.dev/v1alpha1/pipelineresources",
 			"tekton.dev/v1alpha1/tasks",
 			"tekton.dev/v1alpha1/taskruns",
+			"kubeovn.io/v1/ips",
+			"kubeovn.io/v1/subnets",
 		}
 		apiVersions, err := workloadsAPI.ListCustomResourceRouter(ignores)
 		if err != nil {

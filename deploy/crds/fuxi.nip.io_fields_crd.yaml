@@ -35,81 +35,11 @@ spec:
                 description: FormRender Type
                 type: string
               form_data_config:
-                properties:
-                  default:
-                    description: For Bool
-                    type: boolean
-                  description:
-                    type: string
-                  max:
-                    description: For Number
-                    format: int32
-                    type: integer
-                  min:
-                    description: For Number
-                    format: int32
-                    type: integer
-                  prefix:
-                    type: string
-                  select:
-                    description: For String
-                    items:
-                      properties:
-                        key:
-                          type: string
-                        value:
-                          type: string
-                      required:
-                      - key
-                      - value
-                      type: object
-                    type: array
-                  suffix:
-                    type: string
-                  title:
-                    type: string
-                  ui:widget:
-                    type: string
-                type: object
+                type: string
               props_schema:
-                additionalProperties:
-                  properties:
-                    default:
-                      description: For Bool
-                      type: boolean
-                    description:
-                      type: string
-                    enum:
-                      items:
-                        type: string
-                      type: array
-                    enumNames:
-                      items:
-                        type: string
-                      type: array
-                    max:
-                      description: For Number
-                      format: int32
-                      type: integer
-                    min:
-                      format: int32
-                      type: integer
-                    prefix:
-                      type: string
-                    suffix:
-                      type: string
-                    title:
-                      type: string
-                    type:
-                      type: string
-                    ui:widget:
-                      type: string
-                  type: object
-                type: object
+                type: string
             required:
             - field_type
-            - form_data_config
-            - props_schema
             type: object
           status:
             description: FieldStatus defines the observed state of Field
