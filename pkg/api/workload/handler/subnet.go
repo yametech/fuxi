@@ -25,7 +25,7 @@ func (w *WorkloadsAPI) GetSubNet(g *gin.Context) {
 
 // List SubNet
 func (w *WorkloadsAPI) ListSubNet(g *gin.Context) {
-	list, err := resourceList(g, w.ip)
+	list, err := resourceList(g, w.subnet)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
