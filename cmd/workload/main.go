@@ -308,7 +308,7 @@ func main() {
 	{
 		group.GET("/apis/kubeovn.io/v1/subnets", SubNetList)
 		group.GET("/apis/kubeovn.io/v1/namespaces/:namespace/subnets/:name", SubNetGet)
-		group.POST("apis/kubeovn.io/v1/namespaces/:namespace/subnets/:name", SubNetCreate)
+		group.POST("/apis/kubeovn.io/v1/subnets/", SubNetCreate)
 	}
 
 	// #apiextensions.k8s.io/v1beta1
