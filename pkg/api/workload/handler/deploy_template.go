@@ -21,8 +21,13 @@ type metadataTemplate []struct {
 	Environment []struct {
 		Type         string `json:"type"`
 		OneEnvConfig struct {
-			Name  string `json:"name"`
-			Value string `json:"value"`
+			Name          string `json:"name"`
+			ConfigureName string `json:"configureName"`
+			SecretName    string `json:"secretName"`   // Secret name
+			SecretKey     string `json:"secretKey"`    // Secret key
+			EnterCommand  string `json:"enterCommand"` //other
+			Key           string `json:"key"`
+			Value         string `json:"value"`
 		} `json:"oneEnvConfig"`
 	} `json:"environment"`
 	ReadyProbe struct {

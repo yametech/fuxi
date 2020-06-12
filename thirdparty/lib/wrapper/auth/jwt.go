@@ -6,6 +6,7 @@ import (
 	"github.com/yametech/fuxi/thirdparty/lib/whitelist"
 	"github.com/yametech/fuxi/util/common"
 	"net/http"
+	"strings"
 )
 
 // JWTAuthWrapper
@@ -17,6 +18,12 @@ func JWTAuthWrapper(token *token.Token, whitelist *whitelist.Whitelist, loginHan
 				loginHandler.ServeHTTP(w, r)
 				return
 			}
+
+			if strings.Contains(r.URL.Path, "/workload/shell/pod") {
+				h.ServeHTTP(w, r)
+				return
+			}
+
 			tokenHeader := r.Header.Get("Authorization")
 			userFromToken, e := token.Decode(tokenHeader)
 			if e != nil {
