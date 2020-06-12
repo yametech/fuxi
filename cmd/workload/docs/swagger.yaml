@@ -35,6 +35,148 @@ paths:
       summary: workload configMaps list
       tags:
       - ConfigMaps
+  /workload/api/v1/endpoints:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list form render
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload form render list
+      tags:
+      - Endpoint
+  /workload/api/v1/namespaces:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list network policy
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload namespaces list
+      tags:
+      - Namespaces
+    patch:
+      consumes:
+      - multipart/form-data
+      description: workload service for  workload namespaces patch node limit
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload namespaces patch node limit
+      tags:
+      - Namespaces
+  /workload/api/v1/namespaces/:name:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: workload service for list network policy
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload namespaces list
+      tags:
+      - Namespaces
+    post:
+      consumes:
+      - multipart/form-data
+      description: workload service for list network policy
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload namespaces list
+      tags:
+      - Namespaces
+  /workload/api/v1/namespaces/:namespace:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list network policy
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload namespaces list
+      tags:
+      - Namespaces
   /workload/api/v1/namespaces/:namespace/configmaps/:name:
     get:
       consumes:
@@ -95,6 +237,36 @@ paths:
       summary: workload resource quota get
       tags:
       - ResourceQuota
+  /workload/api/v1/namespaces/:namespace/serviceaccounts/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a service account detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload service get
+      tags:
+      - ServiceAccount
   /workload/api/v1/namespaces/:namespace/services/:name:
     get:
       consumes:
@@ -125,6 +297,36 @@ paths:
       summary: workload service get
       tags:
       - Service
+  /workload/api/v1/namespaces/{namespace}/endpoints/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a form render detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload form render get
+      tags:
+      - Endpoint
   /workload/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}:
     get:
       consumes:
@@ -254,6 +456,30 @@ paths:
       tags:
       - PersistentVolume
   /workload/api/v1/persistentvolumes/{name}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a persistent volume detail
+      parameters:
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload persistent volume get
+      tags:
+      - PersistentVolume
     get:
       consumes:
       - multipart/form-data
@@ -353,6 +579,31 @@ paths:
       summary: workload secret list
       tags:
       - Secret
+  /workload/api/v1/serviceaccounts:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list service account
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload service account list
+      tags:
+      - ServiceAccount
   /workload/api/v1/services:
     get:
       consumes:
@@ -378,87 +629,7 @@ paths:
       summary: workload service list
       tags:
       - Service
-  /workload/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions:
-    get:
-      consumes:
-      - multipart/form-data
-      description: workload service for list custom resource definition
-      parameters:
-      - description: namespace
-        in: query
-        name: namespace
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg": "Success"}'
-          schema:
-            type: string
-        "400":
-          description: '{"msg": "Failed"}'
-          schema:
-            type: string
-      summary: workload custom resource definition list
-      tags:
-      - CustomResourceDefinition
-  /workload/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions/{name}:
-    get:
-      consumes:
-      - multipart/form-data
-      description: workload service for get a custom resource definition detail
-      parameters:
-      - description: namespace
-        in: query
-        name: namespace
-        required: true
-        type: string
-      - description: name
-        in: query
-        name: name
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg": "Success"}'
-          schema:
-            type: string
-        "400":
-          description: '{"msg": "Failed"}'
-          schema:
-            type: string
-      summary: workload custom resource definition get
-      tags:
-      - CustomResourceDefinition
-  /workload/apis/apps/v1/daemonsets:
-    get:
-      consumes:
-      - multipart/form-data
-      description: workload service for list cronJob
-      parameters:
-      - description: namespace
-        in: query
-        name: namespace
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg": "Success"}'
-          schema:
-            type: string
-        "400":
-          description: '{"msg": "Failed"}'
-          schema:
-            type: string
-      summary: workload daemonSet list
-      tags:
-      - DaemonSet
-  /workload/apis/apps/v1/namespaces/:namespace/statefulsets/:name:
+  /workload/apis/:group/:version/namespaces/:namespace/statefulsets/:name:
     get:
       consumes:
       - multipart/form-data
@@ -488,6 +659,56 @@ paths:
       summary: workload statefulSet get
       tags:
       - StatefulSet
+  /workload/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list custom resource definition
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload custom resource definition list
+      tags:
+      - CustomResourceDefinition
+  /workload/apis/apps/v1/daemonsets:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list cronJob
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload daemonSet list
+      tags:
+      - DaemonSet
   /workload/apis/apps/v1/statefulsets:
     get:
       consumes:
@@ -763,6 +984,298 @@ paths:
       summary: workload ingress get
       tags:
       - Ingress
+  /workload/apis/fuxi.nip.io/v1/fields:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list field
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload field list
+      tags:
+      - Field
+  /workload/apis/fuxi.nip.io/v1/forms:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list form
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload form list
+      tags:
+      - Form
+  /workload/apis/fuxi.nip.io/v1/namespaces/{namespace}/fields/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a field detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload field get
+      tags:
+      - Field
+    post:
+      consumes:
+      - multipart/form-data
+      description: workload service for field
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload field list
+      tags:
+      - Field
+  /workload/apis/fuxi.nip.io/v1/namespaces/{namespace}/forms/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a form detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload form get
+      tags:
+      - Form
+    post:
+      consumes:
+      - multipart/form-data
+      description: workload service for form
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload form list
+      tags:
+      - Form
+  /workload/apis/fuxi.nip.io/v1/namespaces/{namespace}/pages/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a page detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload page get
+      tags:
+      - Page
+    post:
+      consumes:
+      - multipart/form-data
+      description: workload service for page
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload page list
+      tags:
+      - Page
+  /workload/apis/fuxi.nip.io/v1/pages:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list page
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload page list
+      tags:
+      - Page
+  /workload/apis/fuxi.nip.io/v1/workloads:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list workloads template
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workloads template list
+      tags:
+      - Workloads
+  /workload/apis/fuxi.nip.io/v1/workloads/namespaces/{namespace}/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a workloads template detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workloads template get
+      tags:
+      - Workloads
   /workload/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies/{name}:
     get:
       consumes:
@@ -818,7 +1331,502 @@ paths:
       summary: workload network policy list
       tags:
       - NetworkPolicy
-  /workload/apis/storage.k8s.io/v1beta1/storageclasses:
+  /workload/apis/nuwa.nip.io/v1/Injectors:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list Injectors
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload Injectors list
+      tags:
+      - Injectors
+  /workload/apis/nuwa.nip.io/v1/Waters:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list Waters
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload Waters list
+      tags:
+      - Waters
+  /workload/apis/nuwa.nip.io/v1/namespaces/:namespace/Injectors/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a Injectors detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload Injectors get
+      tags:
+      - Injectors
+  /workload/apis/nuwa.nip.io/v1/namespaces/:namespace/Waters/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a Waters detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload Waters get
+      tags:
+      - Waters
+  /workload/apis/nuwa.nip.io/v1/namespaces/:namespace/statefulsets/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a cronJob detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload statefulSet1 get
+      tags:
+      - StatefulSet1
+  /workload/apis/nuwa.nip.io/v1/namespaces/:namespace/stones/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a stones detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload stones get
+      tags:
+      - stones
+  /workload/apis/nuwa.nip.io/v1/statefulsets:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list cronJob
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload statefulSet1 list
+      tags:
+      - StatefulSet1
+  /workload/apis/nuwa.nip.io/v1/stones:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list stones
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload stones list
+      tags:
+      - stones
+  /workload/apis/policy/v1beta1/namespaces/{namespace}/podsecuritypolicies/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a podsecuritypolicies detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload podsecuritypolicies get
+      tags:
+      - PodSecurityPolicie
+  /workload/apis/policy/v1beta1/podsecuritypolicies:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list podsecuritypolicies
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload PodSecurityPolicie list
+      tags:
+      - PodSecurityPolicie
+  /workload/apis/rbac.authorization.k8s.io/v1/clusterrolebindings:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list ClusterRoleBind
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload configMaps list
+      tags:
+      - ClusterRoleBind
+  /workload/apis/rbac.authorization.k8s.io/v1/clusterroles:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list role
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload role list
+      tags:
+      - ClusterRole
+  /workload/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterrolebindings/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a ClusterRoleBind detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload configMaps get
+      tags:
+      - ClusterRoleBind
+  /workload/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/clusterroles/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a ClusterRole detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload ClusterRole get
+      tags:
+      - ClusterRole
+  /workload/apis/rbac.authorization.k8s.io/v1/namespaces/:namespace/roles/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a Role detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload ClusterRole get
+      tags:
+      - Role
+  /workload/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a role binding detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload role binding get
+      tags:
+      - RoleBinding
+  /workload/apis/rbac.authorization.k8s.io/v1/rolebindings:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list role binding
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload role binding list
+      tags:
+      - RoleBinding
+  /workload/apis/rbac.authorization.k8s.io/v1/roles:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list Role
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload role list
+      tags:
+      - Role
+  /workload/apis/storage.k8s.io/v1/storageclasses:
     get:
       consumes:
       - multipart/form-data
@@ -843,7 +1851,7 @@ paths:
       summary: workload storage class list
       tags:
       - StorageClass
-  /workload/apis/storage.k8s.io/v1beta1/storageclasses/{name}:
+  /workload/apis/storage.k8s.io/v1/storageclasses/{name}:
     get:
       consumes:
       - multipart/form-data
@@ -873,6 +1881,281 @@ paths:
       summary: workload storage class get
       tags:
       - StorageClass
+  /workload/apis/tekton.dev/v1alpha1/pipelineresources:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list PipelineResourc
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: tekton PipelineResourc list
+      tags:
+      - PipelineResourc
+  /workload/apis/tekton.dev/v1alpha1/pipelineruns:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list pipelinRun
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: tekton pipelineRun list
+      tags:
+      - PipelineRun
+  /workload/apis/tekton.dev/v1alpha1/pipelines:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list pipeline
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: tekton pipeline list
+      tags:
+      - Pipeline
+  /workload/apis/tekton.dev/v1alpha1/taskruns:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list taskrun
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: tekton taskrun list
+      tags:
+      - TaskRun
+  /workload/apis/tekton.dev/v1alpha1/tasks:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for list task
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: tekton task list
+      tags:
+      - Task
+  /workload/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a PipelineResourc detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload PipelineResourc get
+      tags:
+      - PipelineResourc
+  /workload/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a pipelinRun detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload pipelineRun get
+      tags:
+      - PipelineRun
+  /workload/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a Pipeline detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload Pipeline get
+      tags:
+      - Pipeline
+  /workload/tekton.dev/v1alpha1/namespaces/:namespace/taskruns/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a taskrun detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload TaskRun get
+      tags:
+      - TaskRun
+  /workload/tekton.dev/v1alpha1/namespaces/:namespace/tasks/:name:
+    get:
+      consumes:
+      - multipart/form-data
+      description: workload service for get a task detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: workload Task get
+      tags:
+      - Task
   /workload/v1/:ns/cronjobs/:name/get:
     get:
       consumes:

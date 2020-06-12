@@ -63,6 +63,8 @@ type WorkloadsAPI struct {
 	stone                    *workloadservice.Stone
 	water                    *workloadservice.Water
 	injector                 *workloadservice.Injector
+	ip                       *workloadservice.IP
+	subnet                   *workloadservice.SubNet
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -107,6 +109,8 @@ func NewWorkladAPI() *WorkloadsAPI {
 		stone:                    workloadservice.NewStone(),
 		water:                    workloadservice.NewWater(),
 		injector:                 workloadservice.NewInjector(),
+		ip:                       workloadservice.NewIP(),
+		subnet:                   workloadservice.NewSubNet(),
 	}
 }
 

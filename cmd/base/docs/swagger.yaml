@@ -1,5 +1,3 @@
-basePath: '{{.BasePath}}'
-host: '{{.Host}}'
 info:
   contact:
     email: laik.lj@me.com
@@ -12,44 +10,15 @@ info:
   title: Gin swagger
   version: "1.0"
 paths:
-  /base/v1/user:
+  /base/apis/fuxi.nip.io/v1/basedepartments:
     get:
       consumes:
       - multipart/form-data
-      description: User info query
+      description: base service for list base department
       parameters:
-      - description: user_id
+      - description: namespace
         in: query
-        name: user
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg": "user_name"}'
-          schema:
-            type: string
-        "400":
-          description: '{"msg": "Please login"}'
-          schema:
-            type: string
-      summary: base service user into
-      tags:
-      - user
-    post:
-      consumes:
-      - multipart/form-data
-      description: User info query
-      parameters:
-      - description: username
-        in: query
-        name: user
-        required: true
-        type: string
-      - description: password
-        in: query
-        name: password
+        name: namespace
         required: true
         type: string
       produces:
@@ -63,7 +32,359 @@ paths:
           description: '{"msg": "Failed"}'
           schema:
             type: string
-      summary: base service user into
+      summary: base department list
       tags:
-      - user
+      - BaseDepartment
+  /base/apis/fuxi.nip.io/v1/baseroles:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for list base role
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role list
+      tags:
+      - BaseRole
+  /base/apis/fuxi.nip.io/v1/baseroleusers:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for list base role user
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role user list
+      tags:
+      - BaseRoleUser
+  /base/apis/fuxi.nip.io/v1/baseusers:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for list base role
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role list
+      tags:
+      - BaseUser
+  /base/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroles/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: base service for base role
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role list
+      tags:
+      - BaseRole
+  /base/apis/fuxi.nip.io/v1/namespaces/:namespace/baseroleusers/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: base service for base role user
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role user list
+      tags:
+      - BaseRoleUser
+  /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/basedepartments/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: base service for base department
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base department list
+      tags:
+      - BaseDepartment
+  /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/basedepartments/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for get a base department detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base department get
+      tags:
+      - BaseDepartment
+  /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/baseroles/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for get a base role detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role get
+      tags:
+      - BaseRole
+  /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/baseroleusers/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for get a base roleuser detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role user get
+      tags:
+      - BaseRoleUser
+  /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/baseusers/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: base service for base role
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role list
+      tags:
+      - BaseUser
+  /base/apis/fuxi.nip.io/v1/namespaces/{namespace}/baseusers/{name}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for get a base role detail
+      parameters:
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base role get
+      tags:
+      - BaseUser
+  /base/permission_auth_value:
+    post:
+      consumes:
+      - multipart/form-data
+      description: base service for list base permission
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base permission
+      tags:
+      - Permission
+  /base/permission_list:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for list base permission
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base permission
+      tags:
+      - Permission
+  /base/permission_transfer/{value}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: base service for list base permission
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg": "Success"}'
+          schema:
+            type: string
+        "400":
+          description: '{"msg": "Failed"}'
+          schema:
+            type: string
+      summary: base permission
+      tags:
+      - Permission
 swagger: "2.0"

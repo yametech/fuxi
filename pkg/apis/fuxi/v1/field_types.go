@@ -12,64 +12,14 @@ type SelectStore struct {
 	Value string `json:"value, omitempty" bson:",omitempty"`
 }
 
-type FormDataConfig struct {
-	// +optional
-	Title string `json:"title, omitempty"`
-	// +optional
-	Description string `json:"description, omitempty"`
-	// For String
-	// +optional
-	Select []SelectStore `json:"select, omitempty" bson:",omitempty"`
-	// For Number
-	// +optional
-	Min uint32 `json:"min, omitempty" bson:",omitempty"`
-	// For Number
-	// +optional
-	Max uint32 `json:"max, omitempty" bson:",omitempty"`
-	// For Bool
-	// +optional
-	Default bool `json:"default, omitempty" bson:",omitempty"`
-	// +optional
-	UiWidget string `json:"ui:widget, omitempty" bson:",omitempty"`
-	// +optional
-	Prefix string `json:"prefix, omitempty" bson:",omitempty"`
-	// +optional
-	Suffix string `json:"suffix, omitempty" bson:",omitempty"`
-}
-
-type PropsSchema struct {
-	// +optional
-	Title string `json:"title, omitempty"`
-	// +optional
-	Type string `json:"type, omitempty"`
-	// +optional
-	Enum []string `json:"enum"`
-	// +optional
-	EnumNames []string `json:"enumNames"`
-	// +optional
-	Description string `json:"description, omitempty"`
-	// +optional
-	Min uint32 `json:"min, omitempty" bson:",omitempty"`
-	// For Number
-	// +optional
-	Max uint32 `json:"max, omitempty" bson:",omitempty"`
-	// For Bool
-	// +optional
-	Default bool `json:"default, omitempty" bson:",omitempty"`
-	// +optional
-	UiWidget string `json:"ui:widget, omitempty" bson:",omitempty"`
-	// +optional
-	Prefix string `json:"prefix, omitempty" bson:",omitempty"`
-	// +optional
-	Suffix string `json:"suffix, omitempty" bson:",omitempty"`
-}
-
 // FieldSpec defines the desired state of Field
 type FieldSpec struct {
 	// FormRender Type
-	FieldType      string                 `json:"field_type"`
-	FormDataConfig FormDataConfig         `json:"form_data_config, omitempty"`
-	PropsSchema    map[string]PropsSchema `json:"props_schema, omitempty"`
+	FieldType string `json:"field_type"`
+	// +optional
+	FormDataConfig string `json:"form_data_config, omitempty"`
+	// +optional
+	PropsSchema string `json:"props_schema, omitempty"`
 }
 
 // FieldStatus defines the observed state of Field
