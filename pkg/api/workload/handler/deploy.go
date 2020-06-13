@@ -105,7 +105,10 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 				//env := &corev1.EnvVar{
 				//	Name: evnConfig.OneEnvConfig.Name,
 				//	ValueFrom: &corev1.EnvVarSource{
-				//		ConfigMapKeyRef: &corev1.ConfigMapEnvSource{},
+				//		ConfigMapKeyRef:
+				//		&corev1.ConfigMapEnvSource{
+				//
+				//		},
 				//	},
 				//}
 			case "Secret":
@@ -116,71 +119,71 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 		container.Env = envs
 
 		// readinessProbe
-		container.ReadinessProbe = &corev1.Probe{
-			Handler: corev1.Handler{
-				Exec: &corev1.ExecAction{
-					Command: []string{item.ReadyProbe.Pattern.Command},
-				},
-				HTTPGet: &corev1.HTTPGetAction{
-					Path: item.ReadyProbe.Pattern.URL,
-					Port: intstr.Parse(item.ReadyProbe.Pattern.HTTPPort),
-				},
-				TCPSocket: &corev1.TCPSocketAction{
-					Port: intstr.Parse(item.ReadyProbe.Pattern.TCPPort),
-				},
-			},
-			InitialDelaySeconds: string2int32(item.ReadyProbe.Delay),
-			TimeoutSeconds:      string2int32(item.ReadyProbe.Timeout),
-			PeriodSeconds:       string2int32(item.ReadyProbe.Cycle),
-			FailureThreshold:    string2int32(item.ReadyProbe.RetryCount),
-		}
-
-		// livenessProbe
-		container.LivenessProbe = &corev1.Probe{
-			Handler: corev1.Handler{
-				Exec: &corev1.ExecAction{
-					Command: []string{item.LiveProbe.Pattern.Command},
-				},
-				HTTPGet: &corev1.HTTPGetAction{
-					Path: item.ReadyProbe.Pattern.URL,
-					Port: intstr.Parse(item.LiveProbe.Pattern.HTTPPort),
-				},
-				TCPSocket: &corev1.TCPSocketAction{
-					Port: intstr.Parse(item.LiveProbe.Pattern.TCPPort),
-				},
-			},
-			InitialDelaySeconds: string2int32(item.LiveProbe.Delay),
-			TimeoutSeconds:      string2int32(item.LiveProbe.Timeout),
-			PeriodSeconds:       string2int32(item.LiveProbe.Cycle),
-			FailureThreshold:    string2int32(item.LiveProbe.RetryCount),
-		}
-		// LifeCycle
-		container.Lifecycle = &corev1.Lifecycle{
-			PostStart: &corev1.Handler{
-				Exec: &corev1.ExecAction{
-					Command: []string{item.LifeCycle.PostStart.Command},
-				},
-				HTTPGet: &corev1.HTTPGetAction{
-					Path: item.LifeCycle.PostStart.URL,
-					Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
-				},
-				TCPSocket: &corev1.TCPSocketAction{
-					Port: intstr.Parse(item.LifeCycle.PostStart.TCPPort),
-				},
-			},
-			PreStop: &corev1.Handler{
-				Exec: &corev1.ExecAction{
-					Command: []string{item.LifeCycle.PreStop.Command},
-				},
-				HTTPGet: &corev1.HTTPGetAction{
-					Path: item.ReadyProbe.Pattern.URL,
-					Port: intstr.Parse(item.LifeCycle.PreStop.HTTPPort),
-				},
-				TCPSocket: &corev1.TCPSocketAction{
-					Port: intstr.Parse(item.LifeCycle.PreStop.TCPPort),
-				},
-			},
-		}
+		//container.ReadinessProbe = &corev1.Probe{
+		//	Handler: corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.ReadyProbe.Pattern.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.ReadyProbe.Pattern.URL,
+		//			Port: intstr.Parse(item.ReadyProbe.Pattern.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.ReadyProbe.Pattern.TCPPort),
+		//		},
+		//	},
+		//	InitialDelaySeconds: string2int32(item.ReadyProbe.Delay),
+		//	TimeoutSeconds:      string2int32(item.ReadyProbe.Timeout),
+		//	PeriodSeconds:       string2int32(item.ReadyProbe.Cycle),
+		//	FailureThreshold:    string2int32(item.ReadyProbe.RetryCount),
+		//}
+		//
+		//// livenessProbe
+		//container.LivenessProbe = &corev1.Probe{
+		//	Handler: corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.LiveProbe.Pattern.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.ReadyProbe.Pattern.URL,
+		//			Port: intstr.Parse(item.LiveProbe.Pattern.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.LiveProbe.Pattern.TCPPort),
+		//		},
+		//	},
+		//	InitialDelaySeconds: string2int32(item.LiveProbe.Delay),
+		//	TimeoutSeconds:      string2int32(item.LiveProbe.Timeout),
+		//	PeriodSeconds:       string2int32(item.LiveProbe.Cycle),
+		//	FailureThreshold:    string2int32(item.LiveProbe.RetryCount),
+		//}
+		//// LifeCycle
+		//container.Lifecycle = &corev1.Lifecycle{
+		//	PostStart: &corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.LifeCycle.PostStart.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.LifeCycle.PostStart.URL,
+		//			Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.LifeCycle.PostStart.TCPPort),
+		//		},
+		//	},
+		//	PreStop: &corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.LifeCycle.PreStop.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.ReadyProbe.Pattern.URL,
+		//			Port: intstr.Parse(item.LifeCycle.PreStop.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.LifeCycle.PreStop.TCPPort),
+		//		},
+		//	},
+		//}
 
 		containers = append(containers, container)
 	}
@@ -242,6 +245,14 @@ func groupBy(cds nuwav1.Coordinates, replicas int32) (group int, result []nuwav1
 		})
 	}
 	return len(temp), result
+}
+
+func workloadsTemplateImagePullSecrets(w *workloadsTemplate) []corev1.LocalObjectReference {
+	result := make([]corev1.LocalObjectReference, 0)
+	for _, item := range w.Metadata {
+		result = append(result, corev1.LocalObjectReference{Name: item.Base.ImagePullSecret})
+	}
+	return result
 }
 
 func (w *WorkloadsAPI) Deploy(g *gin.Context) {
@@ -337,6 +348,16 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 			}
 		}
 
+		// PodSpec
+		podSpec := corev1.PodSpec{}
+		podSpec.Containers = workloadsTemplateToPodContainers(workloadsTemplate)
+		podSpec.ImagePullSecrets = workloadsTemplateImagePullSecrets(workloadsTemplate)
+
+		// Labels
+		labels := map[string]string{
+			"app":               deployTemplate.AppName,
+			"app-template-name": deployTemplate.TemplateName,
+		}
 		runtimeObj = &nuwav1.Stone{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "Stone",
@@ -345,23 +366,15 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      deployTemplate.AppName,
 				Namespace: deployTemplate.Namespace.Value,
-				Labels: map[string]string{
-					"app":               deployTemplate.AppName,
-					"app-template-name": deployTemplate.TemplateName,
-				},
+				Labels:    labels,
 			},
 			Spec: nuwav1.StoneSpec{
 				Template: corev1.PodTemplateSpec{
 					ObjectMeta: metav1.ObjectMeta{
-						Name: deployTemplate.AppName,
-						Labels: map[string]string{
-							"app":               deployTemplate.AppName,
-							"app-template-name": deployTemplate.TemplateName,
-						},
+						Name:   deployTemplate.AppName,
+						Labels: labels,
 					},
-					Spec: corev1.PodSpec{
-						Containers: workloadsTemplateToPodContainers(workloadsTemplate),
-					},
+					Spec: podSpec,
 				},
 				Strategy:             "Release", // TODO
 				Coordinates:          cgs,
