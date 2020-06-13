@@ -1,6 +1,8 @@
 package handler
 
-type UserConfig struct {
+import "encoding/json"
+
+type userConfig struct {
 	LensVersion       string   `json:"lensVersion"`
 	LensTheme         string   `json:"lensTheme"`
 	UserName          string   `json:"userName"`
@@ -12,7 +14,12 @@ type UserConfig struct {
 	DefaultNamespace  string   `json:"defaultNamespace"`
 }
 
-func newUserConfig(user string, token string, allowedNamespaces []string) *UserConfig {
+func (uc *userConfig) String() string {
+	bytesData, _ := json.Marshal(uc)
+	return string(bytesData)
+}
+
+func newUserConfig(user string, token string, allowedNamespaces []string) *userConfig {
 	isClusterAdmin := false
 	defaultNamespace := "default"
 	if user == "admin" {
@@ -21,7 +28,7 @@ func newUserConfig(user string, token string, allowedNamespaces []string) *UserC
 		allowedNamespaces = []string{"dxp", "dxp2"}
 		defaultNamespace = "dxp"
 	}
-	return &UserConfig{
+	return &userConfig{
 		LensVersion:       "1.0",
 		LensTheme:         "",
 		UserName:          user,

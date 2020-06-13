@@ -1,6 +1,9 @@
 package preinstall
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/config"
@@ -16,8 +19,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	clientcmdapiV1 "k8s.io/client-go/tools/clientcmd/api/v1"
-	"net/http"
-	"time"
 )
 
 // defaultETCDFlag a etcd String Flag

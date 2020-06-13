@@ -3,15 +3,30 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yametech/fuxi/pkg/service/workload"
 	"sort"
 	"sync"
+
+	"github.com/yametech/fuxi/pkg/service/workload"
 
 	"github.com/go-acme/lego/log"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"github.com/yametech/fuxi/pkg/service/base"
 	watch "k8s.io/apimachinery/pkg/watch"
 )
+
+type OpType string
+
+const (
+	POST   OpType = "POST"
+	GET    OpType = "GET"
+	PUT    OpType = "PUT"
+	DELELE OpType = "DELELE"
+)
+
+type Resource struct {
+	Op   OpType // eg: http restful[POST,GET,PUT,DELELE]
+	Path string // eg: /workload/apis/nuwa.nip.io/v1/stones &&  /workload/apis/nuwa.nip.io/v1/namespaces/:namespace/stones/:name
+}
 
 type Role struct {
 	Name      string   `json:"name"`

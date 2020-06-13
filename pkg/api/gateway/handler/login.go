@@ -2,13 +2,18 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/yametech/fuxi/util/common"
 	"io/ioutil"
 	"net/http"
 	"time"
 
+	"github.com/yametech/fuxi/util/common"
+
 	"github.com/yametech/fuxi/thirdparty/lib/token"
 )
+
+type userLoginInterface interface {
+	Auth(user, password string) ([]byte, error)
+}
 
 type LoginHandle struct {
 	*token.Token
@@ -47,12 +52,12 @@ func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost && r.URL.Path == "/user-login" {
-		// TODO login
-		//ok, err := h.Auth(userAuth.UserName, userAuth.Password)
-		//if !ok || err != nil {
-		//	writeResponse(w, http.StatusBadRequest, err.Error())
-		//	return
-		//}
+		// // TODO login
+		// ok, err := h.Auth(userAuth.UserName, userAuth.Password)
+		// if !ok || err != nil {
+		// 	writeResponse(w, http.StatusBadRequest, err.Error())
+		// 	return
+		// }
 
 		if pwd, exist := dataBase[userAuth.UserName]; !exist {
 			writeResponse(w, http.StatusUnauthorized, "{message: user not exist}")
