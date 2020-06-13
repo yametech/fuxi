@@ -2,16 +2,17 @@ package handler
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"io"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	watch "k8s.io/apimachinery/pkg/watch"
 	"log"
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/gin-gonic/gin"
+	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	watch "k8s.io/apimachinery/pkg/watch"
 )
 
 type Event struct {
@@ -40,18 +41,17 @@ func parseForApiUrl(apiUrl string) (gvr *schema.GroupVersionResource, namespace 
 		gvr.Group = ""
 		gvr.Version = paths[1]
 		gvr.Resource = paths[2]
-
-		if len(paths) >= 6 && paths[3] == "namespaces" {
-			//  eg: /api/v1/namespaces/{namespaces}/pods
-			gvr.Resource = paths[5]
-			namespace = paths[4]
+		if len(paths) == 5 {
+			//  eg: /api/v1/namespaces/dxp/pods
+			gvr.Resource = paths[4]
+			namespace = paths[3]
 		}
 	case "apis": // eg: /apis/apps/v1/deployments
 		gvr.Group = paths[1]
 		gvr.Version = paths[2]
 		gvr.Resource = paths[3]
-		// /apis/apps/v1/namespaces/{namespaces}/deployments
-		if len(paths) >= 6 && paths[3] == "namespaces" {
+		// eg: /apis/apps/v1/namespaces/dxp/deployments
+		if len(paths) == 6 {
 			gvr.Resource = paths[5]
 			namespace = paths[4]
 		}
