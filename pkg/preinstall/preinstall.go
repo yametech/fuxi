@@ -25,7 +25,7 @@ import (
 // dev Value:  "gz.nuwa.xyz:32428",
 func defaultETCDFlag(value string) cli.StringFlag {
 	if value == "" {
-		value = "fuxi.io:12379"
+		value = "sdmssd.io:2379"
 		//value = "gz.nuwa.xyz:32428"
 		//value = "linux:30755"
 	}

@@ -15,6 +15,7 @@ type metadataTemplate []struct {
 				Memory string `json:"memory"`
 			} `json:"requests"`
 		} `json:"resource"`
+		ImagePullSecret string `json:"imagePullSecrets"`
 	} `json:"base"`
 	Commands    []string `json:"commands"`
 	Args        []string `json:"args"`
