@@ -16,12 +16,7 @@ func main() {
 		panic(err)
 	}
 	common.SharedK8sClient = &gatewayInstallConfigure.DefaultInstallConfigure
-	authorStorage, err := handler.NewAuthorizationStorage()
-	if err != nil {
-		panic(err)
-	}
-	loginHandler.AuthorizationStorage = *authorStorage
-	loginHandler.Token = gatewayInstallConfigure.Token
+	loginHandler.Authorization = *handler.NewAuthorization(gatewayInstallConfigure.Token)
 
 	cmd.Init()
 }

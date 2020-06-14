@@ -39,7 +39,7 @@ func (w *WorkloadsAPI) PatchAnnotateNodeNamespace(g *gin.Context) {
 	}
 	cords := make(nuwav1.Coordinates, 0)
 	for _, nodeName := range pad.Nodes {
-		obj, err := w.node.RemoteGet("", nodeName)
+		obj, err := w.node.Get("", nodeName)
 		if err != nil {
 			common.ToRequestParamsError(g, err)
 			return
@@ -51,20 +51,20 @@ func (w *WorkloadsAPI) PatchAnnotateNodeNamespace(g *gin.Context) {
 			return
 		}
 		cord := nuwav1.Coordinate{}
-		if lables := node.GetLabels(); lables != nil {
-			zone, exist := lables[nuwav1.NuwaZoneFlag]
+		if labels := node.GetLabels(); labels != nil {
+			zone, exist := labels[nuwav1.NuwaZoneFlag]
 			if !exist {
 				common.ToInternalServerError(g, "", fmt.Errorf("node %s not label nuwa zone", node.GetName()))
 				return
 			}
 			cord.Zone = zone
-			rack, exist := lables[nuwav1.NuwaRackFlag]
+			rack, exist := labels[nuwav1.NuwaRackFlag]
 			if !exist {
 				common.ToInternalServerError(g, "", fmt.Errorf("node %s not label nuwa rack", node.GetName()))
 				return
 			}
 			cord.Rack = rack
-			host, exist := lables[nuwav1.NuwaHostFlag]
+			host, exist := labels[nuwav1.NuwaHostFlag]
 			if !exist {
 				common.ToInternalServerError(g, "", fmt.Errorf("node %s not label nuwa host", node.GetName()))
 				return
@@ -141,7 +141,7 @@ func (w *WorkloadsAPI) DeleteNamespace(g *gin.Context) {
 // Get Namespace
 func (w *WorkloadsAPI) GetNamespace(g *gin.Context) {
 	namespaceName := g.Param("namespace")
-	item, err := w.namespace.RemoteGet("", namespaceName)
+	item, err := w.namespace.Get("", namespaceName)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return

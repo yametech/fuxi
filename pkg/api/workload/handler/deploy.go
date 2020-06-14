@@ -20,89 +20,6 @@ import (
 	"strconv"
 )
 
-type deployMetadataItems []deployMetadataItem
-
-type deployMetadataItem struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Image           string `json:"image"`
-	ImagePullPolicy string `json:"imagePullPolicy"`
-	Resource        struct {
-		Limits struct {
-			CPU    float64 `json:"cpu"`
-			Memory int     `json:"memory"`
-		} `json:"limits"`
-		Requests struct {
-			CPU    float64 `json:"cpu"`
-			Memory int     `json:"memory"`
-		} `json:"requests"`
-	} `json:"resource"`
-	VolumeMounts []interface{} `json:"volumeMounts"`
-	Command      []struct {
-		ID    string `json:"id"`
-		Value string `json:"value"`
-	} `json:"command"`
-	Args []struct {
-		ID    string `json:"id"`
-		Value string `json:"value"`
-	} `json:"args"`
-	OneEnvConfig []struct {
-		ID             string `json:"id"`
-		Type           string `json:"type"`
-		ConfigName     string `json:"configName"`
-		ConfigKey      string `json:"configKey"`
-		ConfigType     string `json:"configType"`
-		EnvConfigName  string `json:"envConfigName"`
-		EnvConfigValue string `json:"envConfigValue"`
-	} `json:"oneEnvConfig"`
-	MultipleEnvConfig []interface{} `json:"multipleEnvConfig"`
-	ReadyProbe        struct {
-		Status     bool `json:"status"`
-		Timeout    int  `json:"timeout"`
-		Cycle      int  `json:"cycle"`
-		RetryCount int  `json:"retryCount"`
-		Delay      int  `json:"delay"`
-		Pattern    struct {
-			Type     string `json:"type"`
-			HTTPPort int    `json:"httpPort"`
-			URL      string `json:"url"`
-			TCPPort  int    `json:"tcpPort"`
-			Command  string `json:"command"`
-		} `json:"pattern"`
-	} `json:"readyProbe"`
-	AliveProbe struct {
-		Status     bool `json:"status"`
-		Timeout    int  `json:"timeout"`
-		Cycle      int  `json:"cycle"`
-		RetryCount int  `json:"retryCount"`
-		Delay      int  `json:"delay"`
-		Pattern    struct {
-			Type     string `json:"type"`
-			HTTPPort int    `json:"httpPort"`
-			URL      string `json:"url"`
-			TCPPort  int    `json:"tcpPort"`
-			Command  string `json:"command"`
-		} `json:"pattern"`
-	} `json:"aliveProbe"`
-	LifeCycle struct {
-		Status    bool `json:"status"`
-		PostStart struct {
-			Type     string `json:"type"`
-			HTTPPort int    `json:"httpPort"`
-			URL      string `json:"url"`
-			TCPPort  int    `json:"tcpPort"`
-			Command  string `json:"command"`
-		} `json:"postStart"`
-		PreStop struct {
-			Type     string `json:"type"`
-			HTTPPort int    `json:"httpPort"`
-			URL      string `json:"url"`
-			TCPPort  int    `json:"tcpPort"`
-			Command  string `json:"command"`
-		} `json:"preStop"`
-	} `json:"lifeCycle"`
-}
-
 type deployTemplate struct {
 	AppName   string `json:"appName"`
 	Namespace struct {
@@ -112,41 +29,204 @@ type deployTemplate struct {
 	TemplateName string `json:"templateName"`
 }
 
-func toPodContainer(deployItems ...deployMetadataItem) []corev1.Container {
+func workloadsTemplateToServiceSpec(wt *workloadsTemplate) (*corev1.ServiceSpec, error) {
+	serviceSpec := &corev1.ServiceSpec{
+		Type: corev1.ServiceType(wt.Service.Type),
+	}
+	for _, item := range wt.Service.Ports {
+		port, err := strconv.ParseInt(item.Port, 10, 32)
+		if err != nil {
+			return nil, err
+		}
+		newItem := corev1.ServicePort{
+			Name:       item.Name,
+			Protocol:   corev1.Protocol(item.Protocol),
+			Port:       int32(port),
+			TargetPort: intstr.Parse(item.TargetPort),
+		}
+		serviceSpec.Ports = append(serviceSpec.Ports, newItem)
+	}
+	return serviceSpec, nil
+}
+
+func string2int32(s string) int32 {
+	i, _ := strconv.ParseInt(s, 10, 32)
+	return int32(i)
+}
+
+func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container {
 	containers := make([]corev1.Container, 0)
-	for _, item := range deployItems {
+	for _, item := range wt.Metadata {
+		volumeMounts := make([]corev1.VolumeMount, 0)
+		for _, subItem := range item.VolumeMounts.Items {
+			volumeMounts = append(volumeMounts,
+				corev1.VolumeMount{
+					Name:      subItem.Name,
+					MountPath: subItem.MountPath,
+				})
+		}
 		container := corev1.Container{
-			Name:            item.Name,
-			Image:           item.Image,
-			ImagePullPolicy: corev1.PullPolicy(item.ImagePullPolicy),
-			Resources: corev1.ResourceRequirements{
+			Name:            item.Base.Name,
+			Image:           item.Base.Image,
+			ImagePullPolicy: corev1.PullPolicy(item.Base.ImagePullPolicy),
+			Resources:
+			corev1.ResourceRequirements{
 				Limits: corev1.ResourceList{
 					corev1.ResourceName("cpu"): resource.MustParse(
-						fmt.Sprintf("%f", item.Resource.Limits.CPU),
+						fmt.Sprintf("%s", item.Base.Resource.Limits.CPU),
 					),
-					corev1.ResourceName("memory"): resource.MustParse(fmt.Sprintf("%d", item.Resource.Limits.Memory*1024*1024)),
+					corev1.ResourceName("memory"): resource.MustParse(
+						fmt.Sprintf("%sM", item.Base.Resource.Limits.Memory),
+					),
 				},
 				Requests: corev1.ResourceList{
-					corev1.ResourceName("cpu"):    resource.MustParse(fmt.Sprintf("%f", item.Resource.Requests.CPU)),
-					corev1.ResourceName("memory"): resource.MustParse(fmt.Sprintf("%d", item.Resource.Requests.Memory*1024*1024)),
+					corev1.ResourceName("cpu"): resource.MustParse(
+						fmt.Sprintf("%s", item.Base.Resource.Requests.CPU)),
+					corev1.ResourceName("memory"): resource.MustParse(
+						fmt.Sprintf("%sM", item.Base.Resource.Requests.Memory),
+					),
 				},
 			},
+			VolumeMounts: volumeMounts,
 		}
 		// Command
-		for _, cmd := range item.Command {
-			container.Command = append(container.Command, cmd.Value)
+		for _, cmd := range item.Commands {
+			container.Command = append(container.Command, cmd)
 		}
 		// Args
 		for _, arg := range item.Args {
-			container.Args = append(container.Command, arg.Value)
+			container.Args = append(container.Command, arg)
 		}
-		// OneEnvConfig TODO
-		for _, evnConfig := range item.OneEnvConfig {
-			_ = evnConfig
+		// Environment TODO
+		envs := make([]corev1.EnvVar, 0)
+		for _, evnConfig := range item.Environment {
+			switch evnConfig.Type {
+			case "Configuration":
+				//env := &corev1.EnvVar{
+				//	Name: evnConfig.OneEnvConfig.Name,
+				//	ValueFrom: &corev1.EnvVarSource{
+				//		ConfigMapKeyRef:
+				//		&corev1.ConfigMapEnvSource{
+				//
+				//		},
+				//	},
+				//}
+			case "Secret":
+			case "Other":
+			default:
+			}
 		}
+		container.Env = envs
+
+		// readinessProbe
+		//container.ReadinessProbe = &corev1.Probe{
+		//	Handler: corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.ReadyProbe.Pattern.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.ReadyProbe.Pattern.URL,
+		//			Port: intstr.Parse(item.ReadyProbe.Pattern.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.ReadyProbe.Pattern.TCPPort),
+		//		},
+		//	},
+		//	InitialDelaySeconds: string2int32(item.ReadyProbe.Delay),
+		//	TimeoutSeconds:      string2int32(item.ReadyProbe.Timeout),
+		//	PeriodSeconds:       string2int32(item.ReadyProbe.Cycle),
+		//	FailureThreshold:    string2int32(item.ReadyProbe.RetryCount),
+		//}
+		//
+		//// livenessProbe
+		//container.LivenessProbe = &corev1.Probe{
+		//	Handler: corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.LiveProbe.Pattern.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.ReadyProbe.Pattern.URL,
+		//			Port: intstr.Parse(item.LiveProbe.Pattern.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.LiveProbe.Pattern.TCPPort),
+		//		},
+		//	},
+		//	InitialDelaySeconds: string2int32(item.LiveProbe.Delay),
+		//	TimeoutSeconds:      string2int32(item.LiveProbe.Timeout),
+		//	PeriodSeconds:       string2int32(item.LiveProbe.Cycle),
+		//	FailureThreshold:    string2int32(item.LiveProbe.RetryCount),
+		//}
+		//// LifeCycle
+		//container.Lifecycle = &corev1.Lifecycle{
+		//	PostStart: &corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.LifeCycle.PostStart.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.LifeCycle.PostStart.URL,
+		//			Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.LifeCycle.PostStart.TCPPort),
+		//		},
+		//	},
+		//	PreStop: &corev1.Handler{
+		//		Exec: &corev1.ExecAction{
+		//			Command: []string{item.LifeCycle.PreStop.Command},
+		//		},
+		//		HTTPGet: &corev1.HTTPGetAction{
+		//			Path: item.ReadyProbe.Pattern.URL,
+		//			Port: intstr.Parse(item.LifeCycle.PreStop.HTTPPort),
+		//		},
+		//		TCPSocket: &corev1.TCPSocketAction{
+		//			Port: intstr.Parse(item.LifeCycle.PreStop.TCPPort),
+		//		},
+		//	},
+		//}
+
 		containers = append(containers, container)
 	}
 	return containers
+}
+
+func workloadsTemplateToVolumeClaims(wt *workloadsTemplate) []corev1.PersistentVolumeClaim {
+	pvcs := make([]corev1.PersistentVolumeClaim, 0)
+	for _, item := range wt.VolumeClaims {
+		pvc := corev1.PersistentVolumeClaim{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: item.Metadata.Name,
+			},
+			Spec: corev1.PersistentVolumeClaimSpec{},
+		}
+		accessModes := make([]corev1.PersistentVolumeAccessMode, 0)
+		for _, subItem := range item.Spec.AccessModes {
+			accessModes = append(accessModes, corev1.PersistentVolumeAccessMode(subItem))
+		}
+		resourceRequire := corev1.ResourceRequirements{
+			Requests: corev1.ResourceList{
+				corev1.ResourceName("storage"): resource.MustParse(item.Spec.Resources.Requests.Storage),
+			},
+		}
+		if item.Metadata.IsUseDefaultStorageClass {
+			pvc.ObjectMeta.Annotations = map[string]string{
+				"volume.alpha.kubernetes.io/storage-class": "default",
+			}
+			pvc.Spec = corev1.PersistentVolumeClaimSpec{
+				AccessModes: accessModes,
+				Resources:   resourceRequire,
+			}
+		} else {
+			pvc.Spec = corev1.PersistentVolumeClaimSpec{
+				StorageClassName: &item.Spec.StorageClassName,
+				AccessModes:      accessModes,
+				Resources:        resourceRequire,
+			}
+
+		}
+		pvcs = append(pvcs, pvc)
+	}
+	return pvcs
 }
 
 func groupBy(cds nuwav1.Coordinates, replicas int32) (group int, result []nuwav1.CoordinatesGroup) {
@@ -167,13 +247,21 @@ func groupBy(cds nuwav1.Coordinates, replicas int32) (group int, result []nuwav1
 	return len(temp), result
 }
 
+func workloadsTemplateImagePullSecrets(w *workloadsTemplate) []corev1.LocalObjectReference {
+	result := make([]corev1.LocalObjectReference, 0)
+	for _, item := range w.Metadata {
+		result = append(result, corev1.LocalObjectReference{Name: item.Base.ImagePullSecret})
+	}
+	return result
+}
+
 func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 	deployTemplate := &deployTemplate{}
 	if err := g.BindJSON(deployTemplate); err != nil {
 		common.ToRequestParamsError(g, err)
 		return
 	}
-	obj, err := w.workloadsTemplate.RemoteGet(constraint.WorkloadsDeployTemplateNamespace, deployTemplate.TemplateName)
+	obj, err := w.workloadsTemplate.Get(constraint.WorkloadsDeployTemplateNamespace, deployTemplate.TemplateName)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return
@@ -186,8 +274,21 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 		return
 	}
 
-	deployItems := make(deployMetadataItems, 0)
-	if err := json.Unmarshal([]byte(*workloads.Spec.Metadata), &deployItems); err != nil {
+	workloadsTemplate := &workloadsTemplate{
+		Metadata:     make(metadataTemplate, 0),
+		Service:      serviceTemplate{},
+		VolumeClaims: make(volumeClaimsTemplate, 0),
+	}
+	if err := json.Unmarshal([]byte(*workloads.Spec.Metadata), &workloadsTemplate.Metadata); err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	if err := json.Unmarshal([]byte(*workloads.Spec.Service), &workloadsTemplate.Service); err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	if err := json.Unmarshal([]byte(workloads.Spec.VolumeClaims), &workloadsTemplate.VolumeClaims); err != nil {
 		common.ToRequestParamsError(g, err)
 		return
 	}
@@ -197,7 +298,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 	var runtimeClassGVR schema.GroupVersionResource
 	switch *workloads.Spec.ResourceType {
 	case "Stone":
-		obj, err := w.namespace.RemoteGet("", deployTemplate.Namespace.Value)
+		obj, err := w.namespace.Get("", deployTemplate.Namespace.Value)
 		if err != nil {
 			common.ToRequestParamsError(g, err)
 			return
@@ -239,6 +340,24 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 		rs := int32(replicas)
 		_, cgs := groupBy(cds, rs)
 
+		serviceTemplate, err := workloadsTemplateToServiceSpec(workloadsTemplate)
+		if err != nil {
+			if err != nil {
+				common.ToRequestParamsError(g, err)
+				return
+			}
+		}
+
+		// PodSpec
+		podSpec := corev1.PodSpec{}
+		podSpec.Containers = workloadsTemplateToPodContainers(workloadsTemplate)
+		podSpec.ImagePullSecrets = workloadsTemplateImagePullSecrets(workloadsTemplate)
+
+		// Labels
+		labels := map[string]string{
+			"app":               deployTemplate.AppName,
+			"app-template-name": deployTemplate.TemplateName,
+		}
 		runtimeObj = &nuwav1.Stone{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "Stone",
@@ -247,36 +366,20 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      deployTemplate.AppName,
 				Namespace: deployTemplate.Namespace.Value,
-				Labels: map[string]string{
-					"app":               deployTemplate.AppName,
-					"app-template-name": deployTemplate.TemplateName,
-				},
+				Labels:    labels,
 			},
 			Spec: nuwav1.StoneSpec{
 				Template: corev1.PodTemplateSpec{
 					ObjectMeta: metav1.ObjectMeta{
-						Name: deployTemplate.AppName,
-						Labels: map[string]string{
-							"app":               deployTemplate.AppName,
-							"app-template-name": deployTemplate.TemplateName,
-						},
+						Name:   deployTemplate.AppName,
+						Labels: labels,
 					},
-					Spec: corev1.PodSpec{
-						Containers: toPodContainer(deployItems...),
-					},
+					Spec: podSpec,
 				},
-				Strategy:    "Release", // TODO
-				Coordinates: cgs,
-				Service: corev1.ServiceSpec{
-					Ports: []corev1.ServicePort{
-						corev1.ServicePort{
-							Protocol:   corev1.ProtocolTCP,
-							Port:       80,
-							TargetPort: intstr.Parse("80"),
-						},
-					},
-					Type: corev1.ServiceType("NodePort"),
-				},
+				Strategy:             "Release", // TODO
+				Coordinates:          cgs,
+				Service:              *serviceTemplate,
+				VolumeClaimTemplates: workloadsTemplateToVolumeClaims(workloadsTemplate),
 			},
 		}
 		runtimeClassGVR = types.ResourceStone

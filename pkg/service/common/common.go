@@ -32,8 +32,7 @@ func (w WorkloadsSlice) Less(i, j int) bool {
 // ResourceQuery query resource interface
 type ResourceQuery interface {
 	List(namespace, flag string, pos, size int64, selector interface{}) (*unstructured.UnstructuredList, error)
-	Get(namespace, name string) (runtime.Object, error)
-	RemoteGet(namespace, name string, subresources ...string) (runtime.Object, error)
+	Get(namespace, name string, subresources ...string) (runtime.Object, error)
 	SharedNamespaceList(namespace string, selector interface{}) (*unstructured.UnstructuredList, error)
 	Watch(namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector) (<-chan watch.Event, error)
 }
@@ -142,7 +141,7 @@ func (d *DefaultImplWorkloadsResourceHandler) SharedNamespaceList(namespace stri
 	return items, nil
 }
 
-func (d *DefaultImplWorkloadsResourceHandler) Get(namespace, name string) (
+func (d *DefaultImplWorkloadsResourceHandler) Get(namespace, name string, subresources ...string) (
 	runtime.Object, error,
 ) {
 	gvr := d.GetGroupVersionResource()
@@ -150,19 +149,6 @@ func (d *DefaultImplWorkloadsResourceHandler) Get(namespace, name string) (
 		ClientV2.
 		Interface.
 		Resource(gvr).
-		Namespace(namespace).
-		Get(name, metav1.GetOptions{})
-	if err != nil {
-		return nil, err
-	}
-	return object, nil
-}
-
-func (d *DefaultImplWorkloadsResourceHandler) RemoteGet(namespace, name string, subresources ...string) (runtime.Object, error) {
-	object, err := SharedK8sClient.
-		ClientV2.
-		Interface.
-		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
 		Get(name, metav1.GetOptions{}, subresources...)
 	if err != nil {
@@ -231,9 +217,17 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(
 			reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
 			result = getObj
 			return nil
-		} else {
+		}
+
+		if !reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
 			getObj.Object["spec"] = obj.Object["spec"]
-			getObj.Object["metadata"] = obj.Object["metadata"]
+		}
+
+		if !reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
+			getObj.Object["metadata"] = compareMetadataLabelsOrAnnotation(
+				getObj.Object["metadata"].(map[string]interface{}),
+				obj.Object["metadata"].(map[string]interface{}),
+			)
 		}
 
 		newObj, updateErr := SharedK8sClient.
@@ -285,4 +279,16 @@ func (d *DefaultImplWorkloadsResourceHandler) Delete(namespace, name string) err
 			Delete(name, &metav1.DeleteOptions{})
 	})
 	return retryErr
+}
+
+func compareMetadataLabelsOrAnnotation(old, new map[string]interface{}) map[string]interface{} {
+	newLabels, exist := new["labels"]
+	if exist {
+		old["labels"] = newLabels
+	}
+	newAnnotations, exist := new["annotations"]
+	if exist {
+		old["annotations"] = newAnnotations
+	}
+	return old
 }
