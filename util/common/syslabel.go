@@ -2,6 +2,8 @@ package common
 
 // fuxi label
 const (
+	// BaseServiceStoreageNamespace User/Role/Department data store namespace
+	BaseServiceStoreageNamespace = "kube-system"
 	// NamespaceLabelForDepartment  eg: fuxi.kubernetes.io/department: dxp
 	NamespaceLabelForDepartment = "fuxi.kubernetes.io/department"
 

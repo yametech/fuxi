@@ -19,14 +19,10 @@ func (uc *userConfig) String() string {
 	return string(bytesData)
 }
 
-func newUserConfig(user string, token string, allowedNamespaces []string) *userConfig {
+func newUserConfig(user string, token string, allowedNamespaces []string, defaultNamespace string) *userConfig {
 	isClusterAdmin := false
-	defaultNamespace := "default"
 	if user == "admin" {
 		isClusterAdmin = true
-	} else {
-		allowedNamespaces = []string{"dxp", "dxp2"}
-		defaultNamespace = "dxp"
 	}
 	return &userConfig{
 		LensVersion:       "1.0",

@@ -4,30 +4,17 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/yametech/fuxi/util/common"
-
-	"github.com/yametech/fuxi/thirdparty/lib/token"
 )
 
-type userLoginInterface interface {
-	Auth(user, password string) ([]byte, error)
-}
-
 type LoginHandle struct {
-	*token.Token
-	AuthorizationStorage
+	Authorization
 }
 
 type userAuth struct {
 	UserName string `json:"username"`
 	Password string `json:"password"`
-}
-
-var dataBase = map[string]string{
-	"admin": "admin",
-	"dev":   "dev",
 }
 
 func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -52,57 +39,19 @@ func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost && r.URL.Path == "/user-login" {
-		// // TODO login
-		// ok, err := h.Auth(userAuth.UserName, userAuth.Password)
-		// if !ok || err != nil {
-		// 	writeResponse(w, http.StatusBadRequest, err.Error())
-		// 	return
-		// }
-
-		if pwd, exist := dataBase[userAuth.UserName]; !exist {
-			writeResponse(w, http.StatusUnauthorized, "{message: user not exist}")
-			return
-		} else if pwd != userAuth.Password {
-			writeResponse(w, http.StatusUnauthorized, "{message: password incorrect}")
-			return
-		}
-
-		expireTime := time.Now().Add(time.Hour * 24).Unix()
-		tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
+		// user Login
+		cfgData, err := h.Auth(userAuth.UserName, userAuth.Password)
 		if err != nil {
 			writeResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-
-		config := newUserConfig(userAuth.UserName, tokenStr, []string{})
-		bytesData, err := json.Marshal(config)
-		if err != nil {
-			writeResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		writeResponse(w, http.StatusOK, bytesData)
+		writeResponse(w, http.StatusOK, cfgData)
 		return
 	}
 
 	if r.Method == http.MethodGet && r.URL.Path == "/config" {
-		if userAuth.UserName == "admin" {
-			expireTime := time.Now().Add(time.Hour * 24).Unix()
-			tokenStr, err := h.Encode("go.micro.gateway.login", userAuth.UserName, expireTime)
-			if err != nil {
-				writeResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
-			config := newUserConfig(userAuth.UserName, tokenStr, []string{})
-			bytesData, err := json.Marshal(config)
-			if err != nil {
-				writeResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-			writeResponse(w, http.StatusOK, bytesData)
-		}
-		return
+		// h.Config()
+		// Reserved for future use
 	}
 
 	w.WriteHeader(http.StatusUnauthorized)

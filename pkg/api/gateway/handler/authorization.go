@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"sync"
+	"time"
 
 	"github.com/yametech/fuxi/pkg/service/workload"
+	"github.com/yametech/fuxi/thirdparty/lib/token"
+	"github.com/yametech/fuxi/util/common"
 
-	"github.com/go-acme/lego/log"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"github.com/yametech/fuxi/pkg/service/base"
-	watch "k8s.io/apimachinery/pkg/watch"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type OpType string
@@ -59,199 +60,87 @@ func (r Roles) search(roleName string) *Role {
 }
 
 type Authorization struct {
-	baseRole *base.BaseRole
-	mutex    sync.RWMutex
-	password string
-	roles    Roles `json:"roles"`
+	*token.Token
+	userServices      *base.BaseUser
+	roleServices      *base.BaseRole
+	deptServices      *base.BaseDepartment
+	namespaceServices *workload.Namespace
 }
 
-func NewAuthorization() (*Authorization, error) {
+func NewAuthorization(token *token.Token) *Authorization {
 	auth := &Authorization{
-		baseRole: base.NewBaseRole(),
-		mutex:    sync.RWMutex{},
-		roles:    make([]*Role, 0),
+		Token:             token,
+		userServices:      base.NewBaseUser(),
+		roleServices:      base.NewBaseRole(),
+		deptServices:      base.NewBaseDepartment(),
+		namespaceServices: workload.NewNamespace(),
 	}
-	if err := auth.watch(); err != nil {
+	return auth
+}
+
+func (auth *Authorization) getUser(userName string) (*v1.BaseUser, error) {
+	obj, err := auth.userServices.Get(common.BaseServiceStoreageNamespace, userName)
+	if err != nil {
 		return nil, err
 	}
-	return auth, nil
+	baseUser := &v1.BaseUser{}
+	err = runtimeObjectToInstanceObj(obj, baseUser)
+	if err != nil {
+		return nil, err
+	}
+	return baseUser, nil
 }
 
-func (a *Authorization) watch() error {
-	list, err := a.baseRole.List("", "", 0, 0, nil)
+func (auth *Authorization) getDept(deptName string) (*v1.BaseDepartment, error) {
+	obj, err := auth.deptServices.Get(common.BaseServiceStoreageNamespace, deptName)
+	if err != nil {
+		return nil, err
+	}
+	baseDept := &v1.BaseDepartment{}
+	err = runtimeObjectToInstanceObj(obj, baseDept)
+	if err != nil {
+		return nil, err
+	}
+	return baseDept, nil
+}
+
+func (auth *Authorization) Config(tokenStr string) ([]byte, error) {
+	return nil, nil
+}
+
+func (auth *Authorization) Auth(username, password string) ([]byte, error) {
+	baseUser, err := auth.getUser(username)
+	if err != nil {
+		return nil, err
+	}
+	if *baseUser.Spec.Password != password {
+		return nil, fmt.Errorf("password not match")
+	}
+
+	expireTime := time.Now().Add(time.Hour * 24).Unix()
+	tokenStr, err := auth.Encode(common.MicroSaltUserHeader, username, expireTime)
+	if err != nil {
+		return nil, err
+	}
+	// user AllowedNamespaces
+	dept, err := auth.getDept(baseUser.Spec.DepartmentId)
+	if err != nil {
+		return nil, err
+	}
+	return []byte(
+		newUserConfig(
+			username,
+			tokenStr,
+			dept.Spec.Namespace,
+			dept.Spec.DefaultNamespace,
+		).String(),
+	), nil
+}
+
+func runtimeObjectToInstanceObj(robj runtime.Object, targeObj interface{}) error {
+	bytesData, err := json.Marshal(robj)
 	if err != nil {
 		return err
 	}
-	roleList := &v1.BaseRoleList{}
-	marshalData, err := json.Marshal(list)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(marshalData, roleList)
-	if err != nil {
-		return err
-	}
-
-	for _, baseRole := range roleList.Items {
-		a.roles = append(a.roles, &Role{
-			Name: baseRole.Name,
-		})
-	}
-	stream, err := a.baseRole.Watch("", roleList.GetResourceVersion(), 0, nil)
-	if err != nil {
-		return err
-	}
-	go func() {
-		for event := range stream {
-			obj := event.Object.(*v1.BaseRole)
-			switch event.Type {
-			case watch.Added:
-				a.append(NewRole(obj.GetName(), obj.Spec.Value))
-			case watch.Deleted:
-				a.remove(obj.GetName())
-			case watch.Modified:
-				a.update(obj.GetName(), obj.Spec.Value)
-			}
-		}
-	}()
-
-	return nil
-}
-
-func (auth *Authorization) update(roleName string, permValue uint32) {
-	auth.mutex.RLocker()
-	defer auth.mutex.RUnlock()
-	role := auth.roles.search(roleName)
-	role.PermValue = permValue
-	return
-}
-
-func (auth *Authorization) append(role *Role) {
-	auth.mutex.RLocker()
-	defer auth.mutex.RUnlock()
-	auth.roles = append(auth.roles, role)
-}
-
-func (auth *Authorization) remove(roleName string) {
-	auth.mutex.RLocker()
-	defer auth.mutex.RUnlock()
-	for index, _role := range auth.roles {
-		if _role.Name == roleName {
-			auth.roles = append(
-				auth.roles[:index],
-				auth.roles[index+1:]...,
-			)
-		}
-	}
-}
-
-type AuthorizationStorage struct {
-	mutex     sync.RWMutex
-	data      map[string]*Authorization
-	baseUser  *base.BaseUser
-	namespace *workload.Namespace
-}
-
-func NewAuthorizationStorage() (*AuthorizationStorage, error) {
-	authorizationStorage := &AuthorizationStorage{
-		mutex:     sync.RWMutex{},
-		data:      make(map[string]*Authorization),
-		baseUser:  base.NewBaseUser(),
-		namespace: workload.NewNamespace(),
-	}
-	return authorizationStorage, nil
-}
-
-// TODO 查找用户可以访问的空间
-func (a *Authorization) UserAllowNamespace(user string) []string {
-	if user == "admin" {
-
-	}
-	return []string{}
-}
-
-func (a *AuthorizationStorage) Auth(username string, password string) (bool, error) {
-	auth := a.get(username)
-	if auth == nil {
-		return false, fmt.Errorf("%s", "user does not exist")
-	}
-	if auth.password != password {
-		return false, fmt.Errorf("%s", "user password does not match")
-	}
-	return true, nil
-}
-
-func (a *AuthorizationStorage) watchUserData() error {
-	userList, err := a.baseUser.List("", "", 0, 0, nil)
-	if err != nil {
-		return err
-	}
-	baseUserList := &v1.BaseUserList{}
-	marshalData, err := json.Marshal(userList)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(marshalData, baseUserList)
-	if err != nil {
-		return err
-	}
-
-	for _, user := range userList.Items {
-		authorization, err := NewAuthorization()
-		if err != nil {
-			return err
-		}
-		a.data[user.GetName()] = authorization
-	}
-	stream, err := a.baseUser.Watch("", userList.GetResourceVersion(), 0, nil)
-	if err != nil {
-		return err
-	}
-	go func() {
-		for userEvent := range stream {
-			obj := userEvent.Object.(*v1.BaseUser)
-			switch userEvent.Type {
-			case watch.Added:
-				authorization, err := NewAuthorization()
-				if err != nil {
-					log.Infof("new authorization error: %s", err)
-				}
-				a.add(obj.GetName(), authorization)
-			case watch.Deleted:
-				a.remove(obj.GetName())
-			}
-		}
-	}()
-	return nil
-}
-
-func (a *AuthorizationStorage) get(name string) *Authorization {
-	a.mutex.RLocker()
-	defer a.mutex.RUnlock()
-	author, ok := a.data[name]
-	if !ok {
-		return nil
-	}
-	return author
-}
-
-func (a *AuthorizationStorage) exist(user string) bool {
-	a.mutex.RLocker()
-	defer a.mutex.RUnlock()
-	if _, ok := (a.data)[user]; !ok {
-		return false
-	}
-	return true
-}
-
-func (a *AuthorizationStorage) add(user string, auth *Authorization) {
-	a.mutex.Lock()
-	defer a.mutex.Unlock()
-	a.data[user] = auth
-}
-
-func (a *AuthorizationStorage) remove(user string) {
-	a.mutex.Lock()
-	defer a.mutex.Unlock()
-	delete(a.data, user)
+	return json.Unmarshal(bytesData, targeObj)
 }
