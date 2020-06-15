@@ -3,116 +3,44 @@ module github.com/yametech/fuxi
 go 1.13
 
 require (
-	cloud.google.com/go/pubsub v1.0.1 // indirect
+	cloud.google.com/go v0.45.1 // indirect
 	code.gitea.io/sdk/gitea v0.12.0
 	contrib.go.opencensus.io/exporter/prometheus v0.1.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.12.4 // indirect
-	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
-	github.com/Shopify/sarama v1.24.1 // indirect
-	github.com/abbot/go-http-auth v0.4.1-0.20181019201920-860ed7f246ff // indirect
 	github.com/alauda/kube-ovn v0.10.0
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/anacrolix/sync v0.2.0 // indirect
-	github.com/anacrolix/utp v0.0.0-20180219060659-9e0e1d1d0572 // indirect
-	github.com/asim/go-awsxray v0.0.0-20161209120537-0d8a60b6e205 // indirect
-	github.com/asim/go-bson v0.0.0-20160318195205-84522947cabd // indirect
-	github.com/biezhi/gorm-paginator/pagination v0.0.0-20190124091837-7a5c8ed20334 // indirect
-	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
-	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
-	github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec // indirect
-	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/docker/cli v0.0.0-20191017083524-a8ff7f821017 // indirect
-	github.com/docker/docker v1.4.2-0.20190924003213-a8608b5b67c7 // indirect
-	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/eapache/go-resiliency v1.2.0 // indirect
-	github.com/eclipse/paho.mqtt.golang v1.2.0 // indirect
-	github.com/fatih/structs v1.1.0 // indirect
-	github.com/franela/goreq v0.0.0-20171204163338-bcd34c9993f8 // indirect
-	github.com/gin-contrib/static v0.0.0-20191128031702-f81c604d8ac2 // indirect
 	github.com/gin-gonic/gin v1.5.0
-	github.com/go-acme/lego v2.5.0+incompatible
-	github.com/go-log/log v0.1.0 // indirect
 	github.com/go-openapi/spec v0.19.6
 	github.com/go-openapi/swag v0.19.7 // indirect
-	github.com/go-redsync/redsync v1.3.1 // indirect
 	github.com/go-resty/resty/v2 v2.1.0
-	github.com/go-stomp/stomp v2.0.3+incompatible // indirect
-	github.com/gogo/protobuf v1.3.1 // indirect
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
-	github.com/google/go-containerregistry v0.0.0-20191108172333-79629ba8e9a1 // indirect
-	github.com/google/uuid v1.1.1 // indirect
-	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
 	github.com/gorilla/websocket v1.4.1
-	github.com/grpc-ecosystem/grpc-gateway v1.9.5 // indirect
-	github.com/hashicorp/consul/api v1.2.0 // indirect
-	github.com/hashicorp/memberlist v0.1.5 // indirect
-	github.com/hashicorp/vault/api v1.0.4 // indirect
-	github.com/hudl/fargo v1.3.0 // indirect
-	github.com/igm/pubsub v1.0.0 // indirect
 	github.com/igm/sockjs-go v2.0.1+incompatible
-	github.com/jcmturner/gofork v1.0.0 // indirect
-	github.com/jinzhu/gorm v1.9.12 // indirect
-	github.com/joho/godotenv v1.3.0 // indirect
-	github.com/juju/ratelimit v1.0.1 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/micro/cli v0.2.0
 	github.com/micro/go-micro v1.16.0
-	github.com/micro/go-plugins v0.21.1 // indirect
 	github.com/micro/micro v1.16.0
-	github.com/minio/highwayhash v1.0.0 // indirect
 	github.com/nats-io/nats.go v1.9.1 // indirect
-	github.com/nats-io/stan.go v0.5.0 // indirect
-	github.com/nsqio/go-nsq v1.0.7 // indirect
-	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
-	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/operator-framework/operator-sdk v0.16.0
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.2.1 // indirect
-	github.com/rcrowley/go-metrics v0.0.0-20190706150252-9beb055b7962 // indirect
-	github.com/rs/cors v1.7.0 // indirect
-	github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da // indirect
-	github.com/sirupsen/logrus v1.4.2 // indirect
-	github.com/smartystreets/assertions v1.0.1 // indirect
-	github.com/sony/gobreaker v0.4.1 // indirect
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
 	github.com/tektoncd/pipeline v0.9.2
-	github.com/tinylib/msgp v1.1.0 // indirect
-	github.com/uber-go/atomic v1.4.0 // indirect
-	github.com/uber/jaeger-client-go v2.17.0+incompatible // indirect
-	github.com/uber/jaeger-lib v2.0.0+incompatible // indirect
-	github.com/vishvananda/netns v0.0.0-20190625233234-7109fa855b0f // indirect
 	github.com/yametech/nuwa v0.0.0
 	go.opencensus.io v0.22.2 // indirect
-	go.uber.org/ratelimit v0.1.0 // indirect
 	go.uber.org/zap v1.10.0
-	gocloud.dev/pubsub/rabbitpubsub v0.17.0 // indirect
 	golang.org/x/tools v0.0.0-20200305224536-de023d59a5d1 // indirect
 	google.golang.org/api v0.13.0 // indirect
 	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
-	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0 // indirect
-	gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a // indirect
-	gopkg.in/gcfg.v1 v1.2.3 // indirect
-	gopkg.in/igm/sockjs-go.v2 v2.0.1 // indirect
-	gopkg.in/jcmturner/gokrb5.v7 v7.3.0 // indirect
-	gopkg.in/ldap.v3 v3.1.0 // indirect
-	gopkg.in/redis.v3 v3.6.4 // indirect
-	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/api v0.18.3
 	k8s.io/apiextensions-apiserver v0.18.2
 	k8s.io/apimachinery v0.18.3
 	k8s.io/client-go v12.0.0+incompatible
-	k8s.io/code-generator v0.0.0 // indirect
-	k8s.io/klog v1.0.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20200410145947-61e04a5be9a6
-	k8s.io/kubernetes v1.18.3 // indirect
 	k8s.io/metrics v0.0.0
 	k8s.io/sample-controller v0.0.0-20190326030654-b8f621986e45
 	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706

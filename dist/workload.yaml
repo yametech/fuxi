@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    fuxiapp: fuxigateway
+  name: fuxigateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      fuxiapp: fuxigateway
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        fuxiapp: fuxigateway
+    spec:
+      containers:
+      - args:
+        - --registry_address=etcd:2379
+        - api
+        - --handler=rpc
+        image: yametech/fuxigateway:v0.1.0
+        imagePullPolicy: ""
+        name: gateway
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    fuxiapp: fuxigateway
+  name: fuxigateway
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  selector:
+    fuxiapp: fuxigateway

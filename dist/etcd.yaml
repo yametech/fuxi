@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: etcd-claim0
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: etcd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      fuxiapp: etcd
+  template:
+    metadata:
+      labels:
+        fuxiapp: etcd
+    spec:
+      containers:
+        - name: etcd
+          image: 'quay.io/coreos/etcd:latest'
+          args:
+            - etcd
+            - '-name'
+            - etcd1
+            - '-advertise-client-urls=http://0.0.0.0:2379'
+            - '-listen-client-urls=http://0.0.0.0:2379'
+            - '-initial-cluster-state'
+            - new
+          ports:
+            - containerPort: 2379
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: etcd-claim0
+              mountPath: /etcd-data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+      volumes:
+      - name: etcd-claim0
+        persistentVolumeClaim:
+          claimName: etcd-claim0
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+spec:
+  selector:
+    fuxiapp: etcd
+  ports:
+  - name: "2379"
+    port: 2379
+    targetPort: 2379
+

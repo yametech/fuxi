@@ -76,3 +76,9 @@ generate:
 
 up: generate
 	operator-sdk up local
+
+
+docker-build:
+	docker build -t yametech/fuxigateway:v0.1.0 -f Dockerfile.gateway .
+	docker build -t yametech/workload:v0.1.0 -f Dockerfile.workload .
+	docker build -t yametech/base:v0.1.0 -f Dockerfile.base .
