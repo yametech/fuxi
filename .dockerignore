@@ -1,5 +1,4 @@
 .github
-vendor/
 build/
 dist/
 wireframes/
