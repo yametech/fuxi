@@ -2,43 +2,25 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    fuxiapp: fuxigateway
-  name: fuxigateway
+    app: workload
+  name: workload
+  namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      fuxiapp: fuxigateway
+      app: workload
   strategy: {}
   template:
     metadata:
       labels:
-        fuxiapp: fuxigateway
+        app: workload
     spec:
       containers:
-      - args:
-        - --registry_address=etcd:2379
-        - api
-        - --handler=rpc
-        image: yametech/fuxigateway:v0.1.0
-        imagePullPolicy: ""
-        name: gateway
+      - name: workload
+        image: yametech/workload:v0.1.0
+        args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379"]
         ports:
         - containerPort: 8080
-        resources: {}
+        imagePullPolicy: Always
       restartPolicy: Always
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    fuxiapp: fuxigateway
-  name: fuxigateway
-spec:
-  ports:
-  - name: "8080"
-    port: 8080
-    targetPort: 8080
-  selector:
-    fuxiapp: fuxigateway

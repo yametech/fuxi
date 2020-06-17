@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: compass
+  name: compass
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: compass
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: compass
+    spec:
+      containers:
+      - image: yametech/compass:v0.1.0
+        imagePullPolicy: Always
+        name: compass
+        ports:
+        - containerPort: 80
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: compass
+  name: compass
+  namespace: kube-system
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+  selector:
+    app: compass
+  type: NodePort

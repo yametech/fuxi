@@ -2,40 +2,39 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    fuxiapp: fuxigateway
-  name: fuxigateway
+    app: gateway
+  name: gateway
+  namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      fuxiapp: fuxigateway
-  strategy: {}
+      app: gateway
   template:
     metadata:
       labels:
-        fuxiapp: fuxigateway
+        app: gateway
     spec:
       containers:
-      - args:
-        - --registry etcd --registry_address fuxi.io:12379 api --handler=http
-        image: yametech/fuxigateway:v0.1.0
-        imagePullPolicy: ""
-        name: gateway
-        ports:
-        - containerPort: 8080
-        resources: {}
+        - name: gateway
+          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379", "api","--handler=http"]
+          image: yametech/gateway:v0.1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
       restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    fuxiapp: fuxigateway
-  name: fuxigateway
+    app: gateway
+  name: gateway
+  namespace: kube-system
 spec:
   ports:
-  - name: "8080"
-    port: 8080
-    targetPort: 8080
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
   selector:
-    fuxiapp: fuxigateway
+    app: gateway

@@ -23,17 +23,15 @@ import (
 
 // defaultETCDFlag a etcd String Flag
 // dev Value:  "gz.nuwa.xyz:32428",
-func defaultETCDFlag(value string) cli.StringFlag {
-	if value == "" {
-		value = "sdmssd.io:2379"
-		//value = "gz.nuwa.xyz:32428"
-		//value = "linux:30755"
-	}
+// value = "sdmssd.io:2379"
+// value = "gz.nuwa.xyz:32428"
+// value = "linux:30755"
+func defaultETCDFlag() cli.StringFlag {
 	flag := cli.StringFlag{
 		Name:   "etcd_address",
 		Usage:  "etcd address for config K/V",
 		EnvVar: "ETCD_ADDRESS",
-		Value:  value,
+		Value:  "etcd.kube-system.svc.cluster.local:2379",
 	}
 	return flag
 }
@@ -51,7 +49,7 @@ func InitGatewayInstallConfigure(name string, loginHandle http.Handler, microPlu
 				auth.JWTAuthWrapper(gwic.Token, gwic.Whitelist, loginHandle),
 			),
 			plugin.WithFlag(
-				defaultETCDFlag(""),
+				defaultETCDFlag(),
 			),
 			plugin.WithInit(func(ctx *cli.Context) error {
 				defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
@@ -95,7 +93,7 @@ func InitApi(sampling int, name, version, tracingAddr string) (web.Service, *Api
 		web.Version(common.Version(version)),
 		web.RegisterTTL(time.Second*15),
 		web.RegisterInterval(time.Second*10),
-		web.Flags(defaultETCDFlag("")),
+		web.Flags(defaultETCDFlag()),
 		web.Action(func(ctx *cli.Context) {
 			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
 			if err != nil {
@@ -120,7 +118,7 @@ func InitService(name, version string) (micro.Service, *ApiInstallConfigure) {
 		micro.Version(version),
 		micro.RegisterTTL(time.Second*15),
 		micro.RegisterInterval(time.Second*10),
-		micro.Flags(defaultETCDFlag("")),
+		micro.Flags(defaultETCDFlag()),
 		micro.Action(func(ctx *cli.Context) {
 			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
 			if err != nil {

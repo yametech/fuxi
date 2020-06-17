@@ -1,72 +1,60 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: etcd-claim0
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Mi
----
-kind: Deployment
 apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: etcd
+  namespace: kube-system
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      fuxiapp: etcd
+      app: etcd # has to match .spec.template.metadata.labels
+  serviceName: "etcd"
+  replicas: 1 # by default is 1
   template:
     metadata:
       labels:
-        fuxiapp: etcd
+        app: etcd # has to match .spec.selector.matchLabels
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
-        - name: etcd
-          image: 'quay.io/coreos/etcd:latest'
-          args:
-            - etcd
-            - '-name'
-            - etcd1
-            - '-advertise-client-urls=http://0.0.0.0:2379'
-            - '-listen-client-urls=http://0.0.0.0:2379'
-            - '-initial-cluster-state'
-            - new
-          ports:
-            - containerPort: 2379
-              protocol: TCP
-          resources: {}
-          volumeMounts:
-            - name: etcd-claim0
-              mountPath: /etcd-data
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
-      restartPolicy: Always
-      terminationGracePeriodSeconds: 30
-      dnsPolicy: ClusterFirst
-      securityContext: {}
-      schedulerName: default-scheduler
-      volumes:
-      - name: etcd-claim0
-        persistentVolumeClaim:
-          claimName: etcd-claim0
-  strategy:
-    type: Recreate
-  revisionHistoryLimit: 10
-  progressDeadlineSeconds: 600
+      - name: etcd
+        image: 'quay.io/coreos/etcd:latest'
+        args:
+          - etcd
+          - '-name'
+          - etcd1
+          - '-advertise-client-urls=http://0.0.0.0:2379'
+          - '-listen-client-urls=http://0.0.0.0:2379'
+          # - '-data-dir=/var/lib/etcd'
+          - '-initial-cluster-state'
+          - new
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        # volumeMounts:
+        # - name: data
+        #   mountPath: /var/lib/etcd
+  # volumeClaimTemplates:
+  # - metadata:
+  #     name: data
+  #     annotations:
+  #       volume.alpha.kubernetes.io/storage-class: default      
+  #   spec:
+  #     accessModes: [ "ReadWriteOnce" ]
+  #     resources:
+  #       requests:
+  #         storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  labels:
+    app: etcd
   name: etcd
+  namespace: kube-system
 spec:
-  selector:
-    fuxiapp: etcd
   ports:
   - name: "2379"
     port: 2379
     targetPort: 2379
-
+  selector:
+    app: etcd
