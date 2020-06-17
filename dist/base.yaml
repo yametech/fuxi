@@ -17,11 +17,8 @@ spec:
         fuxiapp: base
     spec:
       containers:
-      - name: base
-        args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379"]
-        image: yametech/base:v0.1.0
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: "ETCD_ADDRESS"
-          value: etcd.nfs-system.svc.cluster.local:2379        
+        - name: base
+          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379"]
+          image: yametech/base:v0.1.0
+          imagePullPolicy: Always
       restartPolicy: Always

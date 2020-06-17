@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - image: yametech/compass:v0.1.0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: compass
         ports:
         - containerPort: 80

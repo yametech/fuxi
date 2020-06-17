@@ -19,13 +19,8 @@ spec:
       containers:
       - name: workload
         image: yametech/workload:v0.1.0
-        args: 
-        - --registry=etcd
-        - --registry_address=etcd.nfs-system.svc.cluster.local:2379
-        env:
-        - name: "ETCD_ADDRESS"
-          value: etcd.nfs-system.svc.cluster.local:2379
+        args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379"]
         ports:
         - containerPort: 8080
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
       restartPolicy: Always
