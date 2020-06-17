@@ -105,6 +105,7 @@ func NewWorkladAPI() *WorkloadsAPI {
 		workloadsTemplate:        workloadservice.NewWorkloadsTemplate(),
 		pipeline:                 workloadservice.NewPipeline(),
 		pipelineRun:              workloadservice.NewPipelineRun(),
+		pipelineResource:         workloadservice.NewPipelineResource(),
 		task:                     workloadservice.NewTask(),
 		taskRun:                  workloadservice.NewTaskRun(),
 		podsecuritypolicies:      workloadservice.NewPodSecurityPolicies(),

@@ -12,9 +12,7 @@ import "github.com/gin-gonic/gin"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/apis/tekton.dev/v1alpha1/pipelineresources [get]
-func PipelineResourceList(g *gin.Context) {
-	workloadsAPI.ListPipelineResource(g)
-}
+func PipelineResourceList(g *gin.Context) { workloadsAPI.ListPipelineResource(g) }
 
 // PipelineResourc doc
 // @Summary workload PipelineResourc get
