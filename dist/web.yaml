@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: microweb
+  name: microweb
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microweb
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: microweb
+    spec:
+      containers:
+      - image: microhq/micro:latest
+        args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "web"]
+        name: microweb
+        ports:
+        - containerPort: 8082
+        resources: {}
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: microweb
+  namespace: kube-system
+  name: microweb
+spec:
+  ports:
+  - name: "8082"
+    port: 8082
+    targetPort: 8082
+  selector:
+    app: microweb
+  type: LoadBalancer
