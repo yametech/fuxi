@@ -12,7 +12,7 @@ import (
 func (w *WorkloadsAPI) GetTaskRun(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
-	item, err := w.taskrun.Get(namespace, name)
+	item, err := w.taskRun.Get(namespace, name)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
@@ -22,7 +22,7 @@ func (w *WorkloadsAPI) GetTaskRun(g *gin.Context) {
 
 func (w *WorkloadsAPI) ListTaskRun(g *gin.Context) {
 	// TODO: need search lables
-	list, err := w.taskrun.List("", "", 0, 0, nil)
+	list, err := w.taskRun.List("", "", 0, 0, nil)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
