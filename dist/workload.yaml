@@ -22,8 +22,10 @@ spec:
         args: 
         - --registry=etcd
         - --registry_address=etcd.nfs-system.svc.cluster.local:2379
-        imagePullPolicy: IfNotPresent
+        env:
+        - name: "ETCD_ADDRESS"
+          value: etcd.nfs-system.svc.cluster.local:2379
         ports:
         - containerPort: 8080
-        resources: {}
+        imagePullPolicy: IfNotPresent
       restartPolicy: Always

@@ -17,7 +17,7 @@ spec:
         app: microweb
     spec:
       containers:
-      - image: microhq/micro:latest
+      - image: yametech/micro:v0.1.0
         args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "web"]
         name: microweb
         ports:

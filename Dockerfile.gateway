@@ -21,4 +21,4 @@ FROM alpine:latest
 WORKDIR /
 COPY --from=builder /workspace/build/gateway .
 
-ENTRYPOINT ["gateway"]
+ENTRYPOINT ["/gateway"]

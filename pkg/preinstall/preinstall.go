@@ -21,19 +21,20 @@ import (
 	clientcmdapiV1 "k8s.io/client-go/tools/clientcmd/api/v1"
 )
 
+var value = flag.StringFlag()
 // defaultETCDFlag a etcd String Flag
 // dev Value:  "gz.nuwa.xyz:32428",
-func defaultETCDFlag(value string) cli.StringFlag {
-	if value == "" {
-		value = "sdmssd.io:2379"
-		//value = "gz.nuwa.xyz:32428"
-		//value = "linux:30755"
-	}
+// value = "sdmssd.io:2379"
+// value = "gz.nuwa.xyz:32428"
+// value = "linux:30755"
+func defaultETCDFlag() cli.StringFlag {
 	flag := cli.StringFlag{
 		Name:   "etcd_address",
 		Usage:  "etcd address for config K/V",
 		EnvVar: "ETCD_ADDRESS",
-		Value:  value,
+	}
+	if value!=""{
+		flag.Value = value
 	}
 	return flag
 }

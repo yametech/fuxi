@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: compass
+  name: etcd
   namespace: kube-system
 spec:
   selector:
     matchLabels:
-      app: compass # has to match .spec.template.metadata.labels
-  serviceName: "compass"
+      app: etcd # has to match .spec.template.metadata.labels
+  serviceName: "etcd"
   replicas: 1 # by default is 1
   template:
     metadata:
       labels:
-        app: compass # has to match .spec.selector.matchLabels
+        app: etcd # has to match .spec.selector.matchLabels
     spec:
       terminationGracePeriodSeconds: 10
       containers:
@@ -24,67 +24,37 @@ spec:
           - etcd1
           - '-advertise-client-urls=http://0.0.0.0:2379'
           - '-listen-client-urls=http://0.0.0.0:2379'
-          - '-data-dir=/var/lib/etcd'
+          # - '-data-dir=/var/lib/etcd'
           - '-initial-cluster-state'
           - new
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
-        volumeMounts:
-        - name: data
-          mountPath: /var/lib/etcd
-
-      - name: gateway
-        args: ["--registry", "etcd", "--registry_address", "127.0.0.1:2379", "api", "--handler=http"]
-        image: yametech/gateway:v0.1.0
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 8080
-
-      - name: workload
-        args: ["--registry", "etcd", "--registry_address", "127.0.0.1:2379"]
-        image: yametech/workload:v0.1.0
-        imagePullPolicy: IfNotPresent
-
-      - name: base
-        args: ["--registry", "etcd", "--registry_address", "127.0.0.1:2379"]
-        image: yametech/base:v0.1.0
-        imagePullPolicy: IfNotPresent
-
-      - name: compass-web
-        image: yametech/compass:v0.1.0
-        ports:
-        - containerPort: 8080
-        imagePullPolicy: IfNotPresent
-
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-      annotations:
-        volume.alpha.kubernetes.io/storage-class: default      
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 1Gi
+        # volumeMounts:
+        # - name: data
+        #   mountPath: /var/lib/etcd
+  # volumeClaimTemplates:
+  # - metadata:
+  #     name: data
+  #     annotations:
+  #       volume.alpha.kubernetes.io/storage-class: default      
+  #   spec:
+  #     accessModes: [ "ReadWriteOnce" ]
+  #     resources:
+  #       requests:
+  #         storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: compass
-  name: compass
+    app: etcd
+  name: etcd
   namespace: kube-system
 spec:
   ports:
   - name: "2379"
     port: 2379
     targetPort: 2379
-  - name: "8080"
-    port: 8080
-    targetPort: 8080
-  - name: "80"
-    port: 80
-    targetPort: 80
   selector:
-    app: compass
+    app: etcd

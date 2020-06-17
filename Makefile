@@ -89,5 +89,8 @@ base:
 	docker build -t yametech/base:v0.1.0 -f Dockerfile.base .
 
 docker-build: gateway base workload
+	docker push yametech/workload:v0.1.0 
+	docker push yametech/base:v0.1.0
+	docker push yametech/gateway:v0.1.0
 	@echo "Docker build done"
 	

@@ -18,15 +18,12 @@ spec:
     spec:
       containers:
       - name: gateway
-        args: 
-        - --registry
-        - etcd 
-        - --registry_address
-        - etcd.nfs-system.svc.cluster.local:2379
-        - api
-        - --handler=http
+        args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "api","--handler=http"]
         image: yametech/gateway:v0.1.0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        env:
+        - name: "ETCD_ADDRESS"
+          value: etcd.kube-system.svc.cluster.local:2379
         ports:
         - containerPort: 8080
       restartPolicy: Always

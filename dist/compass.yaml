@@ -22,7 +22,6 @@ spec:
         name: compass
         ports:
         - containerPort: 80
-        resources: {}
       restartPolicy: Always
 ---
 apiVersion: v1
