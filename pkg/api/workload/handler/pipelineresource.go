@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,4 +41,36 @@ func (w *WorkloadsAPI) ListPipelineResource(g *gin.Context) {
 		return
 	}
 	g.JSON(http.StatusOK, pipelineResourceList)
+}
+
+// Create PipelineResource
+func (w *WorkloadsAPI) CreatePipelineResource(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	obj := tekton.PipelineResource{}
+	err = json.Unmarshal(rawData, &obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	unstructuredStruct := &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}
+	newObj, err := w.pipelineResource.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	g.JSON(http.StatusOK, newObj)
 }

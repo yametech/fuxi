@@ -447,6 +447,7 @@ func main() {
 		// pipelineResource
 		group.GET("/apis/tekton.dev/v1alpha1/pipelineresources", PipelineResourceList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources/:name", PipelineResourceGet)
+		group.POST("/apis/tekton.dev/v1alpha1/pipelineresources", PipelineResourceCreate)
 	}
 
 	// watch the group resource
