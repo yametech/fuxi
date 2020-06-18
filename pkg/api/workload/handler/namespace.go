@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
+	consts "github.com/yametech/fuxi/util/common"
 	nuwav1 "github.com/yametech/nuwa/api/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -13,16 +14,50 @@ import (
 )
 
 type patchAnnotateData struct {
-	Namespace string   `json:"namespace"`
-	Nodes     []string `json:"nodes"`
+	Namespace      string   `json:"namespace"`
+	Nodes          []string `json:"nodes"`
+	StorageClasses []string `json:"storageClasses"`
 }
 
-func jsonPatchNodeListData(o interface{}) (string, error) {
+func jsonPatchData(o interface{}) (string, error) {
 	bs, err := json.Marshal(o)
 	if err != nil {
 		return "", err
 	}
 	return string(bs), nil
+}
+
+func (w *WorkloadsAPI) PatchAnnotateStorageClassNamespace(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	pad := patchAnnotateData{}
+	err = json.Unmarshal(rawData, &pad)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	patchNodeListValue, err := jsonPatchData(pad.StorageClasses)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	patchData := map[string]interface{}{
+		"metadata": map[string]interface{}{
+			"annotations": map[string]string{
+				consts.NamespaceAnnotationForStorageClass: patchNodeListValue,
+			},
+		},
+	}
+	_, err = w.namespace.Patch("", pad.Namespace, patchData)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	g.JSON(http.StatusOK, "")
 }
 
 func (w *WorkloadsAPI) PatchAnnotateNodeNamespace(g *gin.Context) {
@@ -73,7 +108,7 @@ func (w *WorkloadsAPI) PatchAnnotateNodeNamespace(g *gin.Context) {
 		}
 		cords = append(cords, cord)
 	}
-	patchNodeListValue, err := jsonPatchNodeListData(cords)
+	patchNodeListValue, err := jsonPatchData(cords)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
