@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/yametech/fuxi/pkg/service/common"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	metrics "k8s.io/metrics/pkg/apis/metrics"
 )
 
@@ -69,7 +70,17 @@ func (m *Metrics) GetPodMetrics(namespace, name string, pods *metrics.PodMetrics
 	return json.Unmarshal(data, &pods)
 }
 
-func (m *Metrics) GetPodMetricsList(namespace string, pods *metrics.PodMetricsList) error {
+type PodMetricsList struct {
+	metav1.TypeMeta `json:",inline"`
+	// Standard list metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+	metav1.ListMeta `json:"metadata,omitempty"`
+
+	// List of pod metrics.
+	Items []metrics.PodMetrics `json:"items"`
+}
+
+func (m *Metrics) GetPodMetricsList(namespace string, pods *PodMetricsList) error {
 	uri := "apis/metrics.k8s.io/v1beta1/pods"
 	if namespace != "" {
 		uri = fmt.Sprintf("apis/metrics.k8s.io/v1beta1/namespaces/%s/pods", namespace)

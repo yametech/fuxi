@@ -356,6 +356,7 @@ func main() {
 		group.POST("/api/v1/namespaces", NamespaceCreate)
 		group.DELETE("/api/v1/namespaces/:namespace", NamespaceDelete)
 		group.POST("/namespaces/annotation/node", NamespacePatchAnnotateNode)
+		group.POST("/namespaces/annotation/storageclass", NamespacePatchAnnotateStorageClass)
 	}
 
 	// post  workload/stack

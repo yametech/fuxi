@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/yametech/fuxi/pkg/api/common"
+	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -51,7 +52,7 @@ func (w *WorkloadsAPI) PodMetrics(g *gin.Context) {
 
 func (w *WorkloadsAPI) PodMetricsList(g *gin.Context) {
 	namespace := g.Query("namespace")
-	podMetricsList := &metrics.PodMetricsList{}
+	podMetricsList := &workloadservice.PodMetricsList{}
 	if err := w.metrics.GetPodMetricsList(namespace, podMetricsList); err != nil {
 		common.ToInternalServerError(g, "backend service get error", err)
 		return

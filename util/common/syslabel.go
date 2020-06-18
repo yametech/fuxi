@@ -1,5 +1,7 @@
 package common
 
+import nuwav1 "github.com/yametech/nuwa/api/v1"
+
 // fuxi label
 const (
 	// BaseServiceStoreageNamespace User/Role/Department data store namespace
@@ -17,5 +19,9 @@ const (
 	// NamespaceAnnotationForNodeResource
 	// eg: nuwa.kubernetes.io/default_resource_limit: '[{"zone":"A","rack":"W-01","host":"node1"},{"zone":"A","rack":"W-02","host":"node2"}]'
 	// the identified by the operation and maintenance, and the release resources are limited to these areas
-	NamespaceAnnotationForNodeResource = "nuwa.kubernetes.io/default_resource_limit"
+	NamespaceAnnotationForNodeResource = nuwav1.NuwaLimitFlag
+
+	// NamespaceAnnotationForNodeResource
+	// eg: nuwa.kubernetes.io/default_storage_limit: '["a","b","c"]'
+	NamespaceAnnotationForStorageClass = "fuxi.kubernetes.io/default_storage_limit"
 )
