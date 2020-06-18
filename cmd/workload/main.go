@@ -244,6 +244,7 @@ func main() {
 	{
 		group.GET("/apis/storage.k8s.io/v1/storageclasses", StorageClassList)
 		group.GET("/apis/storage.k8s.io/v1/storageclasses/:name", StorageClassGet)
+		group.POST("/apis/storage.k8s.io/v1/storageclasses", workloadsAPI.Apply)
 	}
 
 	// #autoscaling
