@@ -50,4 +50,6 @@ func NamespaceDelete(g *gin.Context) { workloadsAPI.DeleteNamespace(g) }
 func NamespaceCreate(g *gin.Context) { workloadsAPI.CreateNamespace(g) }
 
 func NamespacePatchAnnotateNode(g *gin.Context) { workloadsAPI.PatchAnnotateNodeNamespace(g) }
-func NamespacePatchAnnotateStorageClass(g *gin.Context) { workloadsAPI.PatchAnnotateStorageClassNamespace(g) }
+func NamespacePatchAnnotateStorageClass(g *gin.Context) {
+	workloadsAPI.PatchAnnotateStorageClassNamespace(g)
+}

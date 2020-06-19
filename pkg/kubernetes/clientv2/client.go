@@ -1,13 +1,13 @@
 package clientv2
 
 import (
+	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	clientv2 "k8s.io/client-go/dynamic"
 	informers "k8s.io/client-go/dynamic/dynamicinformer"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	clientcmdlatest "k8s.io/client-go/tools/clientcmd/api/latest"
 	clientcmdapiv1 "k8s.io/client-go/tools/clientcmd/api/v1"
-	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"time"
 )
 

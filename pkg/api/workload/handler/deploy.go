@@ -69,8 +69,7 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 			Name:            item.Base.Name,
 			Image:           item.Base.Image,
 			ImagePullPolicy: corev1.PullPolicy(item.Base.ImagePullPolicy),
-			Resources:
-			corev1.ResourceRequirements{
+			Resources: corev1.ResourceRequirements{
 				Limits: corev1.ResourceList{
 					corev1.ResourceName("cpu"): resource.MustParse(
 						fmt.Sprintf("%s", item.Base.Resource.Limits.CPU),

@@ -2,11 +2,49 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	corev1 "k8s.io/api/core/v1"
-	"net/http"
 )
+
+type patchNodeAnnotation struct {
+	Node string `json:"node"`
+	Host string `json:"host"`
+	Rack string `json:"rack"`
+	Zone string `json:"zone"`
+}
+
+func (w *WorkloadsAPI) GeoAnnotateNode(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	pad := patchNodeAnnotation{}
+	err = json.Unmarshal(rawData, &pad)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	patchData := map[string]interface{}{
+		"metadata": map[string]interface{}{
+			"annotations": map[string]string{
+				"nuwa.kubernetes.io/host": pad.Host,
+				"nuwa.kubernetes.io/rack": pad.Rack,
+				"nuwa.kubernetes.io/zone": pad.Zone,
+			},
+		},
+	}
+	_, err = w.node.Patch("", pad.Node, patchData)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	g.JSON(http.StatusOK, "")
+}
 
 // Get Node
 func (w *WorkloadsAPI) GetNode(g *gin.Context) {
