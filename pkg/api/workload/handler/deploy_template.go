@@ -1,11 +1,14 @@
 package handler
 
-type metadataTemplate []struct {
+type metadataItem struct {
 	Base struct {
 		Name            string `json:"name"`
 		Image           string `json:"image"`
-		ImagePullPolicy string `json:"imagePullPolicy"`
-		Resource        struct {
+		ImagePullPolicy struct {
+			Value string `json:"value"`
+			Label string `json:"label"`
+		} `json:"imagePullPolicy"`
+		Resource struct {
 			Limits struct {
 				CPU    string `json:"cpu"`
 				Memory string `json:"memory"`
@@ -15,21 +18,22 @@ type metadataTemplate []struct {
 				Memory string `json:"memory"`
 			} `json:"requests"`
 		} `json:"resource"`
-		ImagePullSecret string `json:"imagePullSecrets"`
+		ImageFrom       string `json:"imageFrom"`
+		ImagePullSecret string `json:"imagePullSecret"`
 	} `json:"base"`
 	Commands    []string `json:"commands"`
 	Args        []string `json:"args"`
 	Environment []struct {
-		Type         string `json:"type"`
-		OneEnvConfig struct {
-			Name          string `json:"name"`
-			ConfigureName string `json:"configureName"`
-			SecretName    string `json:"secretName"`   // Secret name
-			SecretKey     string `json:"secretKey"`    // Secret key
-			EnterCommand  string `json:"enterCommand"` //other
-			Key           string `json:"key"`
-			Value         string `json:"value"`
-		} `json:"oneEnvConfig"`
+		Type      string `json:"type"`
+		EnvConfig struct {
+			Name         string `json:"name"`
+			Value        string `json:"value"`
+			ConfigName   string `json:"configName"`
+			ConfigKey    string `json:"configKey"`
+			SecretName   string `json:"secretName"`
+			SecretKey    string `json:"secretKey"`
+			EnterCommand string `json:"enterCommand"`
+		} `json:"envConfig,omitempty"`
 	} `json:"environment"`
 	ReadyProbe struct {
 		Status     bool   `json:"status"`
@@ -84,6 +88,8 @@ type metadataTemplate []struct {
 		} `json:"items"`
 	} `json:"volumeMounts"`
 }
+
+type metadataTemplate []metadataItem
 
 type serviceTemplate struct {
 	Type  string `json:"type"`

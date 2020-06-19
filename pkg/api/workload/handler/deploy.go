@@ -68,7 +68,7 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 		container := corev1.Container{
 			Name:            item.Base.Name,
 			Image:           item.Base.Image,
-			ImagePullPolicy: corev1.PullPolicy(item.Base.ImagePullPolicy),
+			ImagePullPolicy: corev1.PullPolicy(item.Base.ImagePullPolicy.Value),
 			Resources:
 			corev1.ResourceRequirements{
 				Limits: corev1.ResourceList{
@@ -101,89 +101,100 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 		envs := make([]corev1.EnvVar, 0)
 		for _, evnConfig := range item.Environment {
 			switch evnConfig.Type {
-			case "Configuration":
-				//env := &corev1.EnvVar{
-				//	Name: evnConfig.OneEnvConfig.Name,
-				//	ValueFrom: &corev1.EnvVarSource{
-				//		ConfigMapKeyRef:
-				//		&corev1.ConfigMapEnvSource{
-				//
-				//		},
-				//	},
-				//}
-			case "Secret":
-			case "Other":
-			default:
+			case "ConfigMaps":
+				env := corev1.EnvVar{
+					Name: evnConfig.EnvConfig.Name,
+					ValueFrom: &corev1.EnvVarSource{
+						ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
+							LocalObjectReference: corev1.LocalObjectReference{Name: evnConfig.EnvConfig.ConfigName},
+							Key:                  evnConfig.EnvConfig.ConfigKey,
+						},
+					},
+				}
+				envs = append(envs, env)
+			case "Secrets":
+				env := corev1.EnvVar{
+					Name: evnConfig.EnvConfig.Name,
+					ValueFrom: &corev1.EnvVarSource{
+						SecretKeyRef: &corev1.SecretKeySelector{
+							LocalObjectReference: corev1.LocalObjectReference{Name: evnConfig.EnvConfig.ConfigName},
+							Key:                  evnConfig.EnvConfig.ConfigKey,
+						},
+					},
+				}
+				envs = append(envs, env)
+			//case "Other":
+			//case "CUSTOM":
 			}
 		}
 		container.Env = envs
 
 		// readinessProbe
-		//container.ReadinessProbe = &corev1.Probe{
-		//	Handler: corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.ReadyProbe.Pattern.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.ReadyProbe.Pattern.URL,
-		//			Port: intstr.Parse(item.ReadyProbe.Pattern.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.ReadyProbe.Pattern.TCPPort),
-		//		},
-		//	},
-		//	InitialDelaySeconds: string2int32(item.ReadyProbe.Delay),
-		//	TimeoutSeconds:      string2int32(item.ReadyProbe.Timeout),
-		//	PeriodSeconds:       string2int32(item.ReadyProbe.Cycle),
-		//	FailureThreshold:    string2int32(item.ReadyProbe.RetryCount),
-		//}
-		//
+		container.ReadinessProbe = &corev1.Probe{
+			Handler: corev1.Handler{
+				Exec: &corev1.ExecAction{
+					Command: []string{item.ReadyProbe.Pattern.Command},
+				},
+				HTTPGet: &corev1.HTTPGetAction{
+					Path: item.ReadyProbe.Pattern.URL,
+					Port: intstr.Parse(item.ReadyProbe.Pattern.HTTPPort),
+				},
+				TCPSocket: &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.ReadyProbe.Pattern.TCPPort),
+				},
+			},
+			InitialDelaySeconds: string2int32(item.ReadyProbe.Delay),
+			TimeoutSeconds:      string2int32(item.ReadyProbe.Timeout),
+			PeriodSeconds:       string2int32(item.ReadyProbe.Cycle),
+			FailureThreshold:    string2int32(item.ReadyProbe.RetryCount),
+		}
+
 		//// livenessProbe
-		//container.LivenessProbe = &corev1.Probe{
-		//	Handler: corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.LiveProbe.Pattern.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.ReadyProbe.Pattern.URL,
-		//			Port: intstr.Parse(item.LiveProbe.Pattern.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.LiveProbe.Pattern.TCPPort),
-		//		},
-		//	},
-		//	InitialDelaySeconds: string2int32(item.LiveProbe.Delay),
-		//	TimeoutSeconds:      string2int32(item.LiveProbe.Timeout),
-		//	PeriodSeconds:       string2int32(item.LiveProbe.Cycle),
-		//	FailureThreshold:    string2int32(item.LiveProbe.RetryCount),
-		//}
+		container.LivenessProbe = &corev1.Probe{
+			Handler: corev1.Handler{
+				Exec: &corev1.ExecAction{
+					Command: []string{item.LiveProbe.Pattern.Command},
+				},
+				HTTPGet: &corev1.HTTPGetAction{
+					Path: item.ReadyProbe.Pattern.URL,
+					Port: intstr.Parse(item.LiveProbe.Pattern.HTTPPort),
+				},
+				TCPSocket: &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.LiveProbe.Pattern.TCPPort),
+				},
+			},
+			InitialDelaySeconds: string2int32(item.LiveProbe.Delay),
+			TimeoutSeconds:      string2int32(item.LiveProbe.Timeout),
+			PeriodSeconds:       string2int32(item.LiveProbe.Cycle),
+			FailureThreshold:    string2int32(item.LiveProbe.RetryCount),
+		}
 		//// LifeCycle
-		//container.Lifecycle = &corev1.Lifecycle{
-		//	PostStart: &corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.LifeCycle.PostStart.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.LifeCycle.PostStart.URL,
-		//			Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.LifeCycle.PostStart.TCPPort),
-		//		},
-		//	},
-		//	PreStop: &corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.LifeCycle.PreStop.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.ReadyProbe.Pattern.URL,
-		//			Port: intstr.Parse(item.LifeCycle.PreStop.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.LifeCycle.PreStop.TCPPort),
-		//		},
-		//	},
-		//}
+		container.Lifecycle = &corev1.Lifecycle{
+			PostStart: &corev1.Handler{
+				Exec: &corev1.ExecAction{
+					Command: []string{item.LifeCycle.PostStart.Command},
+				},
+				HTTPGet: &corev1.HTTPGetAction{
+					Path: item.LifeCycle.PostStart.URL,
+					Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
+				},
+				TCPSocket: &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.LifeCycle.PostStart.TCPPort),
+				},
+			},
+			PreStop: &corev1.Handler{
+				Exec: &corev1.ExecAction{
+					Command: []string{item.LifeCycle.PreStop.Command},
+				},
+				HTTPGet: &corev1.HTTPGetAction{
+					Path: item.ReadyProbe.Pattern.URL,
+					Port: intstr.Parse(item.LifeCycle.PreStop.HTTPPort),
+				},
+				TCPSocket: &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.LifeCycle.PreStop.TCPPort),
+				},
+			},
+		}
 
 		containers = append(containers, container)
 	}
