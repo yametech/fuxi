@@ -445,6 +445,7 @@ func main() {
 		// task
 		group.GET("/apis/tekton.dev/v1alpha1/tasks", TaskList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/tasks/:name", TaskGet)
+		group.POST("/apis/tekton.dev/v1alpha1/tasks", TaskCreate)
 
 		// taskRun
 		group.GET("/apis/tekton.dev/v1alpha1/taskruns", TaskRunList)

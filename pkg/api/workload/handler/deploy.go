@@ -410,7 +410,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 					},
 					Spec: podSpec,
 				},
-				Strategy:             "Release", // TODO
+				Strategy:             "Alpha", // TODO
 				Coordinates:          cgs,
 				Service:              *serviceTemplate,
 				VolumeClaimTemplates: workloadsTemplateToVolumeClaims(workloadsTemplate),
