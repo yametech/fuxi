@@ -1,6 +1,6 @@
 module github.com/yametech/fuxi
 
-go 1.13
+go 1.14
 
 require (
 	cloud.google.com/go v0.45.1 // indirect
@@ -36,9 +36,9 @@ require (
 	golang.org/x/tools v0.0.0-20200305224536-de023d59a5d1 // indirect
 	google.golang.org/api v0.13.0 // indirect
 	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
-	k8s.io/api v0.18.3
+	k8s.io/api v0.18.4
 	k8s.io/apiextensions-apiserver v0.18.2
-	k8s.io/apimachinery v0.18.3
+	k8s.io/apimachinery v0.18.4
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/kube-openapi v0.0.0-20200410145947-61e04a5be9a6
 	k8s.io/metrics v0.0.0
@@ -75,7 +75,7 @@ replace (
 	k8s.io/kubectl => k8s.io/kubectl v0.0.0-20191016120415-2ed914427d51
 	k8s.io/kubelet => k8s.io/kubelet v0.0.0-20191016114556-7841ed97f1b2
 	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.0.0-20191016115753-cf0698c3a16b
-	k8s.io/metrics => k8s.io/metrics v0.0.0-20191016113814-3b1a734dba6e
+	k8s.io/metrics => k8s.io/metrics v0.18.4
 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.0.0-20191016112829-06bb3c9d77c9
 	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.3.0
 )

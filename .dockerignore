@@ -8,3 +8,4 @@ backup
 /tslint.json
 *.DS_Store
 docker-compose.yml
+vendor/
