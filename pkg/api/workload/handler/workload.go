@@ -139,14 +139,27 @@ var in = func(item string) bool {
 func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	group := g.Param("group")
 	version := g.Param("version")
-
+	namespaceOrResource := g.Param("namespaces_or_resource")
 	namespace := g.Param("namespace")
 	resource := g.Param("resource")
 	name := g.Param("name")
 
-	if namespace == "" || resource == "" || name == "" {
-		common.ToRequestParamsError(g, fmt.Errorf("request params not define"))
-		return
+	if strings.HasPrefix(g.Request.URL.Path, "/workload/apis") {
+		if namespaceOrResource == "namespaces" {
+			if namespace == "" || resource == "" || name == "" {
+				common.ToRequestParamsError(g, fmt.Errorf("request params not define"))
+				return
+			}
+		} else {
+			resource = namespaceOrResource
+			name = namespace
+			namespace = ""
+		}
+	} else {
+		if namespace == "" || resource == "" || name == "" {
+			common.ToRequestParamsError(g, fmt.Errorf("request params not define"))
+			return
+		}
 	}
 
 	if group == "" {

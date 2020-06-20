@@ -100,90 +100,125 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 		envs := make([]corev1.EnvVar, 0)
 		for _, evnConfig := range item.Environment {
 			switch evnConfig.Type {
-			case "Configuration":
-				//env := &corev1.EnvVar{
-				//	Name: evnConfig.OneEnvConfig.Name,
-				//	ValueFrom: &corev1.EnvVarSource{
-				//		ConfigMapKeyRef:
-				//		&corev1.ConfigMapEnvSource{
-				//
-				//		},
-				//	},
-				//}
-			case "Secret":
-			case "Other":
-			default:
+			case "ConfigMaps":
+				env := corev1.EnvVar{
+					Name: evnConfig.EnvConfig.Name,
+					ValueFrom: &corev1.EnvVarSource{
+						ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
+							LocalObjectReference: corev1.LocalObjectReference{Name: evnConfig.EnvConfig.ConfigName},
+							Key:                  evnConfig.EnvConfig.ConfigKey,
+						},
+					},
+				}
+				envs = append(envs, env)
+			case "Secrets":
+				env := corev1.EnvVar{
+					Name: evnConfig.EnvConfig.Name,
+					ValueFrom: &corev1.EnvVarSource{
+						SecretKeyRef: &corev1.SecretKeySelector{
+							LocalObjectReference: corev1.LocalObjectReference{Name: evnConfig.EnvConfig.ConfigName},
+							Key:                  evnConfig.EnvConfig.ConfigKey,
+						},
+					},
+				}
+				envs = append(envs, env)
+				//case "Other":
+				//case "CUSTOM":
 			}
 		}
 		container.Env = envs
 
 		// readinessProbe
-		//container.ReadinessProbe = &corev1.Probe{
-		//	Handler: corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.ReadyProbe.Pattern.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.ReadyProbe.Pattern.URL,
-		//			Port: intstr.Parse(item.ReadyProbe.Pattern.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.ReadyProbe.Pattern.TCPPort),
-		//		},
-		//	},
-		//	InitialDelaySeconds: string2int32(item.ReadyProbe.Delay),
-		//	TimeoutSeconds:      string2int32(item.ReadyProbe.Timeout),
-		//	PeriodSeconds:       string2int32(item.ReadyProbe.Cycle),
-		//	FailureThreshold:    string2int32(item.ReadyProbe.RetryCount),
-		//}
-		//
-		//// livenessProbe
-		//container.LivenessProbe = &corev1.Probe{
-		//	Handler: corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.LiveProbe.Pattern.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.ReadyProbe.Pattern.URL,
-		//			Port: intstr.Parse(item.LiveProbe.Pattern.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.LiveProbe.Pattern.TCPPort),
-		//		},
-		//	},
-		//	InitialDelaySeconds: string2int32(item.LiveProbe.Delay),
-		//	TimeoutSeconds:      string2int32(item.LiveProbe.Timeout),
-		//	PeriodSeconds:       string2int32(item.LiveProbe.Cycle),
-		//	FailureThreshold:    string2int32(item.LiveProbe.RetryCount),
-		//}
-		//// LifeCycle
-		//container.Lifecycle = &corev1.Lifecycle{
-		//	PostStart: &corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.LifeCycle.PostStart.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.LifeCycle.PostStart.URL,
-		//			Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.LifeCycle.PostStart.TCPPort),
-		//		},
-		//	},
-		//	PreStop: &corev1.Handler{
-		//		Exec: &corev1.ExecAction{
-		//			Command: []string{item.LifeCycle.PreStop.Command},
-		//		},
-		//		HTTPGet: &corev1.HTTPGetAction{
-		//			Path: item.ReadyProbe.Pattern.URL,
-		//			Port: intstr.Parse(item.LifeCycle.PreStop.HTTPPort),
-		//		},
-		//		TCPSocket: &corev1.TCPSocketAction{
-		//			Port: intstr.Parse(item.LifeCycle.PreStop.TCPPort),
-		//		},
-		//	},
-		//}
+		if item.ReadyProbe.Status {
+			container.ReadinessProbe = &corev1.Probe{
+				Handler:             corev1.Handler{},
+				InitialDelaySeconds: string2int32(item.ReadyProbe.Delay),
+				TimeoutSeconds:      string2int32(item.ReadyProbe.Timeout),
+				PeriodSeconds:       string2int32(item.ReadyProbe.Cycle),
+				FailureThreshold:    string2int32(item.ReadyProbe.RetryCount),
+			}
+			if item.ReadyProbe.Pattern.Command != "" {
+				container.ReadinessProbe.Handler.Exec = &corev1.ExecAction{Command: []string{item.ReadyProbe.Pattern.Command}}
+			}
+			if item.ReadyProbe.Pattern.URL != "" && item.ReadyProbe.Pattern.HTTPPort != "" {
+				container.ReadinessProbe.Handler.HTTPGet = &corev1.HTTPGetAction{
+					Path: item.ReadyProbe.Pattern.URL,
+					Port: intstr.Parse(item.ReadyProbe.Pattern.HTTPPort),
+				}
+			}
+			if item.ReadyProbe.Pattern.TCPPort != "" {
+				container.ReadinessProbe.Handler.TCPSocket = &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.ReadyProbe.Pattern.TCPPort),
+				}
+			}
+		}
 
+		// livenessProbe
+		if item.LiveProbe.Status {
+			container.LivenessProbe = &corev1.Probe{
+				Handler:             corev1.Handler{},
+				InitialDelaySeconds: string2int32(item.LiveProbe.Delay),
+				TimeoutSeconds:      string2int32(item.LiveProbe.Timeout),
+				PeriodSeconds:       string2int32(item.LiveProbe.Cycle),
+				FailureThreshold:    string2int32(item.LiveProbe.RetryCount),
+			}
+
+			if item.LiveProbe.Pattern.Command != "" {
+				container.LivenessProbe.Handler.Exec = &corev1.ExecAction{Command: []string{item.LiveProbe.Pattern.Command}}
+			}
+			if item.LiveProbe.Pattern.URL != "" && item.LiveProbe.Pattern.HTTPPort != "" {
+				container.LivenessProbe.Handler.HTTPGet = &corev1.HTTPGetAction{
+					Path: item.LiveProbe.Pattern.URL,
+					Port: intstr.Parse(item.LiveProbe.Pattern.HTTPPort),
+				}
+			}
+			if item.LiveProbe.Pattern.TCPPort != "" {
+				container.LivenessProbe.Handler.TCPSocket = &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.LiveProbe.Pattern.TCPPort),
+				}
+			}
+		}
+		// LifeCycle
+		if item.LifeCycle.Status {
+			container.Lifecycle = &corev1.Lifecycle{
+				PostStart: &corev1.Handler{},
+				PreStop:   &corev1.Handler{},
+			}
+			if item.LifeCycle.PostStart.Command != "" {
+				container.Lifecycle.PostStart.Exec = &corev1.ExecAction{
+					Command: []string{item.LifeCycle.PostStart.Command},
+				}
+			}
+			if item.LifeCycle.PostStart.URL != "" && item.LifeCycle.PostStart.TCPPort != "" {
+				container.Lifecycle.PostStart.HTTPGet = &corev1.HTTPGetAction{
+					Path: item.LifeCycle.PostStart.URL,
+					Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
+				}
+			}
+			if item.LifeCycle.PostStart.TCPPort != "" {
+				container.Lifecycle.PostStart.TCPSocket = &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.LifeCycle.PostStart.TCPPort),
+				}
+			}
+
+			if item.LifeCycle.PreStop.Command != "" {
+				container.Lifecycle.PreStop.Exec = &corev1.ExecAction{
+					Command: []string{item.LifeCycle.PostStart.Command},
+				}
+			}
+			if item.LifeCycle.PreStop.URL != "" && item.LifeCycle.PreStop.TCPPort != "" {
+				container.Lifecycle.PreStop.HTTPGet = &corev1.HTTPGetAction{
+					Path: item.LifeCycle.PreStop.URL,
+					Port: intstr.Parse(item.LifeCycle.PostStart.HTTPPort),
+				}
+			}
+			if item.LifeCycle.PreStop.TCPPort != "" {
+				container.Lifecycle.PreStop.TCPSocket = &corev1.TCPSocketAction{
+					Port: intstr.Parse(item.LifeCycle.PreStop.TCPPort),
+				}
+			}
+
+		}
 		containers = append(containers, container)
 	}
 	return containers
@@ -375,7 +410,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 					},
 					Spec: podSpec,
 				},
-				Strategy:             "Release", // TODO
+				Strategy:             "Alpha", // TODO
 				Coordinates:          cgs,
 				Service:              *serviceTemplate,
 				VolumeClaimTemplates: workloadsTemplateToVolumeClaims(workloadsTemplate),

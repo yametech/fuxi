@@ -46,7 +46,7 @@ func toPipelineRun(pr *PipelineRun) *v1alpha1.PipelineRun {
 			ServiceAccountNames: nil,
 			Status:              "",
 			Timeout:             pr.Timeout,
-			PodTemplate:         v1alpha1.PodTemplate{},
+			//PodTemplate:         v1alpha1.PodTemplate{},
 		},
 		Status: v1alpha1.PipelineRunStatus{},
 	}

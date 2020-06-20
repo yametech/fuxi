@@ -1,12 +1,10 @@
 module github.com/yametech/fuxi
 
-go 1.13
+go 1.14
 
 require (
-	cloud.google.com/go v0.45.1 // indirect
 	code.gitea.io/sdk/gitea v0.12.0
 	contrib.go.opencensus.io/exporter/prometheus v0.1.0 // indirect
-	contrib.go.opencensus.io/exporter/stackdriver v0.12.4 // indirect
 	github.com/alauda/kube-ovn v0.10.0
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/chzyer/logex v1.1.10 // indirect
@@ -29,21 +27,20 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
-	github.com/tektoncd/pipeline v0.9.2
+	github.com/tektoncd/pipeline v0.11.1
 	github.com/yametech/nuwa v0.0.0
 	go.opencensus.io v0.22.2 // indirect
-	go.uber.org/zap v1.10.0
+	go.uber.org/zap v1.13.0
 	golang.org/x/tools v0.0.0-20200305224536-de023d59a5d1 // indirect
-	google.golang.org/api v0.13.0 // indirect
 	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
-	k8s.io/api v0.18.3
+	k8s.io/api v0.18.4
 	k8s.io/apiextensions-apiserver v0.18.2
-	k8s.io/apimachinery v0.18.3
+	k8s.io/apimachinery v0.18.4
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/kube-openapi v0.0.0-20200410145947-61e04a5be9a6
 	k8s.io/metrics v0.0.0
 	k8s.io/sample-controller v0.0.0-20190326030654-b8f621986e45
-	knative.dev/pkg v0.0.0-20191015201015-757d7e4c7706
+	knative.dev/pkg v0.0.0-20200207155214-fef852970f43
 	sigs.k8s.io/controller-runtime v0.6.0
 )
 
@@ -75,7 +72,7 @@ replace (
 	k8s.io/kubectl => k8s.io/kubectl v0.0.0-20191016120415-2ed914427d51
 	k8s.io/kubelet => k8s.io/kubelet v0.0.0-20191016114556-7841ed97f1b2
 	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.0.0-20191016115753-cf0698c3a16b
-	k8s.io/metrics => k8s.io/metrics v0.0.0-20191016113814-3b1a734dba6e
+	k8s.io/metrics => k8s.io/metrics v0.18.4
 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.0.0-20191016112829-06bb3c9d77c9
 	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.3.0
 )

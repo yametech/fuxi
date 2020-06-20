@@ -36,7 +36,7 @@ func (ops *Ops) Start(stopCh <-chan struct{}) {
 	ops.informer.WaitForCacheSync(stopCh)
 }
 
-var _ OpsService = (*Ops)(nil)
+//var _ OpsService = (*Ops)(nil)
 
 //ListRepo according username and dep to select all repos
 func (o *Ops) ListRepos(username, namespace string) ([]string, error) {

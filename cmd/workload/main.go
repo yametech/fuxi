@@ -371,7 +371,8 @@ func main() {
 		group.POST("/deploy", workloadsAPI.Deploy)
 		// other resource  api/apis resource
 		group.DELETE("/api/v1/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
-		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
+		group.DELETE("/apis/:group/:version/:namespaces_or_resource/:namespace", workloadsAPI.Delete)
+		group.DELETE("/apis/:group/:version/:namespaces_or_resource/:namespace/:resource/:name", workloadsAPI.Delete)
 	}
 
 	// fuxi.nip.io
@@ -444,6 +445,7 @@ func main() {
 		// task
 		group.GET("/apis/tekton.dev/v1alpha1/tasks", TaskList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/tasks/:name", TaskGet)
+		group.POST("/apis/tekton.dev/v1alpha1/tasks", TaskCreate)
 
 		// taskRun
 		group.GET("/apis/tekton.dev/v1alpha1/taskruns", TaskRunList)
