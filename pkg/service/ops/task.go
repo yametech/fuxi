@@ -38,11 +38,11 @@ func toTask(task *Task) *v1alpha1.Task {
 			Labels: task.Labels,
 		},
 		Spec: v1alpha1.TaskSpec{
-			Inputs:       task.Inputs,
-			Outputs:      task.Outputs,
-			Steps:        task.Steps,
-			StepTemplate: nil,
-			Sidecars:     nil,
+			Inputs:  task.Inputs,
+			Outputs: task.Outputs,
+			//Steps:        task.Steps,
+			//StepTemplate: nil,
+			//Sidecars:     nil,
 		},
 	}
 }

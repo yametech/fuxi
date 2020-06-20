@@ -49,7 +49,7 @@ func toPipeline(name string,
 			Tasks:     tasks,
 			Params:    paramSpecs,
 		},
-		Status: v1alpha1.PipelineStatus{},
+		//Status: v1alpha1.PipelineStatus{},
 	}
 }
 
