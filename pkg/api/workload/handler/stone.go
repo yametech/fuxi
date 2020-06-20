@@ -13,7 +13,7 @@ func (w *WorkloadsAPI) GetStone(g *gin.Context) {
 	namespace := g.Param("namespace")
 	name := g.Param("name")
 
-	item, err := w.statefulSet1.Get(namespace, name)
+	item, err := w.stone.Get(namespace, name)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
@@ -28,16 +28,16 @@ func (w *WorkloadsAPI) ListStone(g *gin.Context) {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	statefulSetList := &nuwav1.StatefulSetList{}
+	stoneList := &nuwav1.StoneList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	err = json.Unmarshal(marshalData, statefulSetList)
+	err = json.Unmarshal(marshalData, stoneList)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	g.JSON(http.StatusOK, statefulSetList)
+	g.JSON(http.StatusOK, stoneList)
 }
