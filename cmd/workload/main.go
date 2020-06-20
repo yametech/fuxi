@@ -371,7 +371,8 @@ func main() {
 		group.POST("/deploy", workloadsAPI.Deploy)
 		// other resource  api/apis resource
 		group.DELETE("/api/v1/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
-		group.DELETE("/apis/:group/:version/namespaces/:namespace/:resource/:name", workloadsAPI.Delete)
+		group.DELETE("/apis/:group/:version/:namespaces_or_resource/:namespace", workloadsAPI.Delete)
+		group.DELETE("/apis/:group/:version/:namespaces_or_resource/:namespace/:resource/:name", workloadsAPI.Delete)
 	}
 
 	// fuxi.nip.io
