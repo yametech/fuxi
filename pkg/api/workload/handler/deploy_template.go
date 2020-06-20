@@ -4,11 +4,8 @@ type metadataItem struct {
 	Base struct {
 		Name            string `json:"name"`
 		Image           string `json:"image"`
-		ImagePullPolicy struct {
-			Value string `json:"value"`
-			Label string `json:"label"`
-		} `json:"imagePullPolicy"`
-		Resource struct {
+		ImagePullPolicy string `json:"imagePullPolicy"`
+		Resource        struct {
 			Limits struct {
 				CPU    string `json:"cpu"`
 				Memory string `json:"memory"`
