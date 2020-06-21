@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
@@ -56,12 +57,20 @@ func (w *WorkloadsAPI) GetPipeline(g *gin.Context) {
 
 // List Pipeline
 func (w *WorkloadsAPI) ListPipeline(g *gin.Context) {
-	// TODO: need search lables
-	list, err := w.pipeline.List("", "", 0, 0, nil)
+	var list *unstructured.UnstructuredList
+	var err error
+	namespace := g.Param("namespace")
+	if namespace != "" {
+		list, err = w.pipeline.List("", "", 0, 0, nil)
+	} else {
+		labelSelector := fmt.Sprintf("namespace=%s", namespace)
+		list, err = w.pipeline.List(namespace, "", 0, 0, labelSelector)
+	}
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
+
 	pipelineList := &tekton.PipelineList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
