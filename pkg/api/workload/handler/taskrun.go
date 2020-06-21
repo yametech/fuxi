@@ -26,11 +26,11 @@ func (w *WorkloadsAPI) ListTaskRun(g *gin.Context) {
 	var list *unstructured.UnstructuredList
 	var err error
 	namespace := g.Param("namespace")
-	if namespace != "" {
+	if namespace == "" {
 		list, err = w.taskRun.List("", "", 0, 0, nil)
 	} else {
 		labelSelector := fmt.Sprintf("namespace=%s", namespace)
-		list, err = w.taskRun.List(namespace, "", 0, 0, labelSelector)
+		list, err = w.taskRun.List("", "", 0, 0, labelSelector)
 	}
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
