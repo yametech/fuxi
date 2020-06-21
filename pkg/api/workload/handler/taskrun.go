@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,8 +23,15 @@ func (w *WorkloadsAPI) GetTaskRun(g *gin.Context) {
 }
 
 func (w *WorkloadsAPI) ListTaskRun(g *gin.Context) {
-	// TODO: need search lables
-	list, err := w.taskRun.List("", "", 0, 0, nil)
+	var list *unstructured.UnstructuredList
+	var err error
+	namespace := g.Param("namespace")
+	if namespace != "" {
+		list, err = w.taskRun.List("", "", 0, 0, nil)
+	} else {
+		labelSelector := fmt.Sprintf("namespace=%s", namespace)
+		list, err = w.taskRun.List(namespace, "", 0, 0, labelSelector)
+	}
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

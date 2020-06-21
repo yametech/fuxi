@@ -25,4 +25,5 @@ func PipelineList(g *gin.Context) { workloadsAPI.ListPipeline(g) }
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name [get]
-func PipelineGet(g *gin.Context) { workloadsAPI.GetPipeline(g) }
+func PipelineGet(g *gin.Context)    { workloadsAPI.GetPipeline(g) }
+func PipelineCreate(g *gin.Context) { workloadsAPI.CreatePipeline(g) }

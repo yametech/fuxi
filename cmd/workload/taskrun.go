@@ -12,9 +12,7 @@ import "github.com/gin-gonic/gin"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/apis/tekton.dev/v1alpha1/taskruns [get]
-func TaskRunList(g *gin.Context) {
-	workloadsAPI.ListTaskRun(g)
-}
+func TaskRunList(g *gin.Context) { workloadsAPI.ListTaskRun(g) }
 
 // TaskRun doc
 // @Summary workload TaskRun get
@@ -27,6 +25,4 @@ func TaskRunList(g *gin.Context) {
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/tekton.dev/v1alpha1/namespaces/:namespace/taskruns/:name [get]
-func TaskRunGet(g *gin.Context) {
-	workloadsAPI.GetTaskRun(g)
-}
+func TaskRunGet(g *gin.Context) { workloadsAPI.GetTaskRun(g) }
