@@ -230,6 +230,7 @@ func main() {
 		group.GET("/apis/extensions/v1beta1/ingresses", IngressList)
 		group.GET("/apis/extensions/v1beta1/namespaces/:namespace/ingresses", IngressList)
 		group.GET("/apis/extensions/v1beta1/namespaces/:namespace/ingresses/:name", IngressGet)
+		group.POST("/apis/extensions/v1beta1/namespaces/:namespace/ingresses", workloadsAPI.Apply)
 	}
 
 	// #networking.k8s.io

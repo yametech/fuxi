@@ -26,3 +26,5 @@ func IngressList(g *gin.Context) { workloadsAPI.ListIngress(g) }
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/apis/extensions/v1beta1/namespaces/:namespace/ingresses/:name [get]
 func IngressGet(g *gin.Context) { workloadsAPI.GetIngress(g) }
+
+//func IngressCreate(g *gin.Context) { workloadsAPI.CreateIngress(g) }
