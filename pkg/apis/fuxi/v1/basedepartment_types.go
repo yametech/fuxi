@@ -7,11 +7,27 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type Stack struct {
+	Address string `json:"address,omitempty"`
+	// +optional
+	Verification string `json:"verification,omitempty"`
+	// +optional
+	Token string `json:"token,omitempty"`
+	// +optional
+	User string `json:"user,omitempty"`
+	// +optional
+	Password string `json:"password,omitempty"`
+}
+
 // BaseDepartmentSpec defines the desired state of BaseDepartment
 type BaseDepartmentSpec struct {
 	Namespace []string `json:"namespace,omitempty"`
 	// +optional
 	DefaultNamespace string `json:"defaultNamespace,omitempty"`
+	// +optional
+	Gits []Stack `json:"gits,omitempty"`
+	// +optional
+	Registers []Stack `json:"registers,omitempty"`
 }
 
 // BaseDepartmentStatus defines the observed state of BaseDepartment
