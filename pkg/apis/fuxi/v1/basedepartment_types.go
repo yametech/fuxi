@@ -10,6 +10,8 @@ import (
 type Stack struct {
 	Address string `json:"address,omitempty"`
 	// +optional
+	Verification string `json:"verification,omitempty"`
+	// +optional
 	Token string `json:"token,omitempty"`
 	// +optional
 	User string `json:"user,omitempty"`
