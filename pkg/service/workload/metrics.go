@@ -30,7 +30,7 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 			CoreV1().
 			RESTClient().
 			Get().
-			Namespace("lens-metrics").
+			Namespace("kube-system").
 			Resource("services").
 			Name("prometheus:80").
 			SubResource("proxy").
