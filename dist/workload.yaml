@@ -16,11 +16,10 @@ spec:
       labels:
         app: workload
     spec:
+      serviceAccount: fuxi-app
       containers:
       - name: workload
         image: yametech/workload:v0.1.0
         args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379","--in_cluster","true"]
-        ports:
-        - containerPort: 8080
         imagePullPolicy: Always
       restartPolicy: Always
