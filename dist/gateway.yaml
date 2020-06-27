@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379", "api","--handler=http"]
+          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379","--in_cluster","true", "api","--handler=http"]
           image: yametech/gateway:v0.1.0
           imagePullPolicy: Always
           ports:
