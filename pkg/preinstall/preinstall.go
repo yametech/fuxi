@@ -41,7 +41,7 @@ func inClusterFlag() cli.StringFlag {
 		Name:   "in_cluster",
 		Usage:  "in_cluster=true",
 		EnvVar: "IN_CLUSTER",
-		Value:  `IN_CLUSTER=""`,
+		Value:  "",
 	}
 	return flag
 }
