@@ -220,6 +220,7 @@ func NewDefaultInstallConfigure(addr string) (*DefaultInstallConfigure, error) {
 func createInClusterConfig() (*kubernetes.Clientset, *rest.Config, error) {
 	restConfig, err := rest.InClusterConfig()
 	if err != nil {
+		panic(err)
 		return nil, nil, err
 	}
 	clientSet, err := kubernetes.NewForConfig(restConfig)
