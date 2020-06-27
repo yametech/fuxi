@@ -2,7 +2,6 @@ package preinstall
 
 import (
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/micro/cli"
@@ -64,7 +63,11 @@ func InitGatewayInstallConfigure(name string, loginHandle http.Handler, microPlu
 				inClusterFlag(),
 			),
 			plugin.WithInit(func(ctx *cli.Context) error {
-				defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
+				defaultInstallConfigure, err :=
+					NewDefaultInstallConfigure(
+						ctx.String("etcd_address"),
+						ctx.String("in_cluster"),
+					)
 				if err != nil {
 					return err
 				}
@@ -110,7 +113,11 @@ func InitApi(sampling int, name, version, tracingAddr string) (web.Service, *Api
 			inClusterFlag(),
 		),
 		web.Action(func(ctx *cli.Context) {
-			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
+			defaultInstallConfigure, err :=
+				NewDefaultInstallConfigure(
+					ctx.String("etcd_address"),
+					ctx.String("in_cluster"),
+				)
 			if err != nil {
 				panic(err)
 			}
@@ -138,7 +145,11 @@ func InitService(name, version string) (micro.Service, *ApiInstallConfigure) {
 			inClusterFlag(),
 		),
 		micro.Action(func(ctx *cli.Context) {
-			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
+			defaultInstallConfigure, err :=
+				NewDefaultInstallConfigure(
+					ctx.String("etcd_address"),
+					ctx.String("in_cluster"),
+				)
 			if err != nil {
 				panic(err)
 			}
@@ -183,7 +194,7 @@ type DefaultInstallConfigure struct {
 	ClientV2   *clientv2.CacheInformerFactory
 }
 
-func NewDefaultInstallConfigure(addr string) (*DefaultInstallConfigure, error) {
+func NewDefaultInstallConfigure(addr string, mode string) (*DefaultInstallConfigure, error) {
 	systemConfig, systemConfigServer, err := createSystemConfig(addr)
 	if err != nil {
 		return nil, err
@@ -193,7 +204,7 @@ func NewDefaultInstallConfigure(addr string) (*DefaultInstallConfigure, error) {
 		SystemConfig:       systemConfig,
 		SystemConfigServer: systemConfigServer,
 	}
-	if deployMode := os.Getenv("IN_CLUSTER"); deployMode != "" {
+	if mode != "" {
 		var err error
 		ClientV1, restConf, err := createInClusterConfig()
 		if err != nil {
