@@ -81,16 +81,16 @@ up: generate
 
 gateway:
 	docker build -t yametech/gateway:v0.1.0 -f Dockerfile.gateway .
+	docker push yametech/gateway:v0.1.0
 
 workload:
 	docker build -t yametech/workload:v0.1.0 -f Dockerfile.workload .
+	docker push yametech/workload:v0.1.0 
 
 base:
 	docker build -t yametech/base:v0.1.0 -f Dockerfile.base .
-
-docker-build: gateway base workload
-	docker push yametech/workload:v0.1.0 
 	docker push yametech/base:v0.1.0
-	docker push yametech/gateway:v0.1.0
+
+docker-build: gateway base workload	
 	@echo "Docker build done"
 	
