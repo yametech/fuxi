@@ -2,6 +2,7 @@ package preinstall
 
 import (
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/micro/cli"
@@ -158,7 +159,7 @@ type DefaultInstallConfigure struct {
 	SystemConfig config.Config
 	// custom system config server for etcd
 	SystemConfigServer *common.ConfigServer
-	K8sConfig          *K8sConfig
+	//K8sConfig          *K8sConfig
 	// kubernetes
 	RestConfig *rest.Config
 	ClientV1   *kubernetes.Clientset
@@ -176,13 +177,30 @@ func NewDefaultInstallConfigure(addr string) (*DefaultInstallConfigure, error) {
 		SystemConfigServer: systemConfigServer,
 	}
 
+	if deployMode := os.Getenv("IN_CLUSTER"); deployMode != "" {
+		var err error
+		ClientV1, restConf, err := createInClusterConfig()
+		if err != nil {
+			return nil, err
+		}
+		defaultInstallConfigure.ClientV1 = ClientV1
+		defaultInstallConfigure.RestConfig = restConf
+
+		clientV2, err := clientv2.NewCacheInformerFactory(restConf.ServerName, restConf, nil)
+		if err != nil {
+			return nil, err
+		}
+		defaultInstallConfigure.ClientV2 = clientV2
+
+		return defaultInstallConfigure, nil
+	}
+
 	k8sBytes := systemConfig.Get("go", "micro", "kubernetes", "k8s").Bytes()
 	k8sConfig, err := createKubernetesJsonConfig(k8sBytes)
 	if err != nil {
 		return nil, err
 	}
-	defaultInstallConfigure.K8sConfig = k8sConfig
-
+	//defaultInstallConfigure.K8sConfig = k8sConfig
 	ClientV1, restConf, err := clientv1.BuildClient(k8sConfig.Name, k8sConfig.Config)
 	if err != nil {
 		return nil, err
@@ -190,13 +208,25 @@ func NewDefaultInstallConfigure(addr string) (*DefaultInstallConfigure, error) {
 	defaultInstallConfigure.ClientV1 = ClientV1
 	defaultInstallConfigure.RestConfig = restConf
 
-	clientV2, err := clientv2.NewCacheInformerFactory(k8sConfig.Name, k8sConfig.Config)
+	clientV2, err := clientv2.NewCacheInformerFactory(k8sConfig.Name, nil, &k8sConfig.Config)
 	if err != nil {
 		return nil, err
 	}
 	defaultInstallConfigure.ClientV2 = clientV2
 
 	return defaultInstallConfigure, nil
+}
+
+func createInClusterConfig() (*kubernetes.Clientset, *rest.Config, error) {
+	restConfig, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, nil, err
+	}
+	clientSet, err := kubernetes.NewForConfig(restConfig)
+	if err != nil {
+		return nil, nil, err
+	}
+	return clientSet, restConfig, nil
 }
 
 func createSystemConfig(addr string) (config.Config, *common.ConfigServer, error) {
