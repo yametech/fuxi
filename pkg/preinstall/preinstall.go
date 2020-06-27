@@ -1,7 +1,6 @@
 package preinstall
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -38,6 +37,16 @@ func defaultETCDFlag() cli.StringFlag {
 	return flag
 }
 
+func inClusterFlag() cli.StringFlag {
+	flag := cli.StringFlag{
+		Name:   "in_cluster",
+		Usage:  "in_cluster=true",
+		EnvVar: "IN_CLUSTER",
+		Value:  `IN_CLUSTER=""`,
+	}
+	return flag
+}
+
 //InitGateWay init a gateway
 func InitGatewayInstallConfigure(name string, loginHandle http.Handler, microPlugins ...plugin.Plugin) (*GateWayInstallConfigure, error) {
 	gwic := &GateWayInstallConfigure{
@@ -52,6 +61,7 @@ func InitGatewayInstallConfigure(name string, loginHandle http.Handler, microPlu
 			),
 			plugin.WithFlag(
 				defaultETCDFlag(),
+				inClusterFlag(),
 			),
 			plugin.WithInit(func(ctx *cli.Context) error {
 				defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
@@ -95,7 +105,10 @@ func InitApi(sampling int, name, version, tracingAddr string) (web.Service, *Api
 		web.Version(common.Version(version)),
 		web.RegisterTTL(time.Second*15),
 		web.RegisterInterval(time.Second*10),
-		web.Flags(defaultETCDFlag()),
+		web.Flags(
+			defaultETCDFlag(),
+			inClusterFlag(),
+		),
 		web.Action(func(ctx *cli.Context) {
 			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
 			if err != nil {
@@ -120,7 +133,10 @@ func InitService(name, version string) (micro.Service, *ApiInstallConfigure) {
 		micro.Version(version),
 		micro.RegisterTTL(time.Second*15),
 		micro.RegisterInterval(time.Second*10),
-		micro.Flags(defaultETCDFlag()),
+		micro.Flags(
+			defaultETCDFlag(),
+			inClusterFlag(),
+		),
 		micro.Action(func(ctx *cli.Context) {
 			defaultInstallConfigure, err := NewDefaultInstallConfigure(ctx.String("etcd_address"))
 			if err != nil {
@@ -177,12 +193,10 @@ func NewDefaultInstallConfigure(addr string) (*DefaultInstallConfigure, error) {
 		SystemConfig:       systemConfig,
 		SystemConfigServer: systemConfigServer,
 	}
-
 	if deployMode := os.Getenv("IN_CLUSTER"); deployMode != "" {
 		var err error
 		ClientV1, restConf, err := createInClusterConfig()
 		if err != nil {
-			log.Fatalf("createInClusterConfig err %s", err)
 			return nil, err
 		}
 		defaultInstallConfigure.ClientV1 = ClientV1
@@ -190,7 +204,6 @@ func NewDefaultInstallConfigure(addr string) (*DefaultInstallConfigure, error) {
 
 		clientV2, err := clientv2.NewCacheInformerFactory(restConf.ServerName, restConf, nil)
 		if err != nil {
-			log.Fatalf("NewCacheInformerFactory err %s", err)
 			return nil, err
 		}
 		defaultInstallConfigure.ClientV2 = clientV2
