@@ -94,7 +94,7 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 		}
 		// Args
 		for _, arg := range item.Args {
-			container.Args = append(container.Command, arg)
+			container.Args = append(container.Args, arg)
 		}
 		// Environment TODO
 		envs := make([]corev1.EnvVar, 0)
@@ -239,7 +239,7 @@ func workloadsTemplateToVolumeClaims(wt *workloadsTemplate) []corev1.PersistentV
 		}
 		resourceRequire := corev1.ResourceRequirements{
 			Requests: corev1.ResourceList{
-				corev1.ResourceName("storage"): resource.MustParse(item.Spec.Resources.Requests.Storage),
+				corev1.ResourceName("storage"): resource.MustParse(item.Spec.Resources.Requests.Storage + "Mi"),
 			},
 		}
 		if item.Metadata.IsUseDefaultStorageClass {

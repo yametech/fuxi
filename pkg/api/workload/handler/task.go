@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	constraint "github.com/yametech/fuxi/util/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
@@ -34,7 +35,7 @@ func (w *WorkloadsAPI) CreateTask(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.task.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	newObj, err := w.task.Apply(constraint.TektonResourceNamespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, err.Error(), err)
 		return

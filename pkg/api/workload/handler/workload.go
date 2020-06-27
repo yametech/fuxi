@@ -122,6 +122,7 @@ var ignoreList = []string{
 	"subnets",
 	"clusterroles",
 	"clusterrolebindings",
+	"storageclasses",
 }
 
 var in = func(item string) bool {
