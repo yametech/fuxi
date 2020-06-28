@@ -40,4 +40,3 @@ spec:
     targetPort: 8082
   selector:
     app: microweb
-  type: LoadBalancer
