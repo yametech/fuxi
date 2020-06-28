@@ -1,0 +1,14 @@
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: compass
+  namespace: kube-system
+spec:
+  rules:
+    - host: compass.ym
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: compass
+              servicePort: 80

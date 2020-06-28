@@ -158,6 +158,8 @@ func InitService(name, version string) (micro.Service, *ApiInstallConfigure) {
 			}
 		}),
 	)
+	// Initialise service
+	service.Init()
 	return service, apiInstallConfigure
 }
 
