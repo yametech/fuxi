@@ -3,15 +3,15 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	constraint "github.com/yametech/fuxi/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	"github.com/yametech/fuxi/pkg/api/common"
-	constraint "github.com/yametech/fuxi/util/common"
 )
 
 func (w *WorkloadsAPI) CreateTask(g *gin.Context) {
