@@ -6,9 +6,9 @@ import (
 	"sort"
 	"time"
 
+	"github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/pkg/service/workload"
 	"github.com/yametech/fuxi/thirdparty/lib/token"
-	"github.com/yametech/fuxi/util/common"
 
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"github.com/yametech/fuxi/pkg/service/base"

@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/micro/micro/plugin"
+	"github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/thirdparty/lib/token"
 	"github.com/yametech/fuxi/thirdparty/lib/whitelist"
-	"github.com/yametech/fuxi/util/common"
 )
 
 // JWTAuthWrapper

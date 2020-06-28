@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	constraint "github.com/yametech/fuxi/util/common"
+	constraint "github.com/yametech/fuxi/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
