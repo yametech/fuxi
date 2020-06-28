@@ -39,7 +39,7 @@ func (d *DepartmentAssistant) Run() error {
 		return err
 	}
 	for _, item := range baseDepartmentList.Items {
-		d.update(item)
+		d.update(&item)
 	}
 
 	// watch
