@@ -9,12 +9,12 @@ import (
 	"github.com/micro/go-micro/config"
 	"github.com/micro/go-micro/web"
 	"github.com/micro/micro/plugin"
+	"github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/pkg/kubernetes/clientv1"
 	"github.com/yametech/fuxi/pkg/kubernetes/clientv2"
 	"github.com/yametech/fuxi/thirdparty/lib/token"
 	"github.com/yametech/fuxi/thirdparty/lib/whitelist"
 	"github.com/yametech/fuxi/thirdparty/lib/wrapper/auth"
-	"github.com/yametech/fuxi/util/common"
 	k8sjson "k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -207,6 +207,7 @@ func NewDefaultInstallConfigure(addr string, mode string) (*DefaultInstallConfig
 		SystemConfigServer: systemConfigServer,
 	}
 	if mode != "" {
+		common.DeployInCluster = true
 		var err error
 		ClientV1, restConf, err := createInClusterConfig()
 		if err != nil {
