@@ -3,6 +3,7 @@ package workload
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/go-resty/resty/v2"
 	constraint_common "github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/pkg/service/common"
@@ -33,14 +34,14 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 			resp, err := m.
 				client.
 				R().
-				SetPathParams(params).
+				SetQueryParams(params).
 				SetQueryParam("query", bodyValue).
 				Get("http://prometheus.kube-system.svc.cluster.local/api/v1/query_range")
 			if err != nil {
 				return nil, err
 			}
 			var metricsContextMap MetricsContentMap
-			err = json.Unmarshal(resp.Body(), &metricsContextMap)
+			err = json.Unmarshal([]byte(resp.String()), &metricsContextMap)
 			if err != nil {
 				return nil, err
 			}
