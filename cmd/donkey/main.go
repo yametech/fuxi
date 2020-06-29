@@ -34,4 +34,6 @@ func main() {
 		assistant.Stop()
 		log.Fatal(err)
 	}
+
+	log.Info("Donkey is working. .. ... ....")
 }
