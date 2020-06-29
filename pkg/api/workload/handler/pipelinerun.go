@@ -1,13 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	"github.com/yametech/fuxi/pkg/api/common"
 )
 
@@ -39,16 +37,5 @@ func (w *WorkloadsAPI) ListPipelineRun(g *gin.Context) {
 		return
 	}
 
-	pipelineRunList := &tekton.PipelineRunList{}
-	marshalData, err := json.Marshal(list)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	err = json.Unmarshal(marshalData, pipelineRunList)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	g.JSON(http.StatusOK, pipelineRunList)
+	g.JSON(http.StatusOK, list)
 }
