@@ -83,20 +83,19 @@ func (d *DepartmentAssistant) patchServiceAccount(namespace string, secretName s
 	if err := runtimeObjectToInstanceObj(serviceAccount, obj); err != nil {
 		return err
 	}
-	obj.ImagePullSecrets = append(obj.ImagePullSecrets, v1.LocalObjectReference{Name: secretName})
 
-	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&obj)
-	if err != nil {
-		return err
+	secretObjects := make([]interface{}, 0)
+	for _, alreadySecret := range obj.ImagePullSecrets {
+		secretObjects = append(secretObjects, map[string]string{"name": alreadySecret.Name})
 	}
-	unstructuredStruct := &unstructured.Unstructured{
-		Object: unstructuredObj,
+
+	secretObjects = append(secretObjects, map[string]string{"name": secretName})
+	patchData := map[string]interface{}{
+		"imagePullSecrets": secretObjects,
 	}
+
 	d.SetGroupVersionResource(types.ResourceServiceAccount)
-	_, err = d.Apply(obj.Namespace, obj.Name, unstructuredStruct)
-	if err != nil {
-		return err
-	}
+	_, err = d.Patch(namespace, "default", patchData)
 	return nil
 }
 
