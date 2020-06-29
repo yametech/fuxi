@@ -27,3 +27,4 @@ func PipelineList(g *gin.Context) { workloadsAPI.ListPipeline(g) }
 // @Router /workload/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name [get]
 func PipelineGet(g *gin.Context)    { workloadsAPI.GetPipeline(g) }
 func PipelineCreate(g *gin.Context) { workloadsAPI.CreatePipeline(g) }
+func PipelineUpdate(g *gin.Context) { workloadsAPI.UpdatePipeline(g) }
