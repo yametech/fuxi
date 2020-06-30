@@ -43,7 +43,7 @@ func (d *DepartmentAssistant) updateSecretObject(namespace string, name string, 
 			Type: "kubernetes.io/dockerconfigjson",
 		}
 	} else {
-		if err := runtimeObjectToInstanceObj(secret, obj); err != nil {
+		if err := common.RuntimeObjectToInstanceObj(secret, obj); err != nil {
 			return nil, err
 		}
 	}
