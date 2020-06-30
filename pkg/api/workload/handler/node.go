@@ -30,20 +30,20 @@ func (w *WorkloadsAPI) GeoAnnotateNode(g *gin.Context) {
 	}
 	patchData := map[string]interface{}{
 		"metadata": map[string]interface{}{
-			"annotations": map[string]string{
+			"labels": map[string]string{
 				"nuwa.kubernetes.io/host": pad.Host,
 				"nuwa.kubernetes.io/rack": pad.Rack,
 				"nuwa.kubernetes.io/zone": pad.Zone,
 			},
 		},
 	}
-	_, err = w.node.Patch("", pad.Node, patchData)
+	newObj, err := w.node.Patch("", pad.Node, patchData)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
 
-	g.JSON(http.StatusOK, "")
+	g.JSON(http.StatusOK, newObj)
 }
 
 // Get Node
