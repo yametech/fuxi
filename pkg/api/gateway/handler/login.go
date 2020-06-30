@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/yametech/fuxi/util/common"
+	"github.com/yametech/fuxi/common"
 )
 
 type LoginHandle struct {

@@ -16,9 +16,10 @@ spec:
       labels:
         fuxiapp: base
     spec:
+      serviceAccount: fuxi-app
       containers:
         - name: base
-          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379"]
+          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379","--in_cluster","true"]
           image: yametech/base:v0.1.0
           imagePullPolicy: Always
       restartPolicy: Always

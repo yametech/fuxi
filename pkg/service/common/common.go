@@ -2,8 +2,6 @@ package common
 
 import (
 	"encoding/json"
-	"reflect"
-
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -213,22 +211,22 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(
 			return getErr
 		}
 
-		if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) &&
-			reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
-			result = getObj
-			return nil
-		}
-
-		if !reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
-			getObj.Object["spec"] = obj.Object["spec"]
-		}
-
-		if !reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
-			getObj.Object["metadata"] = compareMetadataLabelsOrAnnotation(
-				getObj.Object["metadata"].(map[string]interface{}),
-				obj.Object["metadata"].(map[string]interface{}),
-			)
-		}
+		//if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) &&
+		//	reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
+		//	result = getObj
+		//	return nil
+		//}
+		//
+		//if !reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
+		//	getObj.Object["spec"] = obj.Object["spec"]
+		//}
+		//
+		//if !reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
+		//	getObj.Object["metadata"] = compareMetadataLabelsOrAnnotation(
+		//		getObj.Object["metadata"].(map[string]interface{}),
+		//		obj.Object["metadata"].(map[string]interface{}),
+		//	)
+		//}
 
 		newObj, updateErr := SharedK8sClient.
 			ClientV2.

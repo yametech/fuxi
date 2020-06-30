@@ -440,6 +440,7 @@ func main() {
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines", PipelineList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name", PipelineGet)
 		group.POST("/apis/tekton.dev/v1alpha1/pipelines", PipelineCreate)
+		group.PUT("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name", PipelineUpdate)
 
 		// pipelineRun
 		group.GET("/apis/tekton.dev/v1alpha1/pipelineruns", PipelineRunList)

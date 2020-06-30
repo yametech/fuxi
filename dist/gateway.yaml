@@ -15,20 +15,14 @@ spec:
       labels:
         app: gateway
     spec:
+      serviceAccount: fuxi-app
       containers:
         - name: gateway
-          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379", "api","--handler=http"]
+          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379","--in_cluster","true", "api","--handler=http"]
           image: yametech/gateway:v0.1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-        - name: workload
-          image: yametech/workload:v0.1.0
-          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379"]
-          imagePullPolicy: Always
-        - name: base
-          args: ["--registry", "etcd", "--registry_address", "etcd.kube-system.svc.cluster.local:2379", "--etcd_address", "etcd.kube-system.svc.cluster.local:2379"]
-          image: yametech/base:v0.1.0
       restartPolicy: Always
 ---
 apiVersion: v1

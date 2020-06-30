@@ -9,9 +9,58 @@ import (
 
 	"github.com/gin-gonic/gin"
 	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
+	constraint "github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/pkg/api/common"
-	constraint "github.com/yametech/fuxi/util/common"
+	service_common "github.com/yametech/fuxi/pkg/service/common"
 )
+
+func (w *WorkloadsAPI) UpdatePipeline(g *gin.Context) {
+	name := g.Param("name")
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	tempPipeline := &tekton.Pipeline{}
+	if err := json.Unmarshal(rawData, tempPipeline); err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	pipeline, err := w.pipeline.Get(constraint.TektonResourceNamespace, name)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	pipelineObject := &tekton.Pipeline{}
+	if err := service_common.RuntimeObjectToInstanceObj(pipeline, pipelineObject); err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	pipelineObject.Spec.Description = tempPipeline.Spec.Description
+	pipelineObject.Spec.Resources = tempPipeline.Spec.Resources
+	pipelineObject.Spec.Params = tempPipeline.Spec.Params
+	pipelineObject.Spec.Tasks = tempPipeline.Spec.Tasks
+	pipelineObject.Spec.Workspaces = tempPipeline.Spec.Workspaces
+
+	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&pipelineObject)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	unstructuredStruct := &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}
+	newObj, err := w.pipeline.Apply(constraint.TektonResourceNamespace, name, unstructuredStruct)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	g.JSON(http.StatusOK, newObj)
+}
 
 func (w *WorkloadsAPI) CreatePipeline(g *gin.Context) {
 	rawData, err := g.GetRawData()
