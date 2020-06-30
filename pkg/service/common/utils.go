@@ -3,7 +3,16 @@ package common
 import (
 	"encoding/base64"
 	"encoding/json"
+	"k8s.io/apimachinery/pkg/runtime"
 )
+
+func RuntimeObjectToInstanceObj(robj runtime.Object, targeObj interface{}) error {
+	bytesData, err := json.Marshal(robj)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(bytesData, targeObj)
+}
 
 // HandleDockerCfgJSONContent serializes a ~/.docker/config.json file
 func HandleDockerCfgJSONContent(username, password, email, server string) ([]byte, error) {

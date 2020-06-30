@@ -43,7 +43,7 @@ func (d *DepartmentAssistant) updateSecretObject(namespace string, name string, 
 			Type: "kubernetes.io/dockerconfigjson",
 		}
 	} else {
-		if err := runtimeObjectToInstanceObj(secret, obj); err != nil {
+		if err := common.RuntimeObjectToInstanceObj(secret, obj); err != nil {
 			return nil, err
 		}
 	}
@@ -80,7 +80,7 @@ func (d *DepartmentAssistant) patchServiceAccount(namespace string, secretName s
 		return err
 	}
 	obj := &v1.ServiceAccount{}
-	if err := runtimeObjectToInstanceObj(serviceAccount, obj); err != nil {
+	if err := common.RuntimeObjectToInstanceObj(serviceAccount, obj); err != nil {
 		return err
 	}
 
@@ -153,7 +153,7 @@ func (d *DepartmentAssistant) Run() error {
 			switch item.Type {
 			case watch.Added, watch.Modified:
 				dept := &fuxi.BaseDepartment{}
-				if err := runtimeObjectToInstanceObj(item.Object, dept); err != nil {
+				if err := common.RuntimeObjectToInstanceObj(item.Object, dept); err != nil {
 					return err
 				}
 				if err := d.update(dept); err != nil {
@@ -176,12 +176,4 @@ func (d *DepartmentAssistant) update(dept *fuxi.BaseDepartment) error {
 		return err
 	}
 	return nil
-}
-
-func runtimeObjectToInstanceObj(robj runtime.Object, targeObj interface{}) error {
-	bytesData, err := json.Marshal(robj)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal(bytesData, targeObj)
 }
