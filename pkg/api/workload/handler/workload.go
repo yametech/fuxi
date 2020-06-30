@@ -123,6 +123,7 @@ var ignoreList = []string{
 	"clusterroles",
 	"clusterrolebindings",
 	"storageclasses",
+	"nodes",
 }
 
 var in = func(item string) bool {
