@@ -238,7 +238,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Patch(namespace, name string, path
 			Interface.
 			Resource(gvr).
 			Namespace(namespace).
-			Patch(name, types.StrategicMergePatchType, ptBytes, metav1.PatchOptions{})
+			Patch(name, types.MergePatchType, ptBytes, metav1.PatchOptions{})
 		if err != nil {
 			return err
 		}
