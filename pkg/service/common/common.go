@@ -183,19 +183,18 @@ func (d *DefaultImplWorkloadsResourceHandler) Watch(
 	return recv.ResultChan(), nil
 }
 
-func (d *DefaultImplWorkloadsResourceHandler) Apply(
-	namespace string,
-	name string,
-	obj *unstructured.Unstructured,
-) (result *unstructured.Unstructured, retryErr error) {
+func (d *DefaultImplWorkloadsResourceHandler) Apply(namespace string, name string, obj *unstructured.Unstructured) (
+	result *unstructured.Unstructured, retryErr error) {
+
 	retryErr = retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		resource := d.GetGroupVersionResource()
-		getObj, getErr := SharedK8sClient.
+		_, getErr := SharedK8sClient.
 			ClientV2.
 			Interface.
 			Resource(resource).
 			Namespace(namespace).
 			Get(name, metav1.GetOptions{})
+
 		if errors.IsNotFound(getErr) {
 			newObj, createErr := SharedK8sClient.
 				ClientV2.
@@ -211,29 +210,12 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(
 			return getErr
 		}
 
-		//if reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) &&
-		//	reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
-		//	result = getObj
-		//	return nil
-		//}
-		//
-		//if !reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
-		//	getObj.Object["spec"] = obj.Object["spec"]
-		//}
-		//
-		//if !reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
-		//	getObj.Object["metadata"] = compareMetadataLabelsOrAnnotation(
-		//		getObj.Object["metadata"].(map[string]interface{}),
-		//		obj.Object["metadata"].(map[string]interface{}),
-		//	)
-		//}
-
 		newObj, updateErr := SharedK8sClient.
 			ClientV2.
 			Interface.
 			Resource(resource).
 			Namespace(namespace).
-			Update(getObj, metav1.UpdateOptions{})
+			Update(obj, metav1.UpdateOptions{})
 
 		result = newObj
 		return updateErr
@@ -256,7 +238,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Patch(namespace, name string, path
 			Interface.
 			Resource(gvr).
 			Namespace(namespace).
-			Patch(name, types.StrategicMergePatchType, ptBytes, metav1.PatchOptions{})
+			Patch(name, types.MergePatchType, ptBytes, metav1.PatchOptions{})
 		if err != nil {
 			return err
 		}
