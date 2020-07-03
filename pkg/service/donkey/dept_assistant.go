@@ -14,6 +14,19 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 )
 
+// LocalObjectReference deduplication
+func unique(mapSlice []v1.LocalObjectReference) []v1.LocalObjectReference {
+	keys := make(map[string]bool)
+	list := make([]v1.LocalObjectReference, 0)
+	for _, entry := range mapSlice {
+		if _, value := keys[entry.Name]; !value {
+			keys[entry.Name] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
 type DepartmentAssistant struct {
 	common.WorkloadsResourceHandler
 	stopChan chan struct{}
@@ -74,22 +87,42 @@ func (d *DepartmentAssistant) updateSecretObject(namespace string, name string, 
 
 // patchServiceAccount
 func (d *DepartmentAssistant) patchServiceAccount(namespace string, secretName string) error {
+	obj := &v1.ServiceAccount{}
 	d.SetGroupVersionResource(types.ResourceServiceAccount)
 	serviceAccount, err := d.Get(namespace, "default")
-	if err != nil {
-		return err
-	}
-	obj := &v1.ServiceAccount{}
-	if err := common.RuntimeObjectToInstanceObj(serviceAccount, obj); err != nil {
-		return err
+
+	if errors.IsNotFound(err) {
+		obj = &v1.ServiceAccount{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "default",
+				Namespace: namespace,
+			},
+		}
+	} else {
+		if err := common.RuntimeObjectToInstanceObj(serviceAccount, obj); err != nil {
+			return err
+		}
 	}
 
-	secretObjects := make([]interface{}, 0)
-	for _, alreadySecret := range obj.ImagePullSecrets {
+	ImagePullSecrets := unique(obj.ImagePullSecrets)
+
+	secretObjects := make([]map[string]string, 0)
+	for _, alreadySecret := range ImagePullSecrets {
 		secretObjects = append(secretObjects, map[string]string{"name": alreadySecret.Name})
 	}
 
-	secretObjects = append(secretObjects, map[string]string{"name": secretName})
+	// If secretName does not exist, add it to secretObjects
+	contains := false
+	for i := range secretObjects {
+		if secretObjects[i]["name"] == secretName {
+			contains = true
+		}
+	}
+
+	if contains == false {
+		secretObjects = append(secretObjects, map[string]string{"name": secretName})
+	}
+
 	patchData := map[string]interface{}{
 		"imagePullSecrets": secretObjects,
 	}
