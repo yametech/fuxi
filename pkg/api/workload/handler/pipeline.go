@@ -38,11 +38,8 @@ func (w *WorkloadsAPI) UpdatePipeline(g *gin.Context) {
 		common.ToRequestParamsError(g, err)
 		return
 	}
-	pipelineObject.Spec.Description = tempPipeline.Spec.Description
-	pipelineObject.Spec.Resources = tempPipeline.Spec.Resources
-	pipelineObject.Spec.Params = tempPipeline.Spec.Params
-	pipelineObject.Spec.Tasks = tempPipeline.Spec.Tasks
-	pipelineObject.Spec.Workspaces = tempPipeline.Spec.Workspaces
+	pipelineObject.ObjectMeta = tempPipeline.ObjectMeta
+	pipelineObject.Spec = tempPipeline.Spec
 
 	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&pipelineObject)
 	if err != nil {

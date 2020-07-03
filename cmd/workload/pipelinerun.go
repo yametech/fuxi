@@ -28,4 +28,3 @@ func PipelineRunList(g *gin.Context) { workloadsAPI.ListPipelineRun(g) }
 func PipelineRunGet(g *gin.Context) { workloadsAPI.GetPipelineRun(g) }
 
 func PipelineRunCreate(g *gin.Context) { workloadsAPI.CreatePipelineRun(g) }
-func PipelineRunUpdate(g *gin.Context) { workloadsAPI.UpdatePipelineRun(g) }
