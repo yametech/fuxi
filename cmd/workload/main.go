@@ -140,7 +140,8 @@ func main() {
 		group.GET("/api/v1/secrets", SecretList)
 		group.GET("/api/v1/namespaces/:namespace/secrets", SecretList)
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
-		group.POST("/api/v1/namespaces/:namespace/secrets", workloadsAPI.Apply)
+		//group.POST("/api/v1/namespaces/:namespace/secrets", workloadsAPI.Apply)
+		group.POST("/api/v1/namespaces/:namespace/secrets", SecretCreate)
 	}
 
 	// #apis
@@ -447,7 +448,6 @@ func main() {
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns", PipelineRunList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns/:name", PipelineRunGet)
 		group.POST("/apis/tekton.dev/v1alpha1/pipelineruns", PipelineRunCreate)
-		group.PUT("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns/:name", PipelineRunUpdate)
 
 		// task
 		group.GET("/apis/tekton.dev/v1alpha1/tasks", TaskList)

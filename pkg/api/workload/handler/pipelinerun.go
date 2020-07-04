@@ -13,36 +13,6 @@ import (
 	"github.com/yametech/fuxi/pkg/api/common"
 )
 
-func (w *WorkloadsAPI) UpdatePipelineRun(g *gin.Context) {
-	rawData, err := g.GetRawData()
-	if err != nil {
-		common.ToRequestParamsError(g, err)
-		return
-	}
-	obj := tekton.PipelineRun{}
-	err = json.Unmarshal(rawData, &obj)
-	if err != nil {
-		common.ToRequestParamsError(g, err)
-		return
-	}
-
-	patchData := map[string]interface{}{
-		"metadata": map[string]interface{}{
-			"labels": map[string]string{
-				"namespace": obj.ObjectMeta.Labels["namespace"],
-			},
-		},
-	}
-
-	newObj, err := w.pipelineRun.Patch(constraint.TektonResourceNamespace, obj.Name, patchData)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-
-	g.JSON(http.StatusOK, newObj)
-}
-
 func (w *WorkloadsAPI) CreatePipelineRun(g *gin.Context) {
 	rawData, err := g.GetRawData()
 	if err != nil {
