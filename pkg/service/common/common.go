@@ -33,7 +33,7 @@ type ResourceQuery interface {
 	List(namespace, flag string, pos, size int64, selector interface{}) (*unstructured.UnstructuredList, error)
 	Get(namespace, name string, subresources ...string) (runtime.Object, error)
 	SharedNamespaceList(namespace string, selector interface{}) (*unstructured.UnstructuredList, error)
-	Watch(namespace string, resourceVersion string, timeoutSeconds int64, selector labels.Selector) (<-chan watch.Event, error)
+	Watch(namespace string, resourceVersion string, timeoutSeconds int64, selector interface{}) (<-chan watch.Event, error)
 }
 
 // ResourceApply update resource interface
@@ -160,18 +160,31 @@ func (d *DefaultImplWorkloadsResourceHandler) Watch(
 	namespace string,
 	resourceVersion string,
 	timeoutSeconds int64,
-	selector labels.Selector,
+	selector interface{},
 ) (<-chan watch.Event, error) {
 	opts := metav1.ListOptions{}
-	if selector != nil {
-		opts.LabelSelector = selector.String()
+	var err error
+
+	if selector == nil || selector == "" {
+		selector = labels.Everything()
 	}
+	switch selector.(type) {
+	case labels.Selector:
+		opts.LabelSelector = selector.(labels.Selector).String()
+	case string:
+		if selector != "" {
+			opts.LabelSelector = selector.(string)
+		}
+	}
+
 	if timeoutSeconds > 0 {
 		opts.TimeoutSeconds = &timeoutSeconds
 	}
+
 	if resourceVersion != "" {
 		opts.ResourceVersion = resourceVersion
 	}
+
 	recv, err := SharedK8sClient.
 		ClientV2.
 		Interface.
@@ -181,6 +194,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Watch(
 	if err != nil {
 		return nil, err
 	}
+
 	return recv.ResultChan(), nil
 }
 
