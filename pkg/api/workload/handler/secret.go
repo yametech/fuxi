@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	serviceCommon "github.com/yametech/fuxi/pkg/service/common"
@@ -25,11 +26,21 @@ func (w *WorkloadsAPI) GetSecret(g *gin.Context) {
 
 // List Secret
 func (w *WorkloadsAPI) ListSecret(g *gin.Context) {
-	list, err := resourceList(g, w.secret)
+	var list *unstructured.UnstructuredList
+	var err error
+
+	namespace := g.Param("namespace")
+	if namespace == "" {
+		list, err = w.secret.List("", "", 0, 0, nil)
+	} else {
+		labelSelector := fmt.Sprintf("hide!=%s", "1")
+		list, err = w.secret.List(namespace, "", 0, 0, labelSelector)
+	}
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
+
 	secretList := &v1.SecretList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
