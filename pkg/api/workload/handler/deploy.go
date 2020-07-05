@@ -21,10 +21,9 @@ import (
 )
 
 type deployTemplate struct {
-	AppName   string `json:"appName"`
-	Namespace struct {
-		Value string `json:"value"`
-	} `json:"namespace"`
+	AppName      string `json:"appName"`
+	Namespace    string `json:"namespace"`
+	StorageClass string `json:"storageClass"`
 	Replicas     string `json:"replicas"`
 	TemplateName string `json:"templateName"`
 }
@@ -224,7 +223,7 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 	return containers
 }
 
-func workloadsTemplateToVolumeClaims(wt *workloadsTemplate) []corev1.PersistentVolumeClaim {
+func workloadsTemplateToVolumeClaims(wt *workloadsTemplate, dt *deployTemplate) []corev1.PersistentVolumeClaim {
 	pvcs := make([]corev1.PersistentVolumeClaim, 0)
 	for _, item := range wt.VolumeClaims {
 		pvc := corev1.PersistentVolumeClaim{
@@ -242,22 +241,21 @@ func workloadsTemplateToVolumeClaims(wt *workloadsTemplate) []corev1.PersistentV
 				corev1.ResourceName("storage"): resource.MustParse(item.Spec.Resources.Requests.Storage + "Mi"),
 			},
 		}
-		if item.Metadata.IsUseDefaultStorageClass {
-			pvc.ObjectMeta.Annotations = map[string]string{
-				"volume.alpha.kubernetes.io/storage-class": "default",
-			}
-			pvc.Spec = corev1.PersistentVolumeClaimSpec{
-				AccessModes: accessModes,
-				Resources:   resourceRequire,
-			}
-		} else {
-			pvc.Spec = corev1.PersistentVolumeClaimSpec{
-				StorageClassName: &item.Spec.StorageClassName,
-				AccessModes:      accessModes,
-				Resources:        resourceRequire,
-			}
-
+		//if item.Metadata.IsUseDefaultStorageClass {
+		//	pvc.ObjectMeta.Annotations = map[string]string{
+		//		"volume.alpha.kubernetes.io/storage-class": "default",
+		//	}
+		//	pvc.Spec = corev1.PersistentVolumeClaimSpec{
+		//		AccessModes: accessModes,
+		//		Resources:   resourceRequire,
+		//	}
+		//} else {
+		pvc.Spec = corev1.PersistentVolumeClaimSpec{
+			StorageClassName: &dt.StorageClass,
+			AccessModes:      accessModes,
+			Resources:        resourceRequire,
 		}
+		//}
 		pvcs = append(pvcs, pvc)
 	}
 	return pvcs
@@ -332,7 +330,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 	var runtimeClassGVR schema.GroupVersionResource
 	switch *workloads.Spec.ResourceType {
 	case "Stone":
-		obj, err := w.namespace.Get("", deployTemplate.Namespace.Value)
+		obj, err := w.namespace.Get("", deployTemplate.Namespace)
 		if err != nil {
 			common.ToRequestParamsError(g, err)
 			return
@@ -399,7 +397,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      deployTemplate.AppName,
-				Namespace: deployTemplate.Namespace.Value,
+				Namespace: deployTemplate.Namespace,
 				Labels:    labels,
 			},
 			Spec: nuwav1.StoneSpec{
@@ -413,7 +411,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 				Strategy:             "Alpha", // TODO
 				Coordinates:          cgs,
 				Service:              *serviceTemplate,
-				VolumeClaimTemplates: workloadsTemplateToVolumeClaims(workloadsTemplate),
+				VolumeClaimTemplates: workloadsTemplateToVolumeClaims(workloadsTemplate, deployTemplate),
 			},
 		}
 		runtimeClassGVR = types.ResourceStone
@@ -427,7 +425,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 	unstructuredData := &unstructured.Unstructured{Object: unstructuredObj}
 
 	w.generic.SetGroupVersionResource(runtimeClassGVR)
-	newObj, err := w.generic.Apply(deployTemplate.Namespace.Value, deployTemplate.AppName, unstructuredData)
+	newObj, err := w.generic.Apply(deployTemplate.Namespace, deployTemplate.AppName, unstructuredData)
 	if err != nil {
 		common.ToInternalServerError(g, unstructuredData, err)
 		return
