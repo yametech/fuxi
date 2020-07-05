@@ -12,6 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/util/retry"
+	"reflect"
 	//"sort"
 )
 
@@ -188,7 +189,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(namespace string, name strin
 
 	retryErr = retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		resource := d.GetGroupVersionResource()
-		_, getErr := SharedK8sClient.
+		getObj, getErr := SharedK8sClient.
 			ClientV2.
 			Interface.
 			Resource(resource).
@@ -210,12 +211,14 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(namespace string, name strin
 			return getErr
 		}
 
+		compareObject(getObj, obj)
+
 		newObj, updateErr := SharedK8sClient.
 			ClientV2.
 			Interface.
 			Resource(resource).
 			Namespace(namespace).
-			Update(obj, metav1.UpdateOptions{})
+			Update(getObj, metav1.UpdateOptions{})
 
 		result = newObj
 		return updateErr
@@ -271,4 +274,34 @@ func compareMetadataLabelsOrAnnotation(old, new map[string]interface{}) map[stri
 		old["annotations"] = newAnnotations
 	}
 	return old
+}
+
+func compareObject(getObj, obj *unstructured.Unstructured) {
+	if !reflect.DeepEqual(getObj.Object["metadata"], obj.Object["metadata"]) {
+		getObj.Object["metadata"] = compareMetadataLabelsOrAnnotation(
+			getObj.Object["metadata"].(map[string]interface{}),
+			obj.Object["metadata"].(map[string]interface{}),
+		)
+	}
+
+	if !reflect.DeepEqual(getObj.Object["spec"], obj.Object["spec"]) {
+		getObj.Object["spec"] = obj.Object["spec"]
+	}
+
+	// configMap
+	if !reflect.DeepEqual(getObj.Object["data"], obj.Object["data"]) {
+		getObj.Object["data"] = obj.Object["data"]
+	}
+
+	if !reflect.DeepEqual(getObj.Object["binaryData"], obj.Object["binaryData"]) {
+		getObj.Object["binaryData"] = obj.Object["binaryData"]
+	}
+
+	if !reflect.DeepEqual(getObj.Object["stringData"], obj.Object["stringData"]) {
+		getObj.Object["stringData"] = obj.Object["stringData"]
+	}
+
+	if !reflect.DeepEqual(getObj.Object["type"], obj.Object["type"]) {
+		getObj.Object["type"] = obj.Object["type"]
+	}
 }
