@@ -318,4 +318,12 @@ func compareObject(getObj, obj *unstructured.Unstructured) {
 	if !reflect.DeepEqual(getObj.Object["type"], obj.Object["type"]) {
 		getObj.Object["type"] = obj.Object["type"]
 	}
+
+	if !reflect.DeepEqual(getObj.Object["secrets"], obj.Object["secrets"]) {
+		getObj.Object["secrets"] = obj.Object["secrets"]
+	}
+
+	if !reflect.DeepEqual(getObj.Object["imagePullSecrets"], obj.Object["imagePullSecrets"]) {
+		getObj.Object["imagePullSecrets"] = obj.Object["imagePullSecrets"]
+	}
 }
