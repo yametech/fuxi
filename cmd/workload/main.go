@@ -331,6 +331,7 @@ func main() {
 			"fuxi.nip.io/v1/basedepartments",
 			"fuxi.nip.io/v1/baseroles",
 			"fuxi.nip.io/v1/baseusers",
+			"fuxi.nip.io/v1/tektongraphs",
 			"nuwa.nip.io/v1/statefulsets",
 			"nuwa.nip.io/v1/stones",
 			"nuwa.nip.io/v1/waters",
@@ -465,6 +466,14 @@ func main() {
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources", PipelineResourceList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources/:name", PipelineResourceGet)
 		group.POST("/apis/tekton.dev/v1alpha1/pipelineresources", PipelineResourceCreate)
+
+	}
+
+	// TektonGraph
+	{
+		group.GET("/apis/fuxi.nip.io/v1/tektongraphs", TektonGraphList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs/:name", TektonGraphGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs", TektonGraphCreate)
 	}
 
 	// watch the group resource
