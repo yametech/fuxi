@@ -12,6 +12,7 @@ const (
 	// NamespaceLabelForDepartment  eg: fuxi.kubernetes.io/namespce: dxp
 	// the dxp is user allow access namespaces
 	DeployResourceLabelForNamespace = "fuxi.kubernetes.io/namespce"
+	DepartmentBindingSecret         = "fuxi.kubernetes.io/departments"
 )
 
 // nuwa annotations
