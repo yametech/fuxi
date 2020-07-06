@@ -78,6 +78,7 @@ rules:
   - baseusers
   - baserolegroups
   - baseroleusers
+  - tektongraphs
   verbs:
   - create
   - delete
