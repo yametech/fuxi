@@ -72,7 +72,6 @@ func (w *WorkloadsAPI) CreateSecret(g *gin.Context) {
 	}
 
 	if obj.Type == v1.SecretTypeDockerConfigJson {
-
 		config := make(map[string]map[string]string)
 		err := json.Unmarshal(obj.Data[".dockerconfigjson"], &config)
 		if err != nil {
@@ -89,8 +88,8 @@ func (w *WorkloadsAPI) CreateSecret(g *gin.Context) {
 				return
 			}
 			obj.Data = map[string][]byte{".dockerconfigjson": bytesData}
-			obj.Annotations = make(map[string]string)
-			obj.Labels = make(map[string]string)
+			delete(obj.Labels, ".dockerconfigjson")
+			delete(obj.Annotations, ".dockerconfigjson")
 		}
 	}
 

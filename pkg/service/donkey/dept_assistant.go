@@ -14,19 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 )
 
-// LocalObjectReference deduplication
-func unique(mapSlice []v1.LocalObjectReference) []v1.LocalObjectReference {
-	keys := make(map[string]bool)
-	list := make([]v1.LocalObjectReference, 0)
-	for _, entry := range mapSlice {
-		if _, value := keys[entry.Name]; !value {
-			keys[entry.Name] = true
-			list = append(list, entry)
-		}
-	}
-	return list
-}
-
 type DepartmentAssistant struct {
 	common.WorkloadsResourceHandler
 	stopChan chan struct{}
@@ -61,6 +48,11 @@ func (d *DepartmentAssistant) updateSecretObject(namespace string, name string, 
 		}
 	}
 
+	if summoner, err := FindSecretAnnotationsByDepartment(name); err == nil {
+		fmt.Print("summoner", summoner, "\n")
+	}
+	// Annotation department information
+	SetSecretDepartmentAnnotations(obj, name)
 	if err != nil && !errors.IsNotFound(err) {
 		return nil, err
 	}
@@ -104,7 +96,7 @@ func (d *DepartmentAssistant) patchServiceAccount(namespace string, secretName s
 		}
 	}
 
-	ImagePullSecrets := unique(obj.ImagePullSecrets)
+	ImagePullSecrets := UniqueImagePullSecrets(obj.ImagePullSecrets)
 
 	secretObjects := make([]map[string]string, 0)
 	for _, alreadySecret := range ImagePullSecrets {
@@ -137,8 +129,12 @@ func (d *DepartmentAssistant) bulkPatchServiceAccounts(dept *fuxi.BaseDepartment
 	if dept.Spec.Registers == nil {
 		return nil
 	}
+	// clear service accounts with empty register
+
+	// clear namespace deleted service account
 	for rIndex := range dept.Spec.Registers {
 		for nIndex := range dept.Spec.Namespace {
+			fmt.Print("namespace ", dept.Spec.Namespace[nIndex], "\n")
 			newSecret, err := d.updateSecretObject(dept.Spec.Namespace[nIndex], dept.Name, &dept.Spec.Registers[rIndex])
 			if err != nil {
 				return err
