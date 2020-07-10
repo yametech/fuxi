@@ -326,4 +326,20 @@ func compareObject(getObj, obj *unstructured.Unstructured) {
 	if !reflect.DeepEqual(getObj.Object["imagePullSecrets"], obj.Object["imagePullSecrets"]) {
 		getObj.Object["imagePullSecrets"] = obj.Object["imagePullSecrets"]
 	}
+	// storageClass field
+	if !reflect.DeepEqual(getObj.Object["provisioner"], obj.Object["provisioner"]) {
+		getObj.Object["provisioner"] = obj.Object["provisioner"]
+	}
+
+	if !reflect.DeepEqual(getObj.Object["parameters"], obj.Object["parameters"]) {
+		getObj.Object["parameters"] = obj.Object["parameters"]
+	}
+
+	if !reflect.DeepEqual(getObj.Object["reclaimPolicy"], obj.Object["reclaimPolicy"]) {
+		getObj.Object["reclaimPolicy"] = obj.Object["reclaimPolicy"]
+	}
+
+	if !reflect.DeepEqual(getObj.Object["volumeBindingMode"], obj.Object["volumeBindingMode"]) {
+		getObj.Object["volumeBindingMode"] = obj.Object["volumeBindingMode"]
+	}
 }

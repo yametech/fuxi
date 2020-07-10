@@ -133,6 +133,7 @@ func main() {
 		group.GET("/api/v1/configmaps", ConfigMapsList)
 		group.GET("/api/v1/namespaces/:namespace/configmaps", ConfigMapsList)
 		group.GET("/api/v1/namespaces/:namespace/configmaps/:name", ConfigMapsGet)
+		group.POST("/api/v1/namespaces/:namespace/configmaps", ConfigMapsCreate)
 	}
 
 	// Secret
