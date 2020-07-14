@@ -2,12 +2,23 @@ package donkey
 
 import (
 	"encoding/json"
+	"fmt"
 	constraint "github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 )
+
+func ApplySecret(secret *v1.Secret) {
+	unstructuredObj, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(&secret)
+	unstructuredStruct := &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}
+
+	b := NewDepartmentAssistant()
+	_, _ = b.Apply(secret.GetNamespace(), secret.GetName(), unstructuredStruct)
+}
 
 // Get: secretList
 func SecretList() (*v1.SecretList, error) {
@@ -92,17 +103,11 @@ func SetSecretAnnotations(secret *v1.Secret, departments []string) {
 		secret.ObjectMeta.Annotations = annotations
 	}
 
-	unstructuredObj, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(&secret)
-	unstructuredStruct := &unstructured.Unstructured{
-		Object: unstructuredObj,
-	}
-
-	b := NewDepartmentAssistant()
-	_, _ = b.Apply(secret.GetNamespace(), secret.GetName(), unstructuredStruct)
+	ApplySecret(secret)
 }
 
 // set department array secretAnnotations
-func SetSecretDepartmentAnnotations(secret *v1.Secret, name string) {
+func SetDepartmentAnnotations(secret *v1.Secret, name string) {
 	secretDepartmentAnnotations := GetDepartmentAnnotations(secret)
 
 	list := UniqueDepartmentAnnotations(secretDepartmentAnnotations)
@@ -145,24 +150,31 @@ func FindSecretAnnotationsByDepartment(department string) ([]v1.Secret, error) {
 }
 
 // Func: remove secretAnnotations by department
-func RemoveSecretAnnotationsDepartment(secret v1.Secret, departmentNamespace []string) {
+func SyncDepartmentAnnotations(secret *v1.Secret, departmentNamespace []string) {
 
+	newNamespace := make([]string, 0)
 	for i := range departmentNamespace {
 		if departmentNamespace[i] == secret.GetNamespace() {
-			departmentNamespace = append(departmentNamespace[:i], departmentNamespace[i+1:]...)
+			newNamespace = append(newNamespace, departmentNamespace[i])
 		}
 	}
+	fmt.Print("newNamespace", newNamespace, "\n")
 
 	if len(departmentNamespace) > 0 {
-		annotations := secret.GetAnnotations()
-		if annotations != nil {
-			binding := make([]string, 0)
-			bindingString, ok := annotations[constraint.DepartmentBindingSecret]
-			if ok {
-				err := json.Unmarshal([]byte(bindingString), &binding)
-				if err == nil {
-
+		var secretAnnotations = make([]string, 0)
+		bindingString, ok := GetBindingAnnotations(secret)
+		if !ok {
+			annotations := make([]string, 0)
+			err := json.Unmarshal([]byte(bindingString), &secretAnnotations)
+			if err == nil {
+				for i := range secretAnnotations {
+					for j := range departmentNamespace {
+						if departmentNamespace[j] == secretAnnotations[i] {
+							annotations = append(annotations, departmentNamespace[j])
+						}
+					}
 				}
+				ApplySecret(secret)
 			}
 		}
 	}

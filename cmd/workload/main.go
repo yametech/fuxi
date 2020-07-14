@@ -133,6 +133,7 @@ func main() {
 		group.GET("/api/v1/configmaps", ConfigMapsList)
 		group.GET("/api/v1/namespaces/:namespace/configmaps", ConfigMapsList)
 		group.GET("/api/v1/namespaces/:namespace/configmaps/:name", ConfigMapsGet)
+		group.POST("/api/v1/namespaces/:namespace/configmaps", ConfigMapsCreate)
 	}
 
 	// Secret
@@ -472,6 +473,7 @@ func main() {
 	// TektonGraph
 	{
 		group.GET("/apis/fuxi.nip.io/v1/tektongraphs", TektonGraphList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs", TektonGraphList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs/:name", TektonGraphGet)
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs", TektonGraphCreate)
 	}

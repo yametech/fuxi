@@ -26,3 +26,5 @@ func ConfigMapsList(g *gin.Context) { workloadsAPI.ListConfigMaps(g) }
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/api/v1/namespaces/:namespace/configmaps/:name [get]
 func ConfigMapsGet(g *gin.Context) { workloadsAPI.GetConfigMaps(g) }
+
+func ConfigMapsCreate(g *gin.Context) { workloadsAPI.CreateConfigMaps(g) }
