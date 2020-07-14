@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
@@ -24,23 +25,31 @@ func (w *WorkloadsAPI) GetTektonGraph(g *gin.Context) {
 
 // List TektonGraph
 func (w *WorkloadsAPI) ListTektonGraph(g *gin.Context) {
-	list, err := w.tektonGraph.List("", "", 0, 0, nil)
+	var list *unstructured.UnstructuredList
+	var err error
+	namespace := g.Param("namespace")
+	if namespace == "" {
+		list, err = w.tektonGraph.List("", "", 0, 0, nil)
+	} else {
+		labelSelector := fmt.Sprintf("namespace=%s", namespace)
+		list, err = w.taskRun.List("", "", 0, 0, labelSelector)
+	}
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	pageList := &v1.TektonGraphList{}
+	tektonGraphList := &v1.TektonGraphList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	err = json.Unmarshal(marshalData, pageList)
+	err = json.Unmarshal(marshalData, tektonGraphList)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	g.JSON(http.StatusOK, pageList)
+	g.JSON(http.StatusOK, tektonGraphList)
 }
 
 // Create TektonGraph
