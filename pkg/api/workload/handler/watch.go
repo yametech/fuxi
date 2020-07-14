@@ -105,6 +105,8 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 			k8sWatchChan, err = event.Watch(constraint_common.WorkloadsDeployTemplateNamespace, rv, 0, fmt.Sprintf("namespace=%s", ns))
 		} else if ns != "" && gvr.Group == "tekton.dev" {
 			k8sWatchChan, err = event.Watch(constraint_common.TektonResourceNamespace, rv, 0, fmt.Sprintf("namespace=%s", ns))
+		} else if ns != "" && gvr.Group == "fuxi.nip.io" && gvr.Resource == "tektongraphs" { // all tektongraphs store in ops namespace
+			k8sWatchChan, err = event.Watch(constraint_common.TektonResourceNamespace, rv, 0, nil)
 		} else {
 			k8sWatchChan, err = event.Watch(ns, rv, 0, nil)
 		}
