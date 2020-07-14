@@ -473,6 +473,7 @@ func main() {
 	// TektonGraph
 	{
 		group.GET("/apis/fuxi.nip.io/v1/tektongraphs", TektonGraphList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs", TektonGraphList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs/:name", TektonGraphGet)
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs", TektonGraphCreate)
 	}
