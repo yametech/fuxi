@@ -11,6 +11,10 @@ import (
 type TektonGraphSpec struct {
 	// +optional
 	Data string `json:"data, omitempty"`
+	// +optional
+	Width uint32 `json:"width, omitempty"`
+	// +optional
+	Height uint32 `json:"height, omitempty"`
 }
 
 // TektonGraphStatus defines the observed state of TektonGraph
