@@ -33,6 +33,12 @@ spec:
             properties:
               data:
                 type: string
+              height:
+                format: int32
+                type: integer
+              width:
+                format: int32
+                type: integer
             type: object
           status:
             description: TektonGraphStatus defines the observed state of TektonGraph
