@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"net/http"
 	"strconv"
 )
@@ -27,6 +28,7 @@ func (w *WorkloadsAPI) ListEvent(g *gin.Context) {
 	namespace := g.Param("namespace")
 	limitNum := int64(10000)
 	var err error
+	var list *unstructured.UnstructuredList
 	if limit != "" {
 		limitNum, err = strconv.ParseInt(limit, 64, 10)
 		if err != nil {
@@ -34,11 +36,16 @@ func (w *WorkloadsAPI) ListEvent(g *gin.Context) {
 			return
 		}
 	}
-	list, err := w.event.List(namespace, "", 0, limitNum, nil)
+	if namespace == "" {
+		list, err = w.event.List("", "", 0, limitNum, nil)
+	} else {
+		list, err = w.event.List(namespace, "", 0, limitNum, nil)
+	}
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
+
 	eventList := &corev1.EventList{}
 	marshalData, err := json.Marshal(list)
 	if err != nil {
