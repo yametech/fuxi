@@ -2,10 +2,8 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
-	constraint "github.com/yametech/fuxi/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 
@@ -15,6 +13,7 @@ import (
 )
 
 func (w *WorkloadsAPI) CreateTask(g *gin.Context) {
+	namespace := g.Param("namespace")
 	rawData, err := g.GetRawData()
 	if err != nil {
 		common.ToRequestParamsError(g, err)
@@ -36,7 +35,7 @@ func (w *WorkloadsAPI) CreateTask(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.task.Apply(constraint.TektonResourceNamespace, obj.Name, unstructuredStruct)
+	newObj, err := w.task.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, err.Error(), err)
 		return
@@ -63,8 +62,7 @@ func (w *WorkloadsAPI) ListTask(g *gin.Context) {
 	if namespace == "" {
 		list, err = w.task.List("", "", 0, 0, nil)
 	} else {
-		labelSelector := fmt.Sprintf("namespace=%s", namespace)
-		list, err = w.task.List("", "", 0, 0, labelSelector)
+		list, err = w.task.List(namespace, "", 0, 0, nil)
 	}
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
