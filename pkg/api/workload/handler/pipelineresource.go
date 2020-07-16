@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	"github.com/yametech/fuxi/pkg/api/common"
-	constraint "github.com/yametech/fuxi/common"
 )
 
 func (w *WorkloadsAPI) GetPipelineResource(g *gin.Context) {
@@ -54,6 +53,7 @@ func (w *WorkloadsAPI) ListPipelineResource(g *gin.Context) {
 
 // Create PipelineResource
 func (w *WorkloadsAPI) CreatePipelineResource(g *gin.Context) {
+	namespace := g.Param("namespace")
 	rawData, err := g.GetRawData()
 	if err != nil {
 		common.ToRequestParamsError(g, err)
@@ -75,7 +75,7 @@ func (w *WorkloadsAPI) CreatePipelineResource(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.pipelineResource.Apply(constraint.TektonResourceNamespace, obj.Name, unstructuredStruct)
+	newObj, err := w.pipelineResource.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

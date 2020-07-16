@@ -60,6 +60,7 @@ func (w *WorkloadsAPI) UpdatePipeline(g *gin.Context) {
 }
 
 func (w *WorkloadsAPI) CreatePipeline(g *gin.Context) {
+	namespace := g.Param("namespace")
 	rawData, err := g.GetRawData()
 	if err != nil {
 		common.ToRequestParamsError(g, err)
@@ -81,7 +82,7 @@ func (w *WorkloadsAPI) CreatePipeline(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.pipeline.Apply(constraint.TektonResourceNamespace, obj.Name, unstructuredStruct)
+	newObj, err := w.pipeline.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
