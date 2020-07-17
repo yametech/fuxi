@@ -3,7 +3,9 @@ package handler
 import (
 	"fmt"
 	constraint_common "github.com/yametech/fuxi/common"
+	"github.com/yametech/fuxi/pkg/service/common"
 	"io"
+	corev1 "k8s.io/api/core/v1"
 	"log"
 	"net/url"
 	"strings"
@@ -99,12 +101,10 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 		}
 
 		var k8sWatchChan <-chan watch.Event
-
 		// Redirect fuxi.nip.io/workload resources
 		if ns != "" && gvr.Group == "fuxi.nip.io" && gvr.Resource == "workloads" {
 			k8sWatchChan, err = event.Watch(constraint_common.WorkloadsDeployTemplateNamespace, rv, 0, fmt.Sprintf("namespace=%s", ns))
-		}
-		if ns != "" && gvr.Resource == "ops-secrets" {
+		} else if gvr.Resource == "ops-secrets" {
 			gvr.Resource = "secrets"
 			event.SetGroupVersionResource(*gvr)
 			k8sWatchChan, err = event.Watch(ns, rv, 0, fmt.Sprintf("tektonConfig=%s", "1"))
@@ -128,9 +128,11 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 					if !ok {
 						return
 					}
+					// ignore all error
+					newObj, _ := insectionObject(item.Object)
 					eventChan <- Event{
 						Type:   item.Type,
-						Object: item.Object,
+						Object: newObj,
 					}
 				}
 			}
@@ -166,4 +168,21 @@ func (w *WorkloadsAPI) WatchStream(g *gin.Context) {
 		}
 		return true
 	})
+}
+
+func insectionObject(object runtime.Object) (runtime.Object, error) {
+	if object.GetObjectKind().GroupVersionKind().Kind == "Secret" {
+		secret := &corev1.Secret{}
+		if err := common.RuntimeObjectToInstanceObj(object, secret); err != nil {
+			return object, err
+		}
+		labels := secret.GetLabels()
+		if _, exist := labels["tektonConfig"]; !exist {
+			return object, nil
+		}
+		selfLink := secret.GetSelfLink()
+		secret.SetSelfLink(strings.Replace(selfLink, "/secrets", "/ops-secrets", 1))
+		return secret, nil
+	}
+	return object, nil
 }
