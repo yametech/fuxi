@@ -57,18 +57,10 @@ func (w *WorkloadsAPI) GetPipelineRun(g *gin.Context) {
 
 // List PipelineRun
 func (w *WorkloadsAPI) ListPipelineRun(g *gin.Context) {
-	var list *unstructured.UnstructuredList
-	var err error
-	namespace := g.Param("namespace")
-	if namespace == "" {
-		list, err = w.pipelineRun.List("", "", 0, 0, nil)
-	} else {
-		list, err = w.pipelineRun.List(namespace, "", 0, 0, nil)
-	}
+	list, err := resourceList(g, w.pipelineRun)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-
 	g.JSON(http.StatusOK, list)
 }
