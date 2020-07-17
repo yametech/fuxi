@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
@@ -24,15 +23,7 @@ func (w *WorkloadsAPI) GetPipelineResource(g *gin.Context) {
 }
 
 func (w *WorkloadsAPI) ListPipelineResource(g *gin.Context) {
-	var list *unstructured.UnstructuredList
-	var err error
-	namespace := g.Param("namespace")
-	if namespace == "" {
-		list, err = w.pipelineResource.List("", "", 0, 0, nil)
-	} else {
-		labelSelector := fmt.Sprintf("namespace=%s", namespace)
-		list, err = w.pipelineResource.List("", "", 0, 0, labelSelector)
-	}
+	list, err := resourceList(g, w.pipelineResource)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

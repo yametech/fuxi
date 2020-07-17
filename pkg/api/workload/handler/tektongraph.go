@@ -24,14 +24,7 @@ func (w *WorkloadsAPI) GetTektonGraph(g *gin.Context) {
 
 // List TektonGraph
 func (w *WorkloadsAPI) ListTektonGraph(g *gin.Context) {
-	var list *unstructured.UnstructuredList
-	var err error
-	namespace := g.Param("namespace")
-	if namespace == "" {
-		list, err = w.tektonGraph.List("", "", 0, 0, nil)
-	} else {
-		list, err = w.tektonGraph.List(namespace, "", 0, 0, nil)
-	}
+	list, err := resourceList(g, w.tektonGraph)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
