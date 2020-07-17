@@ -148,6 +148,10 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	resource := g.Param("resource")
 	name := g.Param("name")
 
+	if resource == "ops-secrets" {
+		resource = "secrets"
+	}
+
 	if strings.HasPrefix(g.Request.URL.Path, "/workload/apis") {
 		if namespaceOrResource == "namespaces" {
 			if namespace == "" || resource == "" || name == "" {

@@ -10,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
+	"strings"
 )
 
 // Get Secret
@@ -82,6 +83,12 @@ func (w *WorkloadsAPI) ListOpsSecret(g *gin.Context) {
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
+	}
+
+	for i := range secretList.Items {
+		item := &secretList.Items[i]
+		item.SetSelfLink(strings.Replace(item.GetSelfLink(), "/secrets", "/ops-secrets", 1))
+		_ = item
 	}
 	g.JSON(http.StatusOK, secretList)
 }
