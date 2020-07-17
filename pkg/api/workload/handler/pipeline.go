@@ -2,19 +2,18 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
-	constraint "github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/pkg/api/common"
 	service_common "github.com/yametech/fuxi/pkg/service/common"
 )
 
 func (w *WorkloadsAPI) UpdatePipeline(g *gin.Context) {
+	namespace := g.Param("namespace")
 	name := g.Param("name")
 	rawData, err := g.GetRawData()
 	if err != nil {
@@ -27,7 +26,7 @@ func (w *WorkloadsAPI) UpdatePipeline(g *gin.Context) {
 		return
 	}
 
-	pipeline, err := w.pipeline.Get(constraint.TektonResourceNamespace, name)
+	pipeline, err := w.pipeline.Get(namespace, name)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return
@@ -50,7 +49,7 @@ func (w *WorkloadsAPI) UpdatePipeline(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.pipeline.Apply(constraint.TektonResourceNamespace, name, unstructuredStruct)
+	newObj, err := w.pipeline.Apply(namespace, name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
@@ -60,6 +59,7 @@ func (w *WorkloadsAPI) UpdatePipeline(g *gin.Context) {
 }
 
 func (w *WorkloadsAPI) CreatePipeline(g *gin.Context) {
+	namespace := g.Param("namespace")
 	rawData, err := g.GetRawData()
 	if err != nil {
 		common.ToRequestParamsError(g, err)
@@ -81,7 +81,7 @@ func (w *WorkloadsAPI) CreatePipeline(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.pipeline.Apply(constraint.TektonResourceNamespace, obj.Name, unstructuredStruct)
+	newObj, err := w.pipeline.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
@@ -104,15 +104,7 @@ func (w *WorkloadsAPI) GetPipeline(g *gin.Context) {
 
 // List Pipeline
 func (w *WorkloadsAPI) ListPipeline(g *gin.Context) {
-	var list *unstructured.UnstructuredList
-	var err error
-	namespace := g.Param("namespace")
-	if namespace == "" {
-		list, err = w.pipeline.List("", "", 0, 0, nil)
-	} else {
-		labelSelector := fmt.Sprintf("namespace=%s", namespace)
-		list, err = w.pipeline.List("", "", 0, 0, labelSelector)
-	}
+	list, err := resourceList(g, w.pipeline)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

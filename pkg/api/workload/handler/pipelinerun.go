@@ -2,9 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
-	constraint "github.com/yametech/fuxi/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
@@ -14,6 +12,7 @@ import (
 )
 
 func (w *WorkloadsAPI) CreatePipelineRun(g *gin.Context) {
+	namespace := g.Param("namespace")
 	rawData, err := g.GetRawData()
 	if err != nil {
 		common.ToRequestParamsError(g, err)
@@ -35,7 +34,7 @@ func (w *WorkloadsAPI) CreatePipelineRun(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.pipelineRun.Apply(constraint.TektonResourceNamespace, obj.Name, unstructuredStruct)
+	newObj, err := w.pipelineRun.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
@@ -58,19 +57,10 @@ func (w *WorkloadsAPI) GetPipelineRun(g *gin.Context) {
 
 // List PipelineRun
 func (w *WorkloadsAPI) ListPipelineRun(g *gin.Context) {
-	var list *unstructured.UnstructuredList
-	var err error
-	namespace := g.Param("namespace")
-	if namespace == "" {
-		list, err = w.pipelineRun.List("", "", 0, 0, nil)
-	} else {
-		labelSelector := fmt.Sprintf("namespace=%s", namespace)
-		list, err = w.pipelineRun.List("", "", 0, 0, labelSelector)
-	}
+	list, err := resourceList(g, w.pipelineRun)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-
 	g.JSON(http.StatusOK, list)
 }

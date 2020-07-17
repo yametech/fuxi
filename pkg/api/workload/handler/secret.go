@@ -55,6 +55,37 @@ func (w *WorkloadsAPI) ListSecret(g *gin.Context) {
 	g.JSON(http.StatusOK, secretList)
 }
 
+// List Ops Secret
+func (w *WorkloadsAPI) ListOpsSecret(g *gin.Context) {
+	var list *unstructured.UnstructuredList
+	var err error
+
+	namespace := g.Param("namespace")
+	labelSelector := fmt.Sprintf("tektonConfig=%s", "1")
+	if namespace == "" {
+		list, err = w.secret.List("", "", 0, 0, labelSelector)
+	} else {
+		list, err = w.secret.List(namespace, "", 0, 0, labelSelector)
+	}
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	secretList := &v1.SecretList{}
+	marshalData, err := json.Marshal(list)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	err = json.Unmarshal(marshalData, secretList)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	g.JSON(http.StatusOK, secretList)
+}
+
 // Create Secret
 func (w *WorkloadsAPI) CreateSecret(g *gin.Context) {
 	namespace := g.Param("namespace")
