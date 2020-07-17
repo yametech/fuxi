@@ -103,7 +103,12 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 		// Redirect fuxi.nip.io/workload resources
 		if ns != "" && gvr.Group == "fuxi.nip.io" && gvr.Resource == "workloads" {
 			k8sWatchChan, err = event.Watch(constraint_common.WorkloadsDeployTemplateNamespace, rv, 0, fmt.Sprintf("namespace=%s", ns))
-		}else {
+		}
+		if ns != "" && gvr.Resource == "ops-secrets" {
+			gvr.Resource = "secrets"
+			event.SetGroupVersionResource(*gvr)
+			k8sWatchChan, err = event.Watch(ns, rv, 0, fmt.Sprintf("tektonConfig=%s", "1"))
+		} else {
 			k8sWatchChan, err = event.Watch(ns, rv, 0, nil)
 		}
 		if err != nil {
