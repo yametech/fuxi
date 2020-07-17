@@ -61,10 +61,10 @@ func (w *WorkloadsAPI) ListOpsSecret(g *gin.Context) {
 	var err error
 
 	namespace := g.Param("namespace")
+	labelSelector := fmt.Sprintf("tektonConfig=%s", "1")
 	if namespace == "" {
-		list, err = w.secret.List("", "", 0, 0, nil)
+		list, err = w.secret.List("", "", 0, 0, labelSelector)
 	} else {
-		labelSelector := fmt.Sprintf("hide!=%s,tektonConfig=%s", "1", "1")
 		list, err = w.secret.List(namespace, "", 0, 0, labelSelector)
 	}
 	if err != nil {
