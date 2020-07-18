@@ -143,8 +143,14 @@ func main() {
 		group.GET("api/v1/ops-secrets", OpsSecretList)
 		group.GET("api/v1/namespaces/:namespace/ops-secrets", OpsSecretList)
 		group.GET("/api/v1/namespaces/:namespace/secrets/:name", SecretGet)
-		//group.POST("/api/v1/namespaces/:namespace/secrets", workloadsAPI.Apply)
+
 		group.POST("/api/v1/namespaces/:namespace/secrets", SecretCreate)
+		group.POST("/api/v1/namespaces/:namespace/ops-secrets", SecretCreate)
+
+		group.PUT("/api/v1/namespaces/:namespace/secrets/:name", SecretUpdate)
+		group.PUT("/api/v1/namespaces/:namespace/ops-secrets/:name", SecretUpdate)
+		group.PUT("/api/v1/namespaces/:namespace/secrets", SecretUpdate)
+		group.PUT("/api/v1/namespaces/:namespace/ops-secrets", SecretUpdate)
 	}
 
 	// #apis

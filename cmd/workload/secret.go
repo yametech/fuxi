@@ -50,4 +50,19 @@ func SecretGet(g *gin.Context) { workloadsAPI.GetSecret(g) }
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/api/v1/namespaces/{namespace}/secrets/ [post]
+// @Router /workload/api/v1/namespaces/{namespace}/ops-secrets/ [post]
 func SecretCreate(g *gin.Context) { workloadsAPI.CreateSecret(g) }
+
+// Secret doc
+// @Summary workload secret get
+// @Description workload service for get a secret detail
+// @Tags ConfigMap
+// @Accept mpfd
+// @Produce json
+// @Param namespace query string true "namespace"
+// @Param name query string true "name"
+// @Success 200 {string} string "{"msg": "Success"}"
+// @Failure 400 {string} string "{"msg": "Failed"}"
+// @Router /workload/api/v1/namespaces/{namespace}/secrets/ [put]
+// @Router /workload/api/v1/namespaces/{namespace}/ops-secrets/ [put]
+func SecretUpdate(g *gin.Context) { workloadsAPI.UpdateSecret(g) }

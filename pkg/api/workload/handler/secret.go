@@ -63,7 +63,7 @@ func (w *WorkloadsAPI) ListOpsSecret(g *gin.Context) {
 	var err error
 
 	namespace := g.Param("namespace")
-	labelSelector := fmt.Sprintf("tektonConfig=%s", "1")
+	labelSelector := fmt.Sprintf("tekton=%s", "1")
 	if namespace == "" {
 		list, err = w.secret.List("", "", 0, 0, labelSelector)
 	} else {
@@ -92,6 +92,10 @@ func (w *WorkloadsAPI) ListOpsSecret(g *gin.Context) {
 		_ = item
 	}
 	g.JSON(http.StatusOK, secretList)
+}
+
+func (w *WorkloadsAPI) UpdateSecret(g *gin.Context) {
+	w.CreateSecret(g)
 }
 
 // Create Secret
