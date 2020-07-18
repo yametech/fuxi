@@ -153,7 +153,7 @@ func (w *WorkloadsAPI) CreateNamespace(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.namespace.Apply("", obj.Name, unstructuredStruct)
+	newObj, _, err := w.namespace.Apply("", obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToRequestParamsError(g, err)
 		return

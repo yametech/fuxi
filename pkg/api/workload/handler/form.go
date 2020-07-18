@@ -67,7 +67,7 @@ func (w *WorkloadsAPI) CreateForm(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.form.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := w.form.Apply(obj.Namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

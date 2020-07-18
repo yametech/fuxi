@@ -32,9 +32,10 @@ func (w *WorkloadsAPI) ListSecret(g *gin.Context) {
 
 	namespace := g.Param("namespace")
 	if namespace == "" {
-		list, err = w.secret.List("", "", 0, 0, nil)
+		labelSelector := fmt.Sprintf("tekton!=%s", "1")
+		list, err = w.secret.List("", "", 0, 0, labelSelector)
 	} else {
-		labelSelector := fmt.Sprintf("hide!=%s", "1")
+		labelSelector := fmt.Sprintf("hide!=%s,tekton!=%s", "1", "1")
 		list, err = w.secret.List(namespace, "", 0, 0, labelSelector)
 	}
 	if err != nil {
@@ -141,7 +142,7 @@ func (w *WorkloadsAPI) CreateSecret(g *gin.Context) {
 		Object: unstructuredObj,
 	}
 
-	newObj, err := w.secret.Apply(namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := w.secret.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

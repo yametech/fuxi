@@ -26,5 +26,3 @@ func TaskList(g *gin.Context) { workloadsAPI.ListTask(g) }
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/tekton.dev/v1alpha1/namespaces/:namespace/tasks/:name [get]
 func TaskGet(g *gin.Context) { workloadsAPI.GetTask(g) }
-
-func TaskCreate(g *gin.Context) { workloadsAPI.CreateTask(g) }

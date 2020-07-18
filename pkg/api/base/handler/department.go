@@ -68,7 +68,7 @@ func (b *BaseAPI) CreateBaseDepartment(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := b.basedepartments.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := b.basedepartments.Apply(obj.Namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

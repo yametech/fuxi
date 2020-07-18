@@ -26,5 +26,3 @@ func PipelineRunList(g *gin.Context) { workloadsAPI.ListPipelineRun(g) }
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns/:name [get]
 func PipelineRunGet(g *gin.Context) { workloadsAPI.GetPipelineRun(g) }
-
-func PipelineRunCreate(g *gin.Context) { workloadsAPI.CreatePipelineRun(g) }

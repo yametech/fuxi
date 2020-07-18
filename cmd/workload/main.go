@@ -444,20 +444,20 @@ func main() {
 		group.GET("/apis/tekton.dev/v1alpha1/pipelines", PipelineList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines", PipelineList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name", PipelineGet)
-		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines", PipelineCreate)
-		group.PUT("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name", PipelineUpdate)
+		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines", workloadsAPI.Apply)
+		group.PUT("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelines/:name", workloadsAPI.Apply)
 
 		// pipelineRun
 		group.GET("/apis/tekton.dev/v1alpha1/pipelineruns", PipelineRunList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns", PipelineRunList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns/:name", PipelineRunGet)
-		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns", PipelineRunCreate)
+		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineruns", workloadsAPI.Apply)
 
 		// task
 		group.GET("/apis/tekton.dev/v1alpha1/tasks", TaskList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/tasks", TaskList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/tasks/:name", TaskGet)
-		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/tasks", TaskCreate)
+		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/tasks", workloadsAPI.Apply)
 
 		// taskRun
 		group.GET("/apis/tekton.dev/v1alpha1/taskruns", TaskRunList)
@@ -468,7 +468,7 @@ func main() {
 		group.GET("/apis/tekton.dev/v1alpha1/pipelineresources", PipelineResourceList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources", PipelineResourceList)
 		group.GET("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources/:name", PipelineResourceGet)
-		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources", PipelineResourceCreate)
+		group.POST("/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources", workloadsAPI.Apply)
 
 	}
 

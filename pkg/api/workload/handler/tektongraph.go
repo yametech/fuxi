@@ -67,7 +67,7 @@ func (w *WorkloadsAPI) CreateTektonGraph(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.tektonGraph.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := w.tektonGraph.Apply(obj.Namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
