@@ -22,6 +22,14 @@ func (w *WorkloadsAPI) GetSecret(g *gin.Context) {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
+	secret := &v1.Secret{}
+	if err := common.RuntimeObjectToInstanceObj(item, secret); err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	if _, exist := secret.GetLabels()["tekton"]; exist {
+		return
+	}
 	g.JSON(http.StatusOK, item)
 }
 

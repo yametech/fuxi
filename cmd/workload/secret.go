@@ -37,6 +37,7 @@ func OpsSecretList(g *gin.Context) { workloadsAPI.ListOpsSecret(g) }
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/api/v1/namespaces/{namespace}/secrets/{name} [get]
+// @Router /workload/api/v1/namespaces/{namespace}/ops-secrets/{name} [get]
 func SecretGet(g *gin.Context) { workloadsAPI.GetSecret(g) }
 
 // Secret doc
