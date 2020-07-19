@@ -69,7 +69,7 @@ func (b *BaseAPI) CreateBaseUser(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := b.baseusers.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := b.baseusers.Apply(obj.Namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

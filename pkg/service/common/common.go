@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
+	"golang.org/x/net/context"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -38,7 +39,7 @@ type ResourceQuery interface {
 
 // ResourceApply update resource interface
 type ResourceApply interface {
-	Apply(namespace, name string, obj *unstructured.Unstructured) (*unstructured.Unstructured, error)
+	Apply(namespace, name string, obj *unstructured.Unstructured) (*unstructured.Unstructured, bool, error)
 	Patch(namespace, name string, patchData map[string]interface{}) (*unstructured.Unstructured, error)
 	Delete(namespace, name string) error
 }
@@ -103,7 +104,7 @@ func (d *DefaultImplWorkloadsResourceHandler) List(
 		Interface.
 		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
-		List(opts)
+		List(context.Background(), opts)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (d *DefaultImplWorkloadsResourceHandler) SharedNamespaceList(namespace stri
 		Interface.
 		Resource(gvr).
 		Namespace(namespace).
-		List(opts)
+		List(context.Background(), opts)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +150,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Get(namespace, name string, subres
 		Interface.
 		Resource(gvr).
 		Namespace(namespace).
-		Get(name, metav1.GetOptions{}, subresources...)
+		Get(context.Background(), name, metav1.GetOptions{}, subresources...)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +191,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Watch(
 		Interface.
 		Resource(d.GetGroupVersionResource()).
 		Namespace(namespace).
-		Watch(opts)
+		Watch(context.Background(), opts)
 	if err != nil {
 		return nil, err
 	}
@@ -199,16 +200,17 @@ func (d *DefaultImplWorkloadsResourceHandler) Watch(
 }
 
 func (d *DefaultImplWorkloadsResourceHandler) Apply(namespace string, name string, obj *unstructured.Unstructured) (
-	result *unstructured.Unstructured, retryErr error) {
+	result *unstructured.Unstructured, isUpdate bool, retryErr error) {
 
 	retryErr = retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		resource := d.GetGroupVersionResource()
+		ctx := context.Background()
 		getObj, getErr := SharedK8sClient.
 			ClientV2.
 			Interface.
 			Resource(resource).
 			Namespace(namespace).
-			Get(name, metav1.GetOptions{})
+			Get(ctx, name, metav1.GetOptions{})
 
 		if errors.IsNotFound(getErr) {
 			newObj, createErr := SharedK8sClient.
@@ -216,7 +218,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(namespace string, name strin
 				Interface.
 				Resource(d.GetGroupVersionResource()).
 				Namespace(namespace).
-				Create(obj, metav1.CreateOptions{})
+				Create(ctx, obj, metav1.CreateOptions{})
 			result = newObj
 			return createErr
 		}
@@ -232,9 +234,10 @@ func (d *DefaultImplWorkloadsResourceHandler) Apply(namespace string, name strin
 			Interface.
 			Resource(resource).
 			Namespace(namespace).
-			Update(getObj, metav1.UpdateOptions{})
+			Update(ctx, getObj, metav1.UpdateOptions{})
 
 		result = newObj
+		isUpdate = true
 		return updateErr
 	})
 
@@ -255,7 +258,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Patch(namespace, name string, path
 			Interface.
 			Resource(gvr).
 			Namespace(namespace).
-			Patch(name, types.MergePatchType, ptBytes, metav1.PatchOptions{})
+			Patch(context.Background(), name, types.MergePatchType, ptBytes, metav1.PatchOptions{})
 		if err != nil {
 			return err
 		}
@@ -273,7 +276,7 @@ func (d *DefaultImplWorkloadsResourceHandler) Delete(namespace, name string) err
 			Interface.
 			Resource(gvr).
 			Namespace(namespace).
-			Delete(name, &metav1.DeleteOptions{})
+			Delete(context.Background(), name, metav1.DeleteOptions{})
 	})
 	return retryErr
 }

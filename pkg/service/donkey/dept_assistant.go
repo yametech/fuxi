@@ -71,7 +71,8 @@ func (d *DepartmentAssistant) updateSecretObject(namespace string, name string, 
 		Object: unstructuredObj,
 	}
 	d.SetGroupVersionResource(types.ResourceSecrets)
-	return d.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := d.Apply(obj.Namespace, obj.Name, unstructuredStruct)
+	return newObj, err
 }
 
 // patchServiceAccount

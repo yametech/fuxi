@@ -34,7 +34,7 @@ func (w *WorkloadsAPI) PostWorkloadsTemplate(g *gin.Context) {
 	unstructuredStruct := &unstructured.Unstructured{
 		Object: unstructuredObj,
 	}
-	newObj, err := w.workloadsTemplate.Apply("fuxi", workloads.Name, unstructuredStruct)
+	newObj, _, err := w.workloadsTemplate.Apply("fuxi", workloads.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

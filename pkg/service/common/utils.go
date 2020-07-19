@@ -6,12 +6,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func RuntimeObjectToInstanceObj(robj runtime.Object, targeObj interface{}) error {
-	bytesData, err := json.Marshal(robj)
+func RuntimeObjectToInstanceObj(obj runtime.Object, targetObj interface{}) error {
+	bytesData, err := json.Marshal(obj)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(bytesData, targeObj)
+	return json.Unmarshal(bytesData, targetObj)
 }
 
 // HandleDockerCfgJSONContent serializes a ~/.docker/config.json file

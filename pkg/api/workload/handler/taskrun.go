@@ -1,11 +1,9 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	"github.com/yametech/fuxi/pkg/api/common"
 )
 
@@ -26,16 +24,5 @@ func (w *WorkloadsAPI) ListTaskRun(g *gin.Context) {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	taskRunList := &tekton.TaskRunList{}
-	marshalData, err := json.Marshal(list)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	err = json.Unmarshal(marshalData, taskRunList)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	g.JSON(http.StatusOK, taskRunList)
+	g.JSON(http.StatusOK, list)
 }

@@ -1,6 +1,7 @@
 package workload
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -67,7 +68,7 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 		}
 		req.Param("query", bodyValue)
 
-		raw, err := req.DoRaw()
+		raw, err := req.DoRaw(context.Background())
 		if err != nil {
 			return nil, err
 		}
@@ -89,7 +90,7 @@ func (m *Metrics) GetPodMetrics(namespace, name string, pods *metrics.PodMetrics
 		RESTClient().
 		Get().
 		AbsPath(uri).
-		DoRaw()
+		DoRaw(context.Background())
 	if err != nil {
 		return err
 	}
@@ -116,7 +117,7 @@ func (m *Metrics) GetPodMetricsList(namespace string, pods *PodMetricsList) erro
 		RESTClient().
 		Get().
 		AbsPath(uri).
-		DoRaw()
+		DoRaw(context.Background())
 	if err != nil {
 		return err
 	}
@@ -129,7 +130,7 @@ func (m *Metrics) GetNodeMetricsList(nodes *metrics.NodeMetricsList) error {
 		RESTClient().
 		Get().
 		AbsPath("apis/metrics.k8s.io/v1beta1/nodes").
-		DoRaw()
+		DoRaw(context.Background())
 	if err != nil {
 		return err
 	}

@@ -26,15 +26,3 @@ func PipelineResourceList(g *gin.Context) { workloadsAPI.ListPipelineResource(g)
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/apis/tekton.dev/v1alpha1/namespaces/:namespace/pipelineresources/:name [get]
 func PipelineResourceGet(g *gin.Context) { workloadsAPI.GetPipelineResource(g) }
-
-// PipelineResource doc
-// @Summary workload PipelineResource list
-// @Description workload service for PipelineResource
-// @Tags PipelineResource
-// @Accept mpfd
-// @Produce json
-// @Param namespace query string true "namespace"
-// @Success 200 {string} string "{"msg": "Success"}"
-// @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/tekton.dev/v1alpha1/pipelineresources/} [post]
-func PipelineResourceCreate(g *gin.Context) { workloadsAPI.CreatePipelineResource(g) }
