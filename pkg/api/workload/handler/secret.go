@@ -28,9 +28,9 @@ func (w *WorkloadsAPI) GetSecret(g *gin.Context) {
 		return
 	}
 	if _, exist := secret.GetLabels()["tekton"]; exist {
-		return
+		secret.SetSelfLink(strings.Replace(secret.GetSelfLink(), "/secrets", "/ops-secrets", 1))
 	}
-	g.JSON(http.StatusOK, item)
+	g.JSON(http.StatusOK, secret)
 }
 
 // List Secret
