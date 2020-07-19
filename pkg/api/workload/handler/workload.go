@@ -244,14 +244,21 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	}
 
 	w.generic.SetGroupVersionResource(runtimeClassGVR)
-	newObj, err := w.generic.Apply(namespace, name, unstructuredData)
+	newObj, isUpdate, err := w.generic.Apply(namespace, name, unstructuredData)
 	if err != nil {
 		common.ToInternalServerError(g, runtimeClassGVR.String(), err)
 		return
 	}
-	g.JSON(
-		http.StatusOK,
-		[]unstructured.Unstructured{
-			*newObj,
-		})
+
+	if isUpdate {
+		g.JSON(
+			http.StatusOK,
+			[]unstructured.Unstructured{
+				*newObj,
+			})
+	} else {
+		g.JSON(http.StatusOK, *newObj)
+	}
+	return
+
 }

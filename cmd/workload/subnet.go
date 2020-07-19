@@ -28,15 +28,3 @@ func SubNetList(g *gin.Context) { workloadsAPI.ListSubNet(g) }
 // @Failure 400 {string} string "{"msg": "Failed"}"
 // @Router /workload/apis/kubeovn.io/v1/namespaces/{namespace}/subnets/{name} [get]
 func SubNetGet(g *gin.Context) { workloadsAPI.GetSubNet(g) }
-
-// SubNet doc
-// @Summary workload subnet list
-// @Description workload service for subnet
-// @Tags SubNet
-// @Accept mpfd
-// @Produce json
-// @Param namespace query string true "namespace"
-// @Success 200 {string} string "{"msg": "Success"}"
-// @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/kubeovn.io/v1/subnets/ [post]
-func SubNetCreate(g *gin.Context) { workloadsAPI.CreateSubNet(g) }

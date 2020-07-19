@@ -22,6 +22,14 @@ func (w *WorkloadsAPI) GetSecret(g *gin.Context) {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
+	secret := &v1.Secret{}
+	if err := common.RuntimeObjectToInstanceObj(item, secret); err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	if _, exist := secret.GetLabels()["tekton"]; exist {
+		return
+	}
 	g.JSON(http.StatusOK, item)
 }
 
@@ -32,9 +40,10 @@ func (w *WorkloadsAPI) ListSecret(g *gin.Context) {
 
 	namespace := g.Param("namespace")
 	if namespace == "" {
-		list, err = w.secret.List("", "", 0, 0, nil)
+		labelSelector := fmt.Sprintf("tekton!=%s", "1")
+		list, err = w.secret.List("", "", 0, 0, labelSelector)
 	} else {
-		labelSelector := fmt.Sprintf("hide!=%s", "1")
+		labelSelector := fmt.Sprintf("hide!=%s,tekton!=%s", "1", "1")
 		list, err = w.secret.List(namespace, "", 0, 0, labelSelector)
 	}
 	if err != nil {
@@ -62,7 +71,7 @@ func (w *WorkloadsAPI) ListOpsSecret(g *gin.Context) {
 	var err error
 
 	namespace := g.Param("namespace")
-	labelSelector := fmt.Sprintf("tektonConfig=%s", "1")
+	labelSelector := fmt.Sprintf("tekton=%s", "1")
 	if namespace == "" {
 		list, err = w.secret.List("", "", 0, 0, labelSelector)
 	} else {
@@ -91,6 +100,10 @@ func (w *WorkloadsAPI) ListOpsSecret(g *gin.Context) {
 		_ = item
 	}
 	g.JSON(http.StatusOK, secretList)
+}
+
+func (w *WorkloadsAPI) UpdateSecret(g *gin.Context) {
+	w.CreateSecret(g)
 }
 
 // Create Secret
@@ -141,7 +154,7 @@ func (w *WorkloadsAPI) CreateSecret(g *gin.Context) {
 		Object: unstructuredObj,
 	}
 
-	newObj, err := w.secret.Apply(namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := w.secret.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

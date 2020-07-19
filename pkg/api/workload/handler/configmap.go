@@ -37,7 +37,7 @@ func (w *WorkloadsAPI) CreateConfigMaps(g *gin.Context) {
 		Object: unstructuredObj,
 	}
 
-	newObj, err := w.configMaps.Apply(namespace, obj.Name, unstructuredStruct)
+	newObj, _, err := w.configMaps.Apply(namespace, obj.Name, unstructuredStruct)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return

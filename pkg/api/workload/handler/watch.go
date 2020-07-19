@@ -104,13 +104,20 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 		// Redirect fuxi.nip.io/workload resources
 		if ns != "" && gvr.Group == "fuxi.nip.io" && gvr.Resource == "workloads" {
 			k8sWatchChan, err = event.Watch(constraint_common.WorkloadsDeployTemplateNamespace, rv, 0, fmt.Sprintf("namespace=%s", ns))
+		} else if gvr.Resource == "secrets" {
+			labelSelector := fmt.Sprintf("tekton!=%s", "1")
+			if ns != "" {
+				labelSelector = fmt.Sprintf("hide!=%s,%s", "1", labelSelector)
+			}
+			k8sWatchChan, err = event.Watch(ns, rv, 0, labelSelector)
 		} else if gvr.Resource == "ops-secrets" {
 			gvr.Resource = "secrets"
 			event.SetGroupVersionResource(*gvr)
-			k8sWatchChan, err = event.Watch(ns, rv, 0, fmt.Sprintf("tektonConfig=%s", "1"))
+			k8sWatchChan, err = event.Watch(ns, rv, 0, fmt.Sprintf("tekton=%s", "1"))
 		} else {
 			k8sWatchChan, err = event.Watch(ns, rv, 0, nil)
 		}
+
 		if err != nil {
 			log.Printf("watch for gvr: %s stream error: %s for api request %s \r\n", gvr, err, api)
 			continue
@@ -128,11 +135,12 @@ func listenByApis(event *workloadservice.Generic, g *gin.Context, eventChan chan
 					if !ok {
 						return
 					}
-					// ignore all error
-					newObj, _ := insectionObject(item.Object)
+					if insectionEventObject(eventChan, item) {
+						continue
+					}
 					eventChan <- Event{
 						Type:   item.Type,
-						Object: newObj,
+						Object: item.Object,
 					}
 				}
 			}
@@ -170,19 +178,23 @@ func (w *WorkloadsAPI) WatchStream(g *gin.Context) {
 	})
 }
 
-func insectionObject(object runtime.Object) (runtime.Object, error) {
-	if object.GetObjectKind().GroupVersionKind().Kind == "Secret" {
+func insectionEventObject(eventChan chan Event, item watch.Event) bool {
+	if item.Object.GetObjectKind().GroupVersionKind().Kind == "Secret" {
 		secret := &corev1.Secret{}
-		if err := common.RuntimeObjectToInstanceObj(object, secret); err != nil {
-			return object, err
+		if err := common.RuntimeObjectToInstanceObj(item.Object.DeepCopyObject(), secret); err != nil {
+			return false
 		}
 		labels := secret.GetLabels()
-		if _, exist := labels["tektonConfig"]; !exist {
-			return object, nil
+		if _, exist := labels["tekton"]; !exist {
+			return false
 		}
 		selfLink := secret.GetSelfLink()
 		secret.SetSelfLink(strings.Replace(selfLink, "/secrets", "/ops-secrets", 1))
-		return secret, nil
+		eventChan <- Event{
+			Type:   item.Type,
+			Object: secret,
+		}
+		return true
 	}
-	return object, nil
+	return false
 }

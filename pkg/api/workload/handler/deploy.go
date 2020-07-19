@@ -425,7 +425,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 	unstructuredData := &unstructured.Unstructured{Object: unstructuredObj}
 
 	w.generic.SetGroupVersionResource(runtimeClassGVR)
-	newObj, err := w.generic.Apply(deployTemplate.Namespace, deployTemplate.AppName, unstructuredData)
+	newObj, _, err := w.generic.Apply(deployTemplate.Namespace, deployTemplate.AppName, unstructuredData)
 	if err != nil {
 		common.ToInternalServerError(g, unstructuredData, err)
 		return

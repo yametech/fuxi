@@ -17,7 +17,7 @@ func ApplySecret(secret *v1.Secret) {
 	}
 
 	b := NewDepartmentAssistant()
-	_, _ = b.Apply(secret.GetNamespace(), secret.GetName(), unstructuredStruct)
+	_, _, _ = b.Apply(secret.GetNamespace(), secret.GetName(), unstructuredStruct)
 }
 
 // Get: secretList

@@ -1,6 +1,7 @@
 package workload
 
 import (
+	"context"
 	"github.com/yametech/fuxi/pkg/kubernetes/types"
 	"github.com/yametech/fuxi/pkg/service/common"
 	"io"
@@ -48,7 +49,7 @@ func (p *Pod) Logs(
 	if tailLines != 0 {
 		req.Param("tailLines", strconv.FormatInt(tailLines, 10))
 	}
-	readCloser, err := req.Stream()
+	readCloser, err := req.Stream(context.Background())
 	if err != nil {
 		return err
 	}
