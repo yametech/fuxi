@@ -125,6 +125,7 @@ func main() {
 	{
 		group.GET("/api/v1/serviceaccounts", ServiceAccountList)
 		group.GET("/api/v1/namespaces/:namespace/serviceaccounts/:name", ServiceAccountGet)
+		group.POST("/serviceaccount/patch/:method", ServiceAccountPatchSecret)
 		//group.POST("/api/v1/namespaces/:namespace/serviceaccounts", workloadsAPI.Apply)
 	}
 
