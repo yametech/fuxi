@@ -15,8 +15,7 @@ func (w *WorkloadsAPI) GetCronJob(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.cronJob.Get(namespace, name)
 	if err != nil {
-		g.JSON(http.StatusBadRequest,
-			gin.H{"code": http.StatusBadRequest, "data": "", "msg": err.Error(), "status": "Request bad parameter"})
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

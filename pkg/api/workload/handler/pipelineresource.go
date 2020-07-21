@@ -12,7 +12,7 @@ func (w *WorkloadsAPI) GetPipelineResource(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.pipelineResource.Get(namespace, name)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

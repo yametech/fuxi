@@ -16,7 +16,7 @@ func (w *WorkloadsAPI) GetDeploymentScale(g *gin.Context) {
 	w.generic.SetGroupVersionResource(types.ResourceDeployment)
 	item, err := w.generic.Get(namespace, name, "scale")
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

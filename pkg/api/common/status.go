@@ -30,6 +30,18 @@ func ToRequestParamsError(g *gin.Context, err error) {
 	)
 }
 
+func ResourceNotFoundError(g *gin.Context, runtimeData interface{}, err error) {
+	g.JSON(
+		http.StatusOK,
+		gin.H{
+			code:   http.StatusOK,
+			data:   runtimeData,
+			msg:    fmt.Sprintf("%s: %s", "Status internal server error", err.Error()),
+			status: err.Error(),
+		},
+	)
+}
+
 func ToInternalServerError(g *gin.Context, runtimeData interface{}, err error) {
 	g.JSON(
 		http.StatusInternalServerError,

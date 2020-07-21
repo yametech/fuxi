@@ -13,7 +13,7 @@ func (w *WorkloadsAPI) GetPersistentVolume(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.persistentVolume.Get("", name)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)
