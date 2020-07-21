@@ -25,7 +25,7 @@ func (w *WorkloadsAPI) GeoAnnotateNode(g *gin.Context) {
 	pad := patchNodeAnnotation{}
 	err = json.Unmarshal(rawData, &pad)
 	if err != nil {
-		common.ToRequestParamsError(g, err)
+		common.ToInternalServerError(g, rawData, err)
 		return
 	}
 	patchData := map[string]interface{}{
@@ -51,7 +51,7 @@ func (w *WorkloadsAPI) GetNode(g *gin.Context) {
 	node := g.Param("node")
 	item, err := w.node.Get("", node)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

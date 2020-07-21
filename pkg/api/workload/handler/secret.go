@@ -19,7 +19,7 @@ func (w *WorkloadsAPI) GetSecret(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.secret.Get(namespace, name)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	secret := &v1.Secret{}

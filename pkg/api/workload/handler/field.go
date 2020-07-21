@@ -16,7 +16,7 @@ func (w *WorkloadsAPI) GetField(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.field.Get(namespace, name)
 	if err != nil {
-		common.ToRequestParamsError(g, err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

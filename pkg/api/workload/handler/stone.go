@@ -15,7 +15,7 @@ func (w *WorkloadsAPI) GetStone(g *gin.Context) {
 
 	item, err := w.stone.Get(namespace, name)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

@@ -17,7 +17,7 @@ func (b *BaseAPI) GetBaseRoleUser(g *gin.Context) {
 	name := g.Param("name")
 	item, err := b.baseroleusers.Get(namespace, name)
 	if err != nil {
-		common.ToRequestParamsError(g, err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

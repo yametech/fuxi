@@ -15,7 +15,7 @@ func (w *WorkloadsAPI) GetStatefulSet1(g *gin.Context) {
 
 	item, err := w.statefulSet1.Get(namespace, name)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

@@ -14,7 +14,7 @@ func (w *WorkloadsAPI) GetNetworkPolicy(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.networkPolicy.Get(namespace, name)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

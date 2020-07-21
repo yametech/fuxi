@@ -51,7 +51,7 @@ func (w *WorkloadsAPI) GetConfigMaps(g *gin.Context) {
 	name := g.Param("name")
 	item, err := w.configMaps.Get(namespace, name)
 	if err != nil {
-		common.ToInternalServerError(g, "", err)
+		common.ResourceNotFoundError(g, "", err)
 		return
 	}
 	g.JSON(http.StatusOK, item)

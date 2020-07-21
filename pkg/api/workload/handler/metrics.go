@@ -24,7 +24,7 @@ func (w *WorkloadsAPI) Metrics(g *gin.Context) {
 
 	bufRaw, err := w.metrics.ProxyToPrometheus(newParams, body)
 	if err != nil {
-		common.ToInternalServerError(g, "backend service get error", err)
+		common.ResourceNotFoundError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, bufRaw)
@@ -33,7 +33,7 @@ func (w *WorkloadsAPI) Metrics(g *gin.Context) {
 func (w *WorkloadsAPI) NodeMetrics(g *gin.Context) {
 	nodeMetricsList := &metrics.NodeMetricsList{}
 	if err := w.metrics.GetNodeMetricsList(nodeMetricsList); err != nil {
-		common.ToInternalServerError(g, "backend service get error", err)
+		common.ResourceNotFoundError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, nodeMetricsList)
@@ -44,7 +44,7 @@ func (w *WorkloadsAPI) PodMetrics(g *gin.Context) {
 	name := g.Query("name")
 	podMetrics := &metrics.PodMetrics{}
 	if err := w.metrics.GetPodMetrics(namespace, name, podMetrics); err != nil {
-		common.ToInternalServerError(g, "backend service get error", err)
+		common.ResourceNotFoundError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, podMetrics)
@@ -54,7 +54,7 @@ func (w *WorkloadsAPI) PodMetricsList(g *gin.Context) {
 	namespace := g.Query("namespace")
 	podMetricsList := &workloadservice.PodMetricsList{}
 	if err := w.metrics.GetPodMetricsList(namespace, podMetricsList); err != nil {
-		common.ToInternalServerError(g, "backend service get error", err)
+		common.ResourceNotFoundError(g, "backend service get error", err)
 		return
 	}
 	g.JSON(http.StatusOK, podMetricsList)
