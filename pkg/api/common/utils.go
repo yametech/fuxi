@@ -21,3 +21,14 @@ func RuntimeObjectToInstanceObj(obj runtime.Object, targetObj interface{}) error
 	}
 	return json.Unmarshal(bytesData, targetObj)
 }
+
+func InstanceToUnstructured(object runtime.Object) (*unstructured.Unstructured, error) {
+	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(object)
+	if err != nil {
+		return nil, err
+	}
+
+	return &unstructured.Unstructured{
+		Object: unstructuredObj,
+	}, nil
+}
