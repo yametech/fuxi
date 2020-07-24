@@ -42,7 +42,7 @@ func (w *WorkloadsAPI) NodeMetrics(g *gin.Context) {
 func (w *WorkloadsAPI) PodMetrics(g *gin.Context) {
 	namespace := g.Query("namespace")
 	name := g.Query("name")
-	podMetrics := &metrics.PodMetrics{}
+	podMetrics := &workloadservice.PodMetrics{}
 	if err := w.metrics.GetPodMetrics(namespace, name, podMetrics); err != nil {
 		common.ResourceNotFoundError(g, "backend service get error", err)
 		return
