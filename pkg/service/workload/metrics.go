@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	corev1 "k8s.io/api/core/v1"
 
 	"github.com/go-resty/resty/v2"
 	constraint_common "github.com/yametech/fuxi/common"
@@ -83,7 +84,28 @@ func (m *Metrics) ProxyToPrometheus(params map[string]string, body []byte) (map[
 	return resultMap, nil
 }
 
-func (m *Metrics) GetPodMetrics(namespace, name string, pods *metrics.PodMetrics) error {
+type PodMetrics struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+
+	// The following fields define time interval from which metrics were
+	// collected from the interval [Timestamp-Window, Timestamp].
+	Timestamp metav1.Time     `json:"timestamp"`
+	Window    metav1.Duration `json:"window"`
+
+	// Metrics for all containers are collected within the same time window.
+	Containers []ContainerMetrics `json:"containers"`
+}
+
+// resource usage metrics of a container.
+type ContainerMetrics struct {
+	// Container name corresponding to the one from pod.spec.containers.
+	Name string `json:"name"`
+	// The memory usage is the memory working set.
+	Usage corev1.ResourceList `json:"usage"`
+}
+
+func (m *Metrics) GetPodMetrics(namespace, name string, pods *PodMetrics) error {
 	uri := fmt.Sprintf("apis/metrics.k8s.io/v1beta1/%s/%s/pods", namespace, name)
 	data, err := common.SharedK8sClient.
 		ClientV1.
@@ -104,7 +126,7 @@ type PodMetricsList struct {
 	metav1.ListMeta `json:"metadata,omitempty"`
 
 	// List of pod metrics.
-	Items []metrics.PodMetrics `json:"items"`
+	Items []PodMetrics `json:"items"`
 }
 
 func (m *Metrics) GetPodMetricsList(namespace string, pods *PodMetricsList) error {
