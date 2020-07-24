@@ -20,6 +20,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -28,6 +29,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
+	"os"
 	"sync"
 
 	"github.com/igm/sockjs-go/sockjs"
@@ -65,6 +68,7 @@ var sharedSessionManager *sessionManager
 
 // CreateSharedSessionManager none
 func CreateSharedSessionManager(clientSet *kubernetes.Clientset, restCfg *rest.Config) {
+
 	if sharedSessionManager == nil {
 		sharedSessionManager = &sessionManager{
 			client:   clientSet.CoreV1().RESTClient(),
@@ -316,6 +320,125 @@ func isValidShell(validShells []string, shell string) bool {
 	return false
 }
 
+func (sm *sessionManager) remoteExecute(
+	method string,
+	url *url.URL,
+	pty PtyHandler,
+	tty bool) error {
+
+	exec, err := remotecommand.NewSPDYExecutor(sm.restCfg, method, url)
+	if err != nil {
+		return err
+	}
+	return exec.Stream(remotecommand.StreamOptions{
+		Stdin:             pty,
+		Stdout:            pty,
+		Stderr:            pty,
+		Tty:               tty,
+		TerminalSizeQueue: pty,
+	})
+}
+
+func (sm *sessionManager) getContainerIDByName(pod *v1.Pod, containerName string) (string, error) {
+	for _, containerStatus := range pod.Status.ContainerStatuses {
+		if containerStatus.Name != containerName {
+			continue
+		}
+		// #52 if a pod is running but not ready(because of readiness probe), we can connect
+		if containerStatus.State.Running == nil {
+			return "", fmt.Errorf("container [%s] not running", containerName)
+		}
+
+		return containerStatus.ContainerID, nil
+	}
+
+	// #14 otherwise we should search for running init containers
+	for _, initContainerStatus := range pod.Status.InitContainerStatuses {
+		if initContainerStatus.Name != containerName {
+			continue
+		}
+		if initContainerStatus.State.Running == nil {
+			return "", fmt.Errorf("init container [%s] is not running", containerName)
+		}
+
+		return initContainerStatus.ContainerID, nil
+	}
+
+	return "", fmt.Errorf("cannot find specified container %s", containerName)
+}
+
+func (sm *sessionManager) lanuchPod(
+	request *AttachPodRequest,
+	pty PtyHandler) error {
+	pod := v1.Pod{}
+	err := sm.
+		client.
+		Get().
+		Resource("pods").
+		Namespace(request.Namespace).
+		Name(request.Name).
+		Do(context.Background()).Into(&pod)
+
+	if err != nil {
+		return err
+	}
+
+	containerID, err := sm.getContainerIDByName(&pod, request.Container)
+
+	if err != nil {
+		return err
+	}
+
+	// TODO: refactor as kubernetes api style, reuse rbac mechanism of kubernetes
+	var targetHost string
+	targetHost = pod.Status.HostIP
+	//TODO:fix hardcode. should remove const or configMap.will be daynamic
+	agentPort := 10027
+	uri, err := url.Parse(fmt.Sprintf("http://%s:%d", targetHost, agentPort))
+	if err != nil {
+		return err
+	}
+	uri.Path = fmt.Sprintf("/api/v1/debug")
+	params := url.Values{}
+	//TODO: hardcode,should use front end. Interactive Design probelm
+	image := "nicolaka/netshoot:latest"
+	params.Add("image", image)
+	params.Add("container", containerID)
+	params.Add("verbosity", fmt.Sprintf("%v", "0"))
+	hstNm, _ := os.Hostname()
+	params.Add("hostname", hstNm)
+
+	params.Add("username", "")
+	//TODO: should be set false
+	params.Add("lxcfsEnabled", "true")
+	params.Add("registrySkipTLS", "false")
+	params.Add("authStr", "")
+
+	//TODO: support private registry pull image,just like  harbor.
+	//var authStr string
+	//registrySecret, err := o.CoreClient.Secrets(o.RegistrySecretNamespace).Get(o.RegistrySecretName, v1.GetOptions{})
+	//if err != nil {
+	//	if errors.IsNotFound(err) {
+	//		authStr = ""
+	//	} else {
+	//		return err
+	//	}
+	//} else {
+	//	authStr = string(registrySecret.Data["authStr"])
+	//}
+
+	cmd := []string{"/bin/bash", "-l"}
+
+	commandBytes, err := json.Marshal(cmd)
+	if err != nil {
+		return err
+	}
+	params.Add("command", string(commandBytes))
+	uri.RawQuery = params.Encode()
+	return sm.remoteExecute("POST", uri, pty, true)
+
+}
+
 // waitForTerminal is called from pod attach api as a goroutine
 // Waits for the SockJS connection to be opened by the clientv2 the session to be bound in handleTerminalSession
 func waitForTerminal(request *AttachPodRequest, sessionId string) {
@@ -327,20 +450,21 @@ func waitForTerminal(request *AttachPodRequest, sessionId string) {
 
 	defer close(session.bound)
 	var err error
-	validShells := []string{"bash", "sh", "csh"}
+	//validShells := []string{"bash", "sh", "csh"}
 
-	if isValidShell(validShells, request.Shell) {
-		cmd := []string{request.Shell}
-		err = sharedSessionManager.process(request, cmd, session)
-	} else {
-		// No shell given or it was not valid: try some shells until one succeeds or all fail
-		for _, testShell := range validShells {
-			cmd := []string{testShell}
-			if err = sharedSessionManager.process(request, cmd, session); err == nil {
-				break
-			}
-		}
-	}
+	err = sharedSessionManager.lanuchPod(request, session)
+	//if isValidShell(validShells, request.Shell) {
+	//	cmd := []string{request.Shell}
+	//	err = sharedSessionManager.process(request, cmd, session)
+	//} else {
+	//	// No shell given or it was not valid: try some shells until one succeeds or all fail
+	//	for _, testShell := range validShells {
+	//		cmd := []string{testShell}
+	//		if err = sharedSessionManager.process(request, cmd, session); err == nil {
+	//			break
+	//		}
+	//	}
+	//}
 	if err != nil {
 		sharedSessionManager.close(sessionId, 2, err.Error())
 		return
