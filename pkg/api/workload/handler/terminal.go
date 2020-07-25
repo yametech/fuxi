@@ -256,7 +256,10 @@ func (s *sessionChannels) Read(p []byte) (n int, err error) {
 
 // CreateAttachHandler is called from main for /workload/attach
 func CreateAttachHandler(path string) http.Handler {
-	return sockjs.NewHandler(path, sockjs.DefaultOptions, HandleTerminalSession)
+	sessionID := sockjs.DefaultJSessionID
+	defaultOption := sockjs.DefaultOptions
+	defaultOption.JSessionID = sessionID
+	return sockjs.NewHandler(path, defaultOption, HandleTerminalSession)
 }
 
 func HandleTerminalSession(session sockjs.Session) {
