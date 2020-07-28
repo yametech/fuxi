@@ -87,6 +87,7 @@ type AttachPodRequest struct {
 	Name      string `json:"name"`
 	Container string `json:"container"`
 	Shell     string `json:"shell"`
+	ShellType string `json:"shellType"`
 }
 
 // AttachPod request and backend pod pty bing
@@ -95,6 +96,7 @@ func (w *WorkloadsAPI) AttachPod(g *gin.Context) {
 		Namespace: g.Param("namespace"),
 		Name:      g.Param("name"),
 		Container: g.Param("container"),
+		ShellType: g.Param("shelltype"),
 		Shell:     g.Query("shell"),
 	}
 
