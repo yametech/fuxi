@@ -63,6 +63,13 @@ const (
 	OUTEXIT // 6
 )
 
+type ShellType string
+
+const (
+	DebugShell  ShellType = "debug"
+	CommonShell ShellType = "common"
+)
+
 // Global import the package init the session manager
 var sharedSessionManager *sessionManager
 
@@ -370,7 +377,7 @@ func (sm *sessionManager) getContainerIDByName(pod *v1.Pod, containerName string
 	return "", fmt.Errorf("cannot find specified container %s", containerName)
 }
 
-func (sm *sessionManager) lanuchPod(
+func (sm *sessionManager) lanuchDebugPod(
 	request *AttachPodRequest,
 	pty PtyHandler) error {
 	pod := v1.Pod{}
@@ -442,6 +449,25 @@ func (sm *sessionManager) lanuchPod(
 
 }
 
+func (sm *sessionManager) launchCommonPod(request *AttachPodRequest, session *sessionChannels) error {
+
+	var err error
+	validShells := []string{"bash", "sh", "csh"}
+	if isValidShell(validShells, request.Shell) {
+		cmd := []string{request.Shell}
+		err = sharedSessionManager.process(request, cmd, session)
+	} else {
+		// No shell given or it was not valid: try some shells until one succeeds or all fail
+		for _, testShell := range validShells {
+			cmd := []string{testShell}
+			if err = sharedSessionManager.process(request, cmd, session); err == nil {
+				break
+			}
+		}
+	}
+	return err
+}
+
 // waitForTerminal is called from pod attach api as a goroutine
 // Waits for the SockJS connection to be opened by the clientv2 the session to be bound in handleTerminalSession
 func waitForTerminal(request *AttachPodRequest, sessionId string) {
@@ -453,21 +479,14 @@ func waitForTerminal(request *AttachPodRequest, sessionId string) {
 
 	defer close(session.bound)
 	var err error
-	//validShells := []string{"bash", "sh", "csh"}
+	if request.ShellType == string(DebugShell) {
+		err = sharedSessionManager.lanuchDebugPod(request, session)
+	}
 
-	err = sharedSessionManager.lanuchPod(request, session)
-	//if isValidShell(validShells, request.Shell) {
-	//	cmd := []string{request.Shell}
-	//	err = sharedSessionManager.process(request, cmd, session)
-	//} else {
-	//	// No shell given or it was not valid: try some shells until one succeeds or all fail
-	//	for _, testShell := range validShells {
-	//		cmd := []string{testShell}
-	//		if err = sharedSessionManager.process(request, cmd, session); err == nil {
-	//			break
-	//		}
-	//	}
-	//}
+	if request.ShellType == string(CommonShell) {
+		err = sharedSessionManager.launchCommonPod(request, session)
+	}
+
 	if err != nil {
 		sharedSessionManager.close(sessionId, 2, err.Error())
 		return

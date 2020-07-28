@@ -64,7 +64,7 @@ func main() {
 	{
 		serveHttp := WrapH(handler.CreateAttachHandler("/workload/shell/pod"))
 		router.GET("/workload/shell/pod/*path", serveHttp)
-		group.GET("/attach/namespace/:namespace/pod/:name/container/:container", PodAttach)
+		group.GET("/attach/namespace/:namespace/pod/:name/container/:container/:shelltype", PodAttach)
 		group.GET("/api/v1/pods", PodList)
 		group.GET("/api/v1/namespaces/:namespace/pods", PodList)
 		group.GET("/api/v1/namespaces/:namespace/pods/:name", PodGet)
