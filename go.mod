@@ -31,11 +31,11 @@ require (
 	github.com/micro/micro v1.16.0
 	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/operator-framework/operator-sdk v0.16.0
+	github.com/operator-framework/operator-sdk v0.16.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.5.0 // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
-	github.com/spf13/pflag v1.0.5
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
