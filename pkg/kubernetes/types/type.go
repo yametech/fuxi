@@ -58,6 +58,7 @@ const (
 	TaskRun          ResourceName = "taskruns"
 	PipelineResource ResourceName = "pipelineresources"
 	TektonGraph      ResourceName = "tektongraphs"
+	TektonStore      ResourceName = "tektonstores"
 )
 
 // GroupVersionResources describe resource collection
@@ -112,6 +113,7 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	TaskRun:          {Group: "tekton.dev", Version: "v1alpha1", Resource: "taskruns"},
 	PipelineResource: {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelineresources"},
 	TektonGraph:      {Group: "fuxi.nip.io", Version: "v1", Resource: "tektongraphs"},
+	TektonStore:      {Group: "fuxi.nip.io", Version: "v1", Resource: "tektonstores"},
 
 	PodSecurityPolicie: {Group: "policy", Version: "v1beta1", Resource: "podsecuritypolicies"},
 }
@@ -165,6 +167,7 @@ var (
 	ResourceTaskRun            = getGvr(TaskRun)
 	ResourcePipelineResource   = getGvr(PipelineResource)
 	ResourceTektonGraph        = getGvr(TektonGraph)
+	ResourceTektonStore        = getGvr(TektonStore)
 	ResourcePodSecurityPolicie = getGvr(PodSecurityPolicie)
 )
 
