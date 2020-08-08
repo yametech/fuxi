@@ -60,6 +60,7 @@ type WorkloadsAPI struct {
 	taskRun                  *workloadservice.TaskRun
 	pipelineResource         *workloadservice.PipelineResource
 	tektonGraph              *workloadservice.TektonGraph
+	tektonStore              *workloadservice.TektonStore
 	podsecuritypolicies      *workloadservice.PodSecurityPolicies
 	stone                    *workloadservice.Stone
 	water                    *workloadservice.Water
