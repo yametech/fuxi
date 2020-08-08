@@ -487,6 +487,14 @@ func main() {
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektongraphs", TektonGraphCreate)
 	}
 
+	// TektonStore
+	{
+		group.GET("/apis/fuxi.nip.io/v1/tektonstores", TektonStoreList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonstores", TektonStoreList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonstores/:name", TektonStoreGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonstores", TektonStoreCreate)
+	}
+
 	// watch the group resource
 	{
 		group.GET("/watch", WatchStream)
