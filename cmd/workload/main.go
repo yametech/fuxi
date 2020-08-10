@@ -342,6 +342,7 @@ func main() {
 			"fuxi.nip.io/v1/baseroles",
 			"fuxi.nip.io/v1/baseusers",
 			"fuxi.nip.io/v1/tektongraphs",
+			"fuxi.nip.io/v1/tektonstores",
 			"nuwa.nip.io/v1/statefulsets",
 			"nuwa.nip.io/v1/stones",
 			"nuwa.nip.io/v1/waters",

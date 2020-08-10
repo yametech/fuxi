@@ -8,9 +8,13 @@ require (
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
 	github.com/elazarl/goproxy v0.0.0-20190630181448-f1e96bc0f4c5 // indirect
 	github.com/elazarl/goproxy/ext v0.0.0-20190630181448-f1e96bc0f4c5 // indirect
+	github.com/emicklei/go-restful v2.11.1+incompatible // indirect
+	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/gin-gonic/gin v1.5.0
+	github.com/go-logr/zapr v0.1.1 // indirect
 	github.com/go-openapi/spec v0.19.6
 	github.com/go-openapi/swag v0.19.7 // indirect
 	github.com/go-resty/resty/v2 v2.1.0
@@ -31,11 +35,9 @@ require (
 	github.com/micro/micro v1.16.0
 	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/operator-framework/operator-sdk v0.16.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.5.0 // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
@@ -69,7 +71,6 @@ replace (
 	github.com/docker/docker => github.com/moby/moby v1.13.1
 	github.com/docker/go-connections => github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units => github.com/docker/go-units v0.4.0
-	github.com/docker/libnetwork => github.com/docker/libnetwork v0.5.6
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.1
 	github.com/micro/go-micro => github.com/micro/go-micro v1.16.0
 	google.golang.org/grpc => google.golang.org/grpc v1.26.0

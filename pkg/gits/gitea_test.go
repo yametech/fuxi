@@ -25,8 +25,7 @@ func TestGiteaClient_ListBranch(t *testing.T) {
 		Url:      "https://gitea.com",
 	}
 	giteaClient := NewGiteaClient(gitArgs)
-	a, err := giteaClient.ListBranchs("skp")
+	a, err := giteaClient.ListBranches("skp")
 	fmt.Println(err)
 	fmt.Println(a)
-
 }

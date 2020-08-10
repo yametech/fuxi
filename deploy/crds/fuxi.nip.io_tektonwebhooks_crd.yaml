@@ -1,20 +1,20 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: baseusers.fuxi.nip.io
+  name: tektonwebhooks.fuxi.nip.io
 spec:
   group: fuxi.nip.io
   names:
-    kind: BaseUser
-    listKind: BaseUserList
-    plural: baseusers
-    singular: baseuser
+    kind: TektonWebHook
+    listKind: TektonWebHookList
+    plural: tektonwebhooks
+    singular: tektonwebhook
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: BaseUser is the Schema for the baseusers API
+        description: TektonWebHook is the Schema for the tektonwebhooks API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -29,25 +29,21 @@ spec:
           metadata:
             type: object
           spec:
-            description: BaseUserSpec defines the desired state of BaseUser
+            description: TektonWebHookSpec defines the desired state of TektonWebHook
             properties:
-              department_id:
-                type: string
-              display:
-                type: string
-              email:
-                type: string
-              name:
-                type: string
-              password:
-                type: string
-              roles:
+              args:
                 items:
                   type: string
                 type: array
+              branch:
+                type: string
+              git:
+                type: string
+              pipeline_run:
+                type: string
             type: object
           status:
-            description: BaseUserStatus defines the observed state of BaseUser
+            description: TektonWebHookStatus defines the observed state of TektonWebHook
             type: object
         type: object
     served: true

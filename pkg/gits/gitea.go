@@ -37,7 +37,7 @@ func (client *GiteaClient) ListRepositories(org string) ([]*GitRepository, error
 }
 
 //ListBranch get a repo all Branch
-func (client *GiteaClient) ListBranchs(repoName string) ([]string, error) {
+func (client *GiteaClient) ListBranches(repoName string) ([]string, error) {
 	var branchArray []string
 	branchs, err := client.Client.ListRepoBranches(client.UserName, repoName, gitea.ListRepoBranchesOptions{})
 	if err != nil {

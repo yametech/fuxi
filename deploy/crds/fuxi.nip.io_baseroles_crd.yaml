@@ -1,4 +1,4 @@
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: baseroles.fuxi.nip.io
@@ -10,41 +10,40 @@ spec:
     plural: baseroles
     singular: baserole
   scope: Namespaced
-  subresources:
-    status: {}
-  validation:
-    openAPIV3Schema:
-      description: BaseRole is the Schema for the baseroles API
-      properties:
-        apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-          type: string
-        kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-          type: string
-        metadata:
-          type: object
-        spec:
-          description: BaseRoleSpec defines the desired state of BaseRole
-          properties:
-            comment:
-              type: string
-            value:
-              format: int32
-              type: integer
-          required:
-          - value
-          type: object
-        status:
-          description: BaseRoleStatus defines the observed state of BaseRole
-          type: object
-      type: object
-  version: v1
   versions:
   - name: v1
+    schema:
+      openAPIV3Schema:
+        description: BaseRole is the Schema for the baseroles API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: BaseRoleSpec defines the desired state of BaseRole
+            properties:
+              comment:
+                type: string
+              value:
+                format: int32
+                type: integer
+            required:
+            - value
+            type: object
+          status:
+            description: BaseRoleStatus defines the observed state of BaseRole
+            type: object
+        type: object
     served: true
     storage: true
+    subresources:
+      status: {}
