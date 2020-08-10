@@ -60,6 +60,7 @@ type WorkloadsAPI struct {
 	taskRun                  *workloadservice.TaskRun
 	pipelineResource         *workloadservice.PipelineResource
 	tektonGraph              *workloadservice.TektonGraph
+	tektonWebHook            *workloadservice.TektonWebHook
 	tektonStore              *workloadservice.TektonStore
 	podsecuritypolicies      *workloadservice.PodSecurityPolicies
 	stone                    *workloadservice.Stone
@@ -111,6 +112,8 @@ func NewWorkladAPI() *WorkloadsAPI {
 		task:                     workloadservice.NewTask(),
 		taskRun:                  workloadservice.NewTaskRun(),
 		tektonGraph:              workloadservice.NewTektonGraph(),
+		tektonStore:              workloadservice.NewTektonStore(),
+		tektonWebHook:            workloadservice.NewTektonWebHook(),
 		podsecuritypolicies:      workloadservice.NewPodSecurityPolicies(),
 		stone:                    workloadservice.NewStone(),
 		water:                    workloadservice.NewWater(),

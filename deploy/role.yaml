@@ -79,6 +79,7 @@ rules:
   - baserolegroups
   - baseroleusers
   - tektongraphs
+  - tektonwebhooks
   verbs:
   - create
   - delete

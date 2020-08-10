@@ -1,20 +1,20 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: baseusers.fuxi.nip.io
+  name: tektonstores.fuxi.nip.io
 spec:
   group: fuxi.nip.io
   names:
-    kind: BaseUser
-    listKind: BaseUserList
-    plural: baseusers
-    singular: baseuser
+    kind: TektonStore
+    listKind: TektonStoreList
+    plural: tektonstores
+    singular: tektonstore
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: BaseUser is the Schema for the baseusers API
+        description: TektonStore is the Schema for the tektonstores API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -29,25 +29,33 @@ spec:
           metadata:
             type: object
           spec:
-            description: BaseUserSpec defines the desired state of BaseUser
+            description: TektonStoreSpec defines the desired state of TektonStore
             properties:
-              department_id:
+              author:
                 type: string
-              display:
+              data:
                 type: string
-              email:
+              forks:
+                format: int32
+                type: integer
+              params_description:
                 type: string
-              name:
-                type: string
-              password:
-                type: string
-              roles:
+              sub_reference:
                 items:
                   type: string
                 type: array
+              tekton_resource_type:
+                type: string
+            required:
+            - author
+            - data
+            - forks
+            - params_description
+            - sub_reference
+            - tekton_resource_type
             type: object
           status:
-            description: BaseUserStatus defines the observed state of BaseUser
+            description: TektonStoreStatus defines the observed state of TektonStore
             type: object
         type: object
     served: true
