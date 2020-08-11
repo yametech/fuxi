@@ -342,6 +342,7 @@ func main() {
 			"fuxi.nip.io/v1/baseroles",
 			"fuxi.nip.io/v1/baseusers",
 			"fuxi.nip.io/v1/tektongraphs",
+			"fuxi.nip.io/v1/tektonwebhooks",
 			"fuxi.nip.io/v1/tektonstores",
 			"nuwa.nip.io/v1/statefulsets",
 			"nuwa.nip.io/v1/stones",
@@ -494,6 +495,14 @@ func main() {
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonstores", TektonStoreList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonstores/:name", TektonStoreGet)
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonstores", TektonStoreCreate)
+	}
+
+	// TektonGraph
+	{
+		group.GET("/apis/fuxi.nip.io/v1/tektonwebhooks", TektonWebHookList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonwebhooks", TektonWebHookList)
+		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonwebhooks/:name", TektonWebHookGet)
+		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonwebhooks", TektonWebHookCreate)
 	}
 
 	// watch the group resource
