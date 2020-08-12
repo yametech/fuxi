@@ -38,21 +38,16 @@ spec:
               forks:
                 format: int32
                 type: integer
-              params_description:
+              paramsDescription:
                 type: string
-              sub_reference:
-                items:
-                  type: string
-                type: array
-              tekton_resource_type:
+              tektonResourceType:
                 type: string
             required:
             - author
             - data
             - forks
-            - params_description
-            - sub_reference
-            - tekton_resource_type
+            - paramsDescription
+            - tektonResourceType
             type: object
           status:
             description: TektonStoreStatus defines the observed state of TektonStore
