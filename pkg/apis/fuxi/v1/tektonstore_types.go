@@ -9,12 +9,11 @@ import (
 
 // TektonStoreSpec defines the desired state of TektonStore
 type TektonStoreSpec struct {
-	TektonResourceType string   `json:"tekton_resource_type, omitempty"`
-	Data               string   `json:"data, omitempty"`
-	Author             string   `json:"author, omitempty"`
-	Forks              uint32   `json:"forks, omitempty"`
-	ParamsDescription  string   `json:"params_description, omitempty"`
-	SubReference       []string `json:"sub_reference, omitempty"`
+	TektonResourceType string `json:"tektonResourceType, omitempty"`
+	Data               string `json:"data, omitempty"`
+	Author             string `json:"author, omitempty"`
+	Forks              uint32 `json:"forks, omitempty"`
+	ParamsDescription  string `json:"paramsDescription, omitempty"`
 }
 
 // TektonStoreStatus defines the observed state of TektonStore
