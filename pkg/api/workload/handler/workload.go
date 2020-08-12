@@ -2,14 +2,16 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+	"sync"
+
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	service_common "github.com/yametech/fuxi/pkg/service/common"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"net/http"
-	"strings"
 )
 
 func resourceList(g *gin.Context, rq service_common.ResourceQuery) (list *unstructured.UnstructuredList, err error) {
@@ -187,6 +189,8 @@ func (w *WorkloadsAPI) Delete(g *gin.Context) {
 	g.JSON(http.StatusOK, nil)
 }
 
+var mu = &sync.Mutex{}
+
 func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	var formData map[string]interface{}
 	if err := g.BindJSON(&formData); err != nil {
@@ -247,6 +251,8 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 		return
 	}
 
+	mu.Lock()
+	defer mu.Unlock()
 	w.generic.SetGroupVersionResource(runtimeClassGVR)
 	newObj, isUpdate, err := w.generic.Apply(namespace, name, unstructuredData)
 	if err != nil {
