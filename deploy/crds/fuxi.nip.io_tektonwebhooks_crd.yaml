@@ -31,15 +31,22 @@ spec:
           spec:
             description: TektonWebHookSpec defines the desired state of TektonWebHook
             properties:
-              args:
-                items:
-                  type: string
-                type: array
-              branch:
-                type: string
               git:
                 type: string
-              pipeline_run:
+              jobs:
+                items:
+                  properties:
+                    args:
+                      items:
+                        type: string
+                      type: array
+                    branch:
+                      type: string
+                    pipeline_run:
+                      type: string
+                  type: object
+                type: array
+              secret:
                 type: string
             type: object
           status:
