@@ -91,6 +91,10 @@ base:
 	docker build -t yametech/base:v0.1.0 -f Dockerfile.base .
 	docker push yametech/base:v0.1.0
 
-docker-build: gateway base workload	
+webhook:
+	docker build -t yametech/webhook:v0.1.0 -f Dockerfile.webhook .
+	docker push yametech/webhook:v0.1.0
+
+docker-build: gateway base workload	webhook
 	@echo "Docker build done"
 	

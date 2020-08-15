@@ -497,7 +497,7 @@ func main() {
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonstores", TektonStoreCreate)
 	}
 
-	// TektonGraph
+	// TektonWebHook
 	{
 		group.GET("/apis/fuxi.nip.io/v1/tektonwebhooks", TektonWebHookList)
 		group.GET("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonwebhooks", TektonWebHookList)

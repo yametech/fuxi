@@ -25,6 +25,11 @@ func JWTAuthWrapper(token *token.Token, whitelist *whitelist.Whitelist, loginHan
 				return
 			}
 
+			if strings.Contains(r.URL.Path, "/webhook") {
+				h.ServeHTTP(w, r)
+				return
+			}
+
 			tokenHeader := r.Header.Get("Authorization")
 			userFromToken, e := token.Decode(tokenHeader)
 			if e != nil {
