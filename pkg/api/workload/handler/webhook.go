@@ -170,6 +170,9 @@ func (w *WorkloadsAPI) TriggerGiteaWebHook(g *gin.Context) {
 				common.ToRequestParamsError(g, err)
 				return
 			}
+
+			unstructuredObj["spec"].(map[string]interface{})["params"] = job.Params
+
 			metadata := map[string]interface{}{
 				"annotations": unstructuredObj["metadata"].(map[string]interface{})["annotations"],
 				"labels":      unstructuredObj["metadata"].(map[string]interface{})["labels"],
@@ -182,6 +185,7 @@ func (w *WorkloadsAPI) TriggerGiteaWebHook(g *gin.Context) {
 				"metadata":   metadata,
 				"spec":       unstructuredObj["spec"],
 			}
+
 			pipelineRunUnstructured := &unstructured.Unstructured{
 				Object: pipelineRunUnstructuredObj,
 			}

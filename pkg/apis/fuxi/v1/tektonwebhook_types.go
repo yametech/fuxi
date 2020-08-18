@@ -7,13 +7,18 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type Params struct {
+	Name  string `json:"name,omitempty"`
+	Value string `json:"value,omitempty"`
+}
+
 type Job struct {
 	// +optional
 	Branch string `json:"branch,omitempty"`
 	// +optional
 	PipelineRun string `json:"pipeline_run,omitempty"`
 	// +optional
-	Args []string `json:"args,omitempty"`
+	Params []Params `json:"params,omitempty"`
 }
 
 // TektonWebHookSpec defines the desired state of TektonWebHook
