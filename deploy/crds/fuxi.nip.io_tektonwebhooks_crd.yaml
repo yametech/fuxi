@@ -36,12 +36,17 @@ spec:
               jobs:
                 items:
                   properties:
-                    args:
-                      items:
-                        type: string
-                      type: array
                     branch:
                       type: string
+                    params:
+                      items:
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            type: string
+                        type: object
+                      type: array
                     pipeline_run:
                       type: string
                   type: object
