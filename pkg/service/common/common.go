@@ -2,6 +2,8 @@ package common
 
 import (
 	"encoding/json"
+	"reflect"
+
 	fv1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"golang.org/x/net/context"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -13,7 +15,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/util/retry"
-	"reflect"
 	//"sort"
 )
 
@@ -289,6 +290,11 @@ func compareMetadataLabelsOrAnnotation(old, new map[string]interface{}) map[stri
 	newAnnotations, exist := new["annotations"]
 	if exist {
 		old["annotations"] = newAnnotations
+	}
+
+	newOwnerReferences, exist := new["ownerReferences"]
+	if exist {
+		old["ownerReferences"] = newOwnerReferences
 	}
 	return old
 }
