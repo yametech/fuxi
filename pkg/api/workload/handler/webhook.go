@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
@@ -171,7 +170,7 @@ func (w *WorkloadsAPI) TriggerGiteaWebHook(g *gin.Context) {
 				common.ToRequestParamsError(g, err)
 				return
 			}
-			fmt.Print(len(job.Params))
+
 			if len(job.Params) > 0 {
 				unstructuredObj["spec"].(map[string]interface{})["params"] = job.Params
 			}
