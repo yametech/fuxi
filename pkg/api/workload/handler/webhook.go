@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -124,19 +122,6 @@ func checkBranch(jobBranch string, giteaWebHookRef string) bool {
 		}
 	}
 	return false
-}
-
-func clone(src, tag interface{}) error {
-	buff := new(bytes.Buffer)
-	enc := gob.NewEncoder(buff)
-	dec := gob.NewDecoder(buff)
-	if err := enc.Encode(src); err != nil {
-		return err
-	}
-	if err := dec.Decode(tag); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (w *WorkloadsAPI) TriggerGiteaWebHook(g *gin.Context) {
