@@ -2,15 +2,18 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
+
+	"github.com/pkg/errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"net/http"
-	"net/url"
-	"strings"
 )
 
 type Permissions struct {
@@ -83,6 +86,14 @@ type giteaWebHook struct {
 	Sender     Owner      `json:"sender"`
 }
 
+const (
+	annotationGraphKey = "fuxi.nip.io/run-tektongraphs"
+)
+
+var (
+	tektonGraphNotFoudErr = errors.New("current pipeline not found tekton graph")
+)
+
 func checkUrl(RequestHtmlUrl string, tektonWebHookGit string) error {
 	htmlUrl, err := url.Parse(RequestHtmlUrl)
 	if err != nil {
@@ -92,7 +103,7 @@ func checkUrl(RequestHtmlUrl string, tektonWebHookGit string) error {
 	if err != nil {
 		return err
 	}
-	gitUrl.Path = strings.TrimRight(gitUrl.Path, ".git")
+	gitUrl.Path = strings.TrimSuffix(gitUrl.Path, ".git")
 	if (htmlUrl.Host != gitUrl.Host) || (htmlUrl.Path != gitUrl.Path) {
 		return errors.New("git url checksum error")
 	}
@@ -174,11 +185,57 @@ func (w *WorkloadsAPI) TriggerGiteaWebHook(g *gin.Context) {
 			if len(job.Params) > 0 {
 				unstructuredObj["spec"].(map[string]interface{})["params"] = job.Params
 			}
+
+			graphName := unstructuredObj["metadata"].(map[string]interface{})["annotations"].(map[string]interface{})[annotationGraphKey]
+			gName := fmt.Sprintf("%s", graphName)
+			tektonGraphItem, err := w.tektonGraph.Get(namespace, gName)
+			if err != nil {
+				common.ToRequestParamsError(g, err)
+				return
+			}
+
+			_ = w.tektonGraph.Delete(namespace, gName)
+			if tektonGraphItem == nil {
+				common.ToRequestParamsError(g, tektonGraphNotFoudErr)
+				return
+			}
+
+			tektonGraphObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&tektonGraphItem)
+			if err != nil {
+				common.ToRequestParamsError(g, err)
+				return
+			}
+
+			newTektonGraphObjMetadata := map[string]interface{}{
+				"name":      unstructuredObj["metadata"].(map[string]interface{})["name"],
+				"namespace": unstructuredObj["metadata"].(map[string]interface{})["namespace"],
+			}
+
+			newTektonGraphObj := map[string]interface{}{
+				"apiVersion": tektonGraphObj["apiVersion"],
+				"kind":       tektonGraphObj["kind"],
+				"metadata":   newTektonGraphObjMetadata,
+				"spec":       tektonGraphObj["spec"],
+			}
+
+			newTektonGraph := &unstructured.Unstructured{
+				Object: newTektonGraphObj,
+			}
+			currentTektonGraphName := unstructuredObj["metadata"].(map[string]interface{})["name"].(string)
+			_, _, err = w.tektonGraph.Apply(namespace, currentTektonGraphName, newTektonGraph)
+			if err != nil {
+				common.ToRequestParamsError(g, err)
+				return
+			}
+
+			pipelineRunAnno := unstructuredObj["metadata"].(map[string]interface{})["annotations"]
+			pipelineRunAnno.(map[string]interface{})[annotationGraphKey] = currentTektonGraphName
+			currentNameSpace := unstructuredObj["metadata"].(map[string]interface{})["namespace"]
 			metadata := map[string]interface{}{
-				"annotations": unstructuredObj["metadata"].(map[string]interface{})["annotations"],
+				"annotations": pipelineRunAnno,
 				"labels":      unstructuredObj["metadata"].(map[string]interface{})["labels"],
 				"name":        unstructuredObj["metadata"].(map[string]interface{})["name"],
-				"namespace":   unstructuredObj["metadata"].(map[string]interface{})["namespace"],
+				"namespace":   currentNameSpace,
 			}
 			pipelineRunUnstructuredObj := map[string]interface{}{
 				"apiVersion": unstructuredObj["apiVersion"],
