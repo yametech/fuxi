@@ -3,6 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	constraint "github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/pkg/api/common"
@@ -16,8 +19,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"net/http"
-	"strconv"
 )
 
 type deployTemplate struct {
@@ -362,6 +363,12 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 		err = json.Unmarshal([]byte(limits), &cds)
 		if err != nil {
 			common.ToRequestParamsError(g, err)
+			return
+		}
+		if len(cds) == 0 {
+			common.ToRequestParamsError(g,
+				notResourceAllocatedError,
+			)
 			return
 		}
 		replicas, err := strconv.ParseUint(deployTemplate.Replicas, 10, 32)
