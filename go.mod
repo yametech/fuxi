@@ -57,6 +57,7 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
+	istio.io/api v0.0.0-20200926011135-d7cf1f5167bf // indirect
 	k8s.io/api v0.18.6
 	k8s.io/apiextensions-apiserver v0.18.4
 	k8s.io/apimachinery v0.18.6

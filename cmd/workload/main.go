@@ -505,6 +505,54 @@ func main() {
 		group.POST("/apis/fuxi.nip.io/v1/namespaces/:namespace/tektonwebhooks", TektonWebHookCreate)
 	}
 
+	//Istio networking gateways
+	{
+		group.GET("/apis/networking.istio.io/v1beta1/gateways/", GatewayList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/gateways", GatewayList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/gateways/:name", GetGateway)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/gateways", workloadsAPI.Apply)
+	}
+
+	//Istio networking virtualservices
+	{
+		group.GET("/apis/networking.istio.io/v1beta1/virtualservices/", VirtualServiceList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/virtualservices", VirtualServiceList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/virtualservices/:name", GetVirtualService)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/virtualservices", workloadsAPI.Apply)
+	}
+
+	//Istio networking destinationrules
+	{
+		group.GET("/apis/networking.istio.io/v1beta1/destinationrules/", DestinationRuleList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/destinationrules", DestinationRuleList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/destinationrules/:name", GetDestinationRule)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/destinationrules", workloadsAPI.Apply)
+	}
+
+	//Istio networking serviceentry
+	{
+		group.GET("/apis/networking.istio.io/v1beta1/serviceentrys/", ServiceEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/serviceentrys", ServiceEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/serviceentrys/:name", GetServiceEntry)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/serviceentrys", workloadsAPI.Apply)
+	}
+
+	//Istio networking workloadentrys
+	{
+		group.GET("/apis/networking.istio.io/v1beta1/workloadentrys/", ServiceEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys", ServiceEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys/:name", GetServiceEntry)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys", workloadsAPI.Apply)
+	}
+
+	//Istio networking sidecars
+	{
+		group.GET("/apis/networking.istio.io/v1beta1/sidecars/", SidecarList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/sidecars", SidecarList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/sidecars/:name", GetSidecar)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/sidecars", workloadsAPI.Apply)
+	}
+
 	// watch the group resource
 	{
 		group.GET("/watch", WatchStream)
