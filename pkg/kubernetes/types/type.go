@@ -60,6 +60,14 @@ const (
 	TektonGraph      ResourceName = "tektongraphs"
 	TektonWebHook    ResourceName = "tektonwebhooks"
 	TektonStore      ResourceName = "tektonstores"
+
+	//Istio  NetWorking
+	Gateway         ResourceName = "Gateway"
+	DestinationRule ResourceName = "DestinationRule"
+	ServiceEntry    ResourceName = "ServiceEntry"
+	Sidecar         ResourceName = "Sidecar"
+	VirtualService  ResourceName = "VirtualService"
+	WorkloadEntry   ResourceName = "WorkloadEntry"
 )
 
 // GroupVersionResources describe resource collection
@@ -118,6 +126,14 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	TektonStore:      {Group: "fuxi.nip.io", Version: "v1", Resource: "tektonstores"},
 
 	PodSecurityPolicie: {Group: "policy", Version: "v1beta1", Resource: "podsecuritypolicies"},
+
+	//Istio Networking
+	Gateway:         {Group: "networking.istio.io", Version: "v1beta1", Resource: "Gateway"},
+	DestinationRule: {Group: "networking.istio.io", Version: "v1beta1", Resource: "DestinationRule"},
+	ServiceEntry:    {Group: "networking.istio.io", Version: "v1beta1", Resource: "ServiceEntry"},
+	Sidecar:         {Group: "networking.istio.io", Version: "v1beta1", Resource: "Sidecar"},
+	VirtualService:  {Group: "networking.istio.io", Version: "v1beta1", Resource: "VirtualService"},
+	WorkloadEntry:   {Group: "networking.istio.io", Version: "v1beta1", Resource: "WorkloadEntry"},
 }
 
 var (
@@ -172,6 +188,14 @@ var (
 	ResourceTektonWebHook      = getGvr(TektonWebHook)
 	ResourceTektonStore        = getGvr(TektonStore)
 	ResourcePodSecurityPolicie = getGvr(PodSecurityPolicie)
+
+	//Isito Networking
+	ResourceIstioGateway         = getGvr(Gateway)
+	ResourceIstioDestinationRule = getGvr(DestinationRule)
+	ResourceIstioServiceEntry    = getGvr(ServiceEntry)
+	ResourceIstioSidecar         = getGvr(Sidecar)
+	ResourceIstioVirtualService  = getGvr(VirtualService)
+	ResourceIstioWorkloadEntry   = getGvr(WorkloadEntry)
 )
 
 func getGvr(rs ResourceName) schema.GroupVersionResource {

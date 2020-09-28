@@ -10,6 +10,7 @@ import (
 	"github.com/yametech/fuxi/pkg/api/common"
 	service_common "github.com/yametech/fuxi/pkg/service/common"
 	workloadservice "github.com/yametech/fuxi/pkg/service/workload"
+	istio_service "github.com/yametech/fuxi/pkg/service/workload/istio"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -70,6 +71,12 @@ type WorkloadsAPI struct {
 	injector                 *workloadservice.Injector
 	ip                       *workloadservice.IP
 	subnet                   *workloadservice.SubNet
+	gateway                  *istio_service.Gateway
+	virtualService           *istio_service.VirtualService
+	destinationRule          *istio_service.DestinationRule
+	serviceEntry             *istio_service.ServiceEntry
+	workloadEntry            *istio_service.WorkloadEntry
+	sidecar                  *istio_service.Sidecar
 }
 
 func NewWorkladAPI() *WorkloadsAPI {
@@ -122,6 +129,12 @@ func NewWorkladAPI() *WorkloadsAPI {
 		injector:                 workloadservice.NewInjector(),
 		ip:                       workloadservice.NewIP(),
 		subnet:                   workloadservice.NewSubNet(),
+		gateway:                  istio_service.NewGateway(),
+		virtualService:           istio_service.NewVirtualService(),
+		destinationRule:          istio_service.NewDestinationRule(),
+		serviceEntry:             istio_service.NewServiceEntry(),
+		workloadEntry:            istio_service.NewWorkloadEntry(),
+		sidecar:                  istio_service.NewSidecar(),
 	}
 }
 
