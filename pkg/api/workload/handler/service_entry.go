@@ -19,7 +19,7 @@ func (w *WorkloadsAPI) GetServiceEntry(g *gin.Context) {
 }
 
 func (w *WorkloadsAPI) ListServiceEntry(g *gin.Context) {
-	list, err := resourceList(g, w.gateway)
+	list, err := resourceList(g, w.serviceEntry)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
