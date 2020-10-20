@@ -122,8 +122,11 @@ func workloadsTemplateToPodContainers(wt *workloadsTemplate) []corev1.Container 
 					},
 				}
 				envs = append(envs, env)
-				//case "Other":
-				//case "CUSTOM":
+			//case "Other":
+			//case "CUSTOM":
+			case "Normal":
+				env := corev1.EnvVar{Name: evnConfig.EnvConfig.Name, Value: evnConfig.EnvConfig.Value}
+				envs = append(envs, env)
 			}
 		}
 		container.Env = envs
