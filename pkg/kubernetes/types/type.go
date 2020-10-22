@@ -201,7 +201,7 @@ var (
 func getGvr(rs ResourceName) schema.GroupVersionResource {
 	gvr, exist := GroupVersionResources[rs]
 	if !exist {
-		//panic("try to get an undefined resource")
+		panic("try to get an undefined resource")
 	}
 	return gvr
 }
