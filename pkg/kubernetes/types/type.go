@@ -62,12 +62,12 @@ const (
 	TektonStore      ResourceName = "tektonstores"
 
 	//Istio  NetWorking
-	Gateway         ResourceName = "Gateway"
-	DestinationRule ResourceName = "DestinationRule"
-	ServiceEntry    ResourceName = "ServiceEntry"
-	Sidecar         ResourceName = "Sidecar"
-	VirtualService  ResourceName = "VirtualService"
-	WorkloadEntry   ResourceName = "WorkloadEntry"
+	Gateway         ResourceName = "gateways"
+	DestinationRule ResourceName = "destinationrules"
+	ServiceEntry    ResourceName = "serviceentries"
+	Sidecar         ResourceName = "sidecars"
+	VirtualService  ResourceName = "virtualservices"
+	WorkloadEntry   ResourceName = "workloadentries"
 )
 
 // GroupVersionResources describe resource collection
@@ -128,12 +128,12 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	PodSecurityPolicie: {Group: "policy", Version: "v1beta1", Resource: "podsecuritypolicies"},
 
 	//Istio Networking
-	Gateway:         {Group: "networking.istio.io", Version: "v1beta1", Resource: "Gateway"},
-	DestinationRule: {Group: "networking.istio.io", Version: "v1beta1", Resource: "DestinationRule"},
-	ServiceEntry:    {Group: "networking.istio.io", Version: "v1beta1", Resource: "ServiceEntry"},
-	Sidecar:         {Group: "networking.istio.io", Version: "v1beta1", Resource: "Sidecar"},
-	VirtualService:  {Group: "networking.istio.io", Version: "v1beta1", Resource: "VirtualService"},
-	WorkloadEntry:   {Group: "networking.istio.io", Version: "v1beta1", Resource: "WorkloadEntry"},
+	Gateway:         {Group: "networking.istio.io", Version: "v1beta1", Resource: "gateways"},
+	DestinationRule: {Group: "networking.istio.io", Version: "v1beta1", Resource: "destinationrules"},
+	ServiceEntry:    {Group: "networking.istio.io", Version: "v1beta1", Resource: "serviceentries"},
+	Sidecar:         {Group: "networking.istio.io", Version: "v1beta1", Resource: "sidecars"},
+	VirtualService:  {Group: "networking.istio.io", Version: "v1beta1", Resource: "virtualservices"},
+	WorkloadEntry:   {Group: "networking.istio.io", Version: "v1beta1", Resource: "workloadentries"},
 }
 
 var (
