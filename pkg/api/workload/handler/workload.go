@@ -221,6 +221,8 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 	if strings.HasSuffix(strings.ToLower(kind), "ss") {
 		// Compatible with ingress resources
 		kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "es")
+	} else if strings.HasSuffix(strings.ToLower(kind), "y") {
+		kind = fmt.Sprintf("%s%s", strings.TrimSuffix(strings.ToLower(kind), "y"), "ies")
 	} else if strings.HasSuffix(strings.ToLower(kind), "s") {
 		kind = strings.ToLower(kind)
 	} else {
