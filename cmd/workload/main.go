@@ -537,12 +537,12 @@ func main() {
 		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/serviceentrys", workloadsAPI.Apply)
 	}
 
-	//Istio networking workloadentrys
+	//Istio networking workloadentries
 	{
-		group.GET("/apis/networking.istio.io/v1beta1/workloadentrys/", WorkloadEntryList)
-		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys", WorkloadEntryList)
-		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys/:name", GetWorkloadEntry)
-		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys", workloadsAPI.Apply)
+		group.GET("/apis/networking.istio.io/v1beta1/workloadentries/", WorkloadEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentries", WorkloadEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentries/:name", GetWorkloadEntry)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentries", workloadsAPI.Apply)
 	}
 
 	//Istio networking sidecars
