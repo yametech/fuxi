@@ -553,6 +553,13 @@ func main() {
 		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/sidecars", workloadsAPI.Apply)
 	}
 
+	{
+		group.GET("/apis/k8s.cni.cncf.io/v1/network-attachment-definitions/", NetworkAttachmentDefinitionList)
+		group.GET("/apis/k8s.cni.cncf.io/v1/namespaces/:namespace/network-attachment-definitions", NetworkAttachmentDefinitionList)
+		group.GET("/apis/k8s.cni.cncf.io/v1/namespaces/:namespace/network-attachment-definitions/:name", NetworkAttachmentDefinitionGet)
+		group.POST("/apis/k8s.cni.cncf.io/v1/namespaces/:namespace/network-attachment-definitions", workloadsAPI.Apply)
+	}
+
 	// watch the group resource
 	{
 		group.GET("/watch", WatchStream)

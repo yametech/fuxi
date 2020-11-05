@@ -25,6 +25,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.12.2 // indirect
 	github.com/igm/sockjs-go v2.0.1+incompatible
+	github.com/k8snetworkplumbingwg/network-attachment-definition-client v0.0.0-20200626054723-37f83d1996bc
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
@@ -57,7 +58,6 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
-	istio.io/api v0.0.0-20200926011135-d7cf1f5167bf // indirect
 	k8s.io/api v0.18.6
 	k8s.io/apiextensions-apiserver v0.18.4
 	k8s.io/apimachinery v0.18.6
