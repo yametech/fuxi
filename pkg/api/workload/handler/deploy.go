@@ -22,6 +22,7 @@ import (
 )
 
 type deployTemplate struct {
+	Annotations map[string]string `json:"annotations"`
 	AppName      string `json:"appName"`
 	Namespace    string `json:"namespace"`
 	StorageClass string `json:"storageClass"`
@@ -409,6 +410,7 @@ func (w *WorkloadsAPI) Deploy(g *gin.Context) {
 				Name:      deployTemplate.AppName,
 				Namespace: deployTemplate.Namespace,
 				Labels:    labels,
+				Annotations: deployTemplate.Annotations,
 			},
 			Spec: nuwav1.StoneSpec{
 				Template: corev1.PodTemplateSpec{
