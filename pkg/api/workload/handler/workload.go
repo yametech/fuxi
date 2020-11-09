@@ -220,7 +220,10 @@ func (w *WorkloadsAPI) Apply(g *gin.Context) {
 		common.ToRequestParamsError(g, fmt.Errorf("form data kind not define"))
 		return
 	}
-	if strings.HasSuffix(strings.ToLower(kind), "ss") {
+	// 后面需要修改直接取 crd 复数
+	if kind == "NetworkAttachmentDefinition" {
+		kind = "network-attachment-definitions"
+	} else if strings.HasSuffix(strings.ToLower(kind), "ss") {
 		// Compatible with ingress resources
 		kind = fmt.Sprintf("%s%s", strings.ToLower(kind), "es")
 	} else if strings.HasSuffix(strings.ToLower(kind), "y") {
