@@ -51,6 +51,8 @@ const (
 	IP                 ResourceName = "ips"
 	SubNet             ResourceName = "subnets"
 
+	NetworkAttachmentDefinition ResourceName = "network-attachment-definitions"
+
 	//tekton
 	Pipeline         ResourceName = "pipelines"
 	PipelineRun      ResourceName = "pipelineruns"
@@ -114,6 +116,8 @@ var GroupVersionResources = map[ResourceName]schema.GroupVersionResource{
 	BaseRoleUser: {Group: "fuxi.nip.io", Version: "v1", Resource: "baseroleusers"},
 	IP:           {Group: "kubeovn.io", Version: "v1", Resource: "ips"},
 	SubNet:       {Group: "kubeovn.io", Version: "v1", Resource: "subnets"},
+
+	NetworkAttachmentDefinition: {Group: "k8s.cni.cncf.io", Version: "v1", Resource: "network-attachment-definitions"},
 
 	// tekton.dev resource view
 	Pipeline:         {Group: "tekton.dev", Version: "v1alpha1", Resource: "pipelines"},
@@ -188,6 +192,8 @@ var (
 	ResourceTektonWebHook      = getGvr(TektonWebHook)
 	ResourceTektonStore        = getGvr(TektonStore)
 	ResourcePodSecurityPolicie = getGvr(PodSecurityPolicie)
+
+	ResourceNetworkAttachmentDefinition = getGvr(NetworkAttachmentDefinition)
 
 	//Isito Networking
 	ResourceIstioGateway         = getGvr(Gateway)

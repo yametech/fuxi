@@ -537,12 +537,12 @@ func main() {
 		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/serviceentrys", workloadsAPI.Apply)
 	}
 
-	//Istio networking workloadentrys
+	//Istio networking workloadentries
 	{
-		group.GET("/apis/networking.istio.io/v1beta1/workloadentrys/", WorkloadEntryList)
-		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys", WorkloadEntryList)
-		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys/:name", GetWorkloadEntry)
-		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentrys", workloadsAPI.Apply)
+		group.GET("/apis/networking.istio.io/v1beta1/workloadentries/", WorkloadEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentries", WorkloadEntryList)
+		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentries/:name", GetWorkloadEntry)
+		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/workloadentries", workloadsAPI.Apply)
 	}
 
 	//Istio networking sidecars
@@ -551,6 +551,13 @@ func main() {
 		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/sidecars", SidecarList)
 		group.GET("/apis/networking.istio.io/v1beta1/namespaces/:namespace/sidecars/:name", GetSidecar)
 		group.POST("/apis/networking.istio.io/v1beta1/namespaces/:namespace/sidecars", workloadsAPI.Apply)
+	}
+
+	{
+		group.GET("/apis/k8s.cni.cncf.io/v1/network-attachment-definitions/", NetworkAttachmentDefinitionList)
+		group.GET("/apis/k8s.cni.cncf.io/v1/namespaces/:namespace/network-attachment-definitions", NetworkAttachmentDefinitionList)
+		group.GET("/apis/k8s.cni.cncf.io/v1/namespaces/:namespace/network-attachment-definitions/:name", NetworkAttachmentDefinitionGet)
+		group.POST("/apis/k8s.cni.cncf.io/v1/namespaces/:namespace/network-attachment-definitions", workloadsAPI.Apply)
 	}
 
 	// watch the group resource
