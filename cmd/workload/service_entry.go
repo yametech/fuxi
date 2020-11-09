@@ -11,7 +11,7 @@ import "github.com/gin-gonic/gin"
 // @Param namespace query string true "namespace"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/apis/networking.istio.io/v1beta1/serviceentry [get]
+// @Router /workload/apis/networking.istio.io/v1beta1/serviceentries [get]
 func ServiceEntryList(g *gin.Context) { workloadsAPI.ListServiceEntry(g) }
 
 // ServiceEntry doc
@@ -24,5 +24,5 @@ func ServiceEntryList(g *gin.Context) { workloadsAPI.ListServiceEntry(g) }
 // @Param name query string true "name"
 // @Success 200 {string} string "{"msg": "Success"}"
 // @Failure 400 {string} string "{"msg": "Failed"}"
-// @Router /workload/networking.istio.io/v1beta1/namespaces/:namespace/serviceentry/:name [get]
+// @Router /workload/networking.istio.io/v1beta1/namespaces/:namespace/serviceentries/:name [get]
 func GetServiceEntry(g *gin.Context) { workloadsAPI.GetServiceEntry(g) }
