@@ -4,17 +4,44 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/yametech/fuxi/common"
 )
 
 type LoginHandle struct {
-	Authorization
+	*Authorization
 }
 
 type userAuth struct {
 	UserName string `json:"username"`
 	Password string `json:"password"`
+}
+
+func parseUri(uri string) (isNamespaced bool, namespace string) {
+	isNamespaced = strings.Contains(uri, "/namespaces")
+	if isNamespaced {
+		actions := strings.Split(uri, "/")
+		actions = actions[1:]
+		if len(actions) < 4 {
+			isNamespaced = false
+			return
+		}
+		namespace = actions[4]
+	}
+	return
+}
+
+func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Request) bool {
+	isNamespaced, namespace := parseUri(r.URL.Path)
+	if username != "admin" && !isNamespaced {
+		writeResponse(w, http.StatusForbidden, "Unauthorized Access")
+	}
+	allow, err := h.allowNamespaceAccess(username, namespace)
+	if !allow || err != nil {
+		writeResponse(w, http.StatusForbidden, "Not Allowed Namespaces")
+	}
+	return allow
 }
 
 func (h *LoginHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
