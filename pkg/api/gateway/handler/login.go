@@ -18,7 +18,11 @@ type userAuth struct {
 	Password string `json:"password"`
 }
 
-func parseUri(uri string) (isNamespaced bool, namespace string) {
+func parseUri(uri string) (isNamespaced bool, namespace string, bypass bool) {
+	if strings.Contains(uri, "/api/metrics") {
+		bypass = true
+		return
+	}
 	isNamespaced = strings.Contains(uri, "/namespaces")
 	if isNamespaced {
 		actions := strings.Split(uri, "/")
@@ -33,8 +37,14 @@ func parseUri(uri string) (isNamespaced bool, namespace string) {
 }
 
 func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Request) bool {
-	isNamespaced, namespace := parseUri(r.URL.Path)
-	if username != "admin" && !isNamespaced {
+	isNamespaced, namespace, bypass := parseUri(r.URL.Path)
+	if username == "admin" {
+		return true
+	}
+	if bypass {
+		return true
+	}
+	if !isNamespaced {
 		writeResponse(w, http.StatusForbidden, "Unauthorized Access")
 	}
 	allow, err := h.allowNamespaceAccess(username, namespace)
