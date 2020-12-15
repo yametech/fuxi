@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -19,7 +20,7 @@ type userAuth struct {
 }
 
 func parseUri(uri string) (isNamespaced bool, namespace string, bypass bool) {
-	if strings.Contains(uri, "/api/metrics") {
+	if strings.Contains(uri, "/api/metrics") || strings.Contains(uri, "/watch") {
 		bypass = true
 		return
 	}
@@ -49,7 +50,7 @@ func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Requ
 	}
 	allow, err := h.allowNamespaceAccess(username, namespace)
 	if !allow || err != nil {
-		writeResponse(w, http.StatusForbidden, "Not Allowed Namespaces")
+		writeResponse(w, http.StatusForbidden, fmt.Sprintf("Access namespace %s is not allowed", namespace))
 	}
 	return allow
 }
