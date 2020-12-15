@@ -10,13 +10,12 @@ import (
 const name = "API gateway"
 
 func main() {
-	loginHandler := &handler.LoginHandle{}
-	gatewayInstallConfigure, err := preinstall.InitGatewayInstallConfigure(name, loginHandler)
+	loginHandler := &handler.LoginHandle{Authorization: handler.NewAuthorization()}
+	gatewayInstallConfigure, err := preinstall.InitGatewayInstallConfigure(name, loginHandler.Check, loginHandler)
 	if err != nil {
 		panic(err)
 	}
 	common.SharedK8sClient = &gatewayInstallConfigure.DefaultInstallConfigure
-	loginHandler.Authorization = *handler.NewAuthorization(gatewayInstallConfigure.Token)
 
 	cmd.Init()
 }

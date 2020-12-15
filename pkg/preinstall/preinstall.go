@@ -47,7 +47,7 @@ func inClusterFlag() cli.StringFlag {
 }
 
 //InitGateWay init a gateway
-func InitGatewayInstallConfigure(name string, loginHandle http.Handler, microPlugins ...plugin.Plugin) (*GateWayInstallConfigure, error) {
+func InitGatewayInstallConfigure(name string, check auth.PrivateCheckerType, loginHandle http.Handler, microPlugins ...plugin.Plugin) (*GateWayInstallConfigure, error) {
 	gwic := &GateWayInstallConfigure{
 		Token:     &token.Token{},
 		Whitelist: &whitelist.Whitelist{},
@@ -56,7 +56,7 @@ func InitGatewayInstallConfigure(name string, loginHandle http.Handler, microPlu
 		plugin.NewPlugin(
 			plugin.WithName("auth"),
 			plugin.WithHandler(
-				auth.JWTAuthWrapper(gwic.Token, gwic.Whitelist, loginHandle),
+				auth.JWTAuthWrapper(gwic.Token, check, loginHandle),
 				func(h http.Handler) http.Handler {
 					return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 						w.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")

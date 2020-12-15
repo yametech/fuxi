@@ -3,15 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yametech/fuxi/thirdparty/lib/token"
 	"sort"
 	"time"
 
 	"github.com/yametech/fuxi/common"
-	"github.com/yametech/fuxi/pkg/service/workload"
-	"github.com/yametech/fuxi/thirdparty/lib/token"
-
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
 	"github.com/yametech/fuxi/pkg/service/base"
+	"github.com/yametech/fuxi/pkg/service/workload"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -42,8 +41,6 @@ func NewRole(name string, permValue uint32) *Role {
 		PermValue: permValue,
 		baseDept:  base.NewBaseDepartment(),
 	}
-
-	//TODO 关联关系??
 	return &role
 }
 
@@ -60,22 +57,56 @@ func (r Roles) search(roleName string) *Role {
 }
 
 type Authorization struct {
-	*token.Token
 	userServices      *base.BaseUser
 	roleServices      *base.BaseRole
 	deptServices      *base.BaseDepartment
 	namespaceServices *workload.Namespace
 }
 
-func NewAuthorization(token *token.Token) *Authorization {
+func NewAuthorization() *Authorization {
 	auth := &Authorization{
-		Token:             token,
 		userServices:      base.NewBaseUser(),
 		roleServices:      base.NewBaseRole(),
 		deptServices:      base.NewBaseDepartment(),
 		namespaceServices: workload.NewNamespace(),
 	}
 	return auth
+}
+
+func (auth *Authorization) allowNamespaceAccess(userName string, namespace string) (bool, error) {
+	obj, err := auth.userServices.Get(common.BaseServiceStoreageNamespace, userName)
+	if err != nil {
+		return false, err
+	}
+	baseUser := &v1.BaseUser{}
+	if err = runtimeObjectToInstanceObj(obj, baseUser); err != nil {
+		return false, err
+	}
+
+	deptObj, err := auth.deptServices.Get(common.BaseServiceStoreageNamespace, baseUser.Spec.DepartmentId)
+	if err != nil {
+		return false, err
+	}
+	baseDept := &v1.BaseDepartment{}
+	err = runtimeObjectToInstanceObj(deptObj, baseDept)
+	if err != nil {
+		return false, err
+	}
+	// not contain in allowNamespace
+	if !In(baseDept.Spec.Namespace, namespace) {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func In(list []string, item string) bool {
+	for _, _item := range list {
+		if _item == item {
+			return true
+		}
+	}
+	return false
 }
 
 func (auth *Authorization) getUser(userName string) (*v1.BaseUser, error) {
@@ -118,7 +149,7 @@ func (auth *Authorization) Auth(username, password string) ([]byte, error) {
 	}
 
 	expireTime := time.Now().Add(time.Hour * 24).Unix()
-	tokenStr, err := auth.Encode(common.MicroSaltUserHeader, username, expireTime)
+	tokenStr, err := (&token.Token{}).Encode(common.MicroSaltUserHeader, username, expireTime)
 	if err != nil {
 		return nil, err
 	}
