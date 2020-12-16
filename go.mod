@@ -4,15 +4,18 @@ go 1.14
 
 require (
 	code.gitea.io/sdk/gitea v0.12.0
+	github.com/Sirupsen/logrus v1.4.2 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/disintegration/imaging v1.6.2
+	github.com/docker/distribution v2.7.1+incompatible
 	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
 	github.com/elazarl/goproxy v0.0.0-20190630181448-f1e96bc0f4c5 // indirect
 	github.com/elazarl/goproxy/ext v0.0.0-20190630181448-f1e96bc0f4c5 // indirect
 	github.com/emicklei/go-restful v2.11.1+incompatible // indirect
-	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
+	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-logr/zapr v0.1.1 // indirect
 	github.com/go-openapi/spec v0.19.6
@@ -25,9 +28,11 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.12.2 // indirect
 	github.com/igm/sockjs-go v2.0.1+incompatible
+	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/k8snetworkplumbingwg/network-attachment-definition-client v0.0.0-20200626054723-37f83d1996bc
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/kubeapps/kubeapps v1.11.3
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.8 // indirect
@@ -38,11 +43,13 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.5.0 // indirect
-	github.com/sirupsen/logrus v1.6.0 // indirect
-	github.com/stretchr/testify v1.5.1 // indirect
+	github.com/sirupsen/logrus v1.7.0
+	github.com/srwiley/oksvg v0.0.0-20200311192757-870daf9aa564
+	github.com/srwiley/rasterx v0.0.0-20200120212402-85cb7272f5e9
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
+	github.com/vbatts/tar-split v0.11.1 // indirect
 	github.com/yametech/nuwa v1.0.1-0.20200602142225-f13837e897ae
 	go.uber.org/zap v1.15.0 // indirect
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
@@ -57,24 +64,28 @@ require (
 	google.golang.org/grpc v1.30.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
+	gopkg.in/yaml.v2 v2.3.0
+	helm.sh/helm/v3 v3.3.3
 	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
-	k8s.io/api v0.18.6
-	k8s.io/apiextensions-apiserver v0.18.4
-	k8s.io/apimachinery v0.18.6
+	k8s.io/api v0.19.4
+	k8s.io/apiextensions-apiserver v0.19.4
+	k8s.io/apimachinery v0.19.4
+	k8s.io/cli-runtime v0.19.4
 	k8s.io/client-go v12.0.0+incompatible
+	k8s.io/helm v2.17.0+incompatible
 	k8s.io/kube-openapi v0.0.0-20200410145947-bcb3869e6f29
+	k8s.io/kubectl v0.19.4
 	k8s.io/metrics v0.18.6
 	sigs.k8s.io/controller-runtime v0.6.1
+	sigs.k8s.io/yaml v1.2.0
 )
 
 replace (
-	github.com/docker/distribution => github.com/docker/distribution v2.7.1+incompatible
-	github.com/docker/docker => github.com/moby/moby v1.13.1
-	github.com/docker/go-connections => github.com/docker/go-connections v0.4.0
-	github.com/docker/go-units => github.com/docker/go-units v0.4.0
+	github.com/Sirupsen/logrus v1.4.2 => github.com/sirupsen/logrus v1.6.0
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.1
 	github.com/micro/go-micro => github.com/micro/go-micro v1.16.0
 	google.golang.org/grpc => google.golang.org/grpc v1.26.0
+	helm.sh/helm/v3 => helm.sh/helm/v3 v3.3.3
 	k8s.io/api => k8s.io/api v0.18.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.18.6
 	k8s.io/apimachinery => k8s.io/apimachinery v0.18.6

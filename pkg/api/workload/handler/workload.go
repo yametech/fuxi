@@ -6,6 +6,12 @@ import (
 	"strings"
 	"sync"
 
+	"k8s.io/client-go/rest"
+
+	"k8s.io/client-go/dynamic"
+
+	"github.com/yametech/fuxi/pkg/app/helm"
+
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
 	service_common "github.com/yametech/fuxi/pkg/service/common"
@@ -23,6 +29,12 @@ func resourceList(g *gin.Context, rq service_common.ResourceQuery) (list *unstru
 
 // WorkloadsAPI all resource operate
 type WorkloadsAPI struct {
+	//App
+	ActionInstance helm.NewActionConfigWithSecretFunc
+	HarborAddress  string
+	DynamicClient  dynamic.Interface
+	RestConfig     *rest.Config
+	//resource
 	deployments                  *workloadservice.Deployment
 	job                          *workloadservice.Job
 	cronJob                      *workloadservice.CronJob
@@ -82,6 +94,7 @@ type WorkloadsAPI struct {
 
 func NewWorkladAPI() *WorkloadsAPI {
 	return &WorkloadsAPI{
+
 		deployments:                  workloadservice.NewDeployment(),
 		cronJob:                      workloadservice.NewCronJob(),
 		statefulSet:                  workloadservice.NewStatefulSet(),
