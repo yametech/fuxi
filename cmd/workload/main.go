@@ -3,6 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+
+	"k8s.io/client-go/dynamic"
+
+	"github.com/yametech/fuxi/pkg/app/helm"
+	"helm.sh/helm/v3/pkg/action"
 
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
@@ -38,9 +44,21 @@ func initNeed() (web.Service, *gin.Engine, *gin.RouterGroup, *handler.WorkloadsA
 	}
 	router := gin.Default()
 	common.SharedK8sClient = &apiInstallConfigure.DefaultInstallConfigure
-	handler.CreateSharedSessionManager(apiInstallConfigure.ClientV1, apiInstallConfigure.RestConfig)
-
-	return service, router, router.Group("/workload"), handler.NewWorkladAPI()
+	client := apiInstallConfigure.ClientV1
+	restConfig := apiInstallConfigure.RestConfig
+	handler.CreateSharedSessionManager(client, restConfig)
+	workloadsApi := handler.NewWorkladAPI()
+	workloadsApi.HarborAddress = os.Getenv("HARBORADDRESS") + "chartrepo/" + os.Getenv("HARBORREPONAME")
+	workloadsApi.ActionInstance = func(namespace string) *action.Configuration {
+		actionConfig, err := helm.NewActionConfigWithSecret(restConfig, client, namespace)
+		if err != nil {
+			panic(err)
+		}
+		return actionConfig
+	}
+	workloadsApi.DynamicClient = dynamic.NewForConfigOrDie(restConfig)
+	workloadsApi.RestConfig = restConfig
+	return service, router, router.Group("/workload"), workloadsApi
 }
 
 var service, router, group, workloadsAPI = initNeed()
@@ -564,6 +582,21 @@ func main() {
 	// watch the group resource
 	{
 		group.GET("/watch", WatchStream)
+	}
+	{
+		group.GET("/v2/charts", ListCharts)
+		group.GET("/v2/charts/:repo/:chart", GetCharts)
+		group.GET("/v2/charts/:repo/:chart/values", GetChartValues)
+
+		group.GET("/v2/releases", ListRelease)
+		group.POST("/v2/releases", InstallChart)
+		group.GET("/v2/releases/:namespace", FindReleasesByNamespace)
+		group.GET("/v2/releases/:namespace/:release", FindReleaseByNamespace)
+		group.GET("/v2/releases/:namespace/:release/values", FindReleaseValueByName)
+		group.DELETE("/v2/releases/:namespace/:release", DeleteRelease)
+		group.PUT("/v2/releases/:namespace/:release", UpgradeRelease)
+		group.PUT("/v2/releases/:namespace/:release/rollback", RollbackRelease)
+		group.GET("/v2/releases/:namespace/:release/history", HistoryRelease)
 	}
 
 	// Swag
