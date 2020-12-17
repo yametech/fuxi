@@ -4,17 +4,14 @@ go 1.14
 
 require (
 	code.gitea.io/sdk/gitea v0.12.0
-	github.com/Sirupsen/logrus v1.4.2 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/docker/distribution v2.7.1+incompatible
-	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
 	github.com/elazarl/goproxy v0.0.0-20190630181448-f1e96bc0f4c5 // indirect
 	github.com/elazarl/goproxy/ext v0.0.0-20190630181448-f1e96bc0f4c5 // indirect
-	github.com/emicklei/go-restful v2.11.1+incompatible // indirect
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-logr/zapr v0.1.1 // indirect
@@ -39,7 +36,6 @@ require (
 	github.com/micro/cli v0.2.0
 	github.com/micro/go-micro v1.16.0
 	github.com/micro/micro v1.16.0
-	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.5.0 // indirect
@@ -49,7 +45,6 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
-	github.com/vbatts/tar-split v0.11.1 // indirect
 	github.com/yametech/nuwa v1.0.1-0.20200602142225-f13837e897ae
 	go.uber.org/zap v1.15.0 // indirect
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
