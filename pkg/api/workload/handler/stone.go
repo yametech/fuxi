@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yametech/fuxi/pkg/api/common"
-	nuwav1 "github.com/yametech/nuwa/api/v1"
 	"net/http"
 )
 
