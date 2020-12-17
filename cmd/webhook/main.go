@@ -41,7 +41,6 @@ func main() {
 	{
 		group.POST("/gitea/namespaces/:namespace/tektonwebhooks/:name", TriggerGiteaWebHook)
 	}
-
 	service.Handle("/", router)
 	if err := service.Run(); err != nil {
 		log.Fatal(err)

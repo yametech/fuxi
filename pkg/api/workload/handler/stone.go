@@ -21,23 +21,12 @@ func (w *WorkloadsAPI) GetStone(g *gin.Context) {
 	g.JSON(http.StatusOK, item)
 }
 
-// List StatefulSet
+// List stone
 func (w *WorkloadsAPI) ListStone(g *gin.Context) {
 	list, err := resourceList(g, w.stone)
 	if err != nil {
 		common.ToInternalServerError(g, "", err)
 		return
 	}
-	stoneList := &nuwav1.StoneList{}
-	marshalData, err := json.Marshal(list)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	err = json.Unmarshal(marshalData, stoneList)
-	if err != nil {
-		common.ToInternalServerError(g, "", err)
-		return
-	}
-	g.JSON(http.StatusOK, stoneList)
+	g.JSON(http.StatusOK, list)
 }
