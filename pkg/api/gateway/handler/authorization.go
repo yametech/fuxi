@@ -95,7 +95,6 @@ func (auth *Authorization) allowNamespaceAccess(userName string, namespace strin
 	}
 	// not contain in allowNamespace
 	if !In(baseDept.Spec.Namespace, namespace) {
-		fmt.Printf("####--------------------------------namespace %s not in allowNamespace %v\n", namespace, baseDept.Spec.Namespace)
 		return false, nil
 	}
 

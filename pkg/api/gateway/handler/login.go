@@ -14,25 +14,11 @@ type LoginHandle struct {
 	*Authorization
 }
 
-func parseUri(uri string) (isNamespaced bool, namespace string, bypass bool) {
-	if strings.Contains(uri, "/api/metrics") || strings.Contains(uri, "/watch") {
-		bypass = true
-		return
-	}
+var _uriFilter = &uriFilter{}
 
-	if strings.Contains(uri, "/namespaces") && !strings.HasPrefix(uri, "/workload/api/v1") {
-		actions := strings.Split(uri, "/")
-		actions = trimSpace(actions)
-		idx := index(actions, "namespaces")
-		if idx == -1 {
-			isNamespaced = false
-			return
-		}
-		isNamespaced = true
-		namespace = actions[idx+1]
-	}
+func parseUri(uri string, w http.ResponseWriter, h *LoginHandle) bool {
 
-	return
+	return false
 }
 
 type userAuth struct {
@@ -41,20 +27,30 @@ type userAuth struct {
 }
 
 func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Request) bool {
-	isNamespaced, namespace, bypass := parseUri(r.URL.Path)
 	if username == "admin" {
 		return true
 	}
-	if bypass {
+
+	if strings.HasPrefix(r.URL.Path, "/workload/metrics") || strings.HasPrefix(r.URL.Path, "/workload/watch") {
 		return true
 	}
-	if !isNamespaced {
-		writeResponse(w, http.StatusForbidden, "Unauthorized Access")
+
+	_, resourceType, namespaceName, resourceName, err := _uriFilter.Parse(r.URL.Path)
+	if err != nil {
+		return false
 	}
-	allow, err := h.allowNamespaceAccess(username, namespace)
+
+	if (resourceType == "namespaces" && namespaceName == "") ||
+		(namespaceName != "" && resourceName == "") {
+		return false
+	}
+
+	allow, err := h.allowNamespaceAccess(username, namespaceName)
 	if !allow || err != nil {
-		writeResponse(w, http.StatusForbidden, fmt.Sprintf("Access namespace %s is not allowed", namespace))
+		writeResponse(w, http.StatusForbidden, fmt.Sprintf("Access namespace %s is not allowed", namespaceName))
+		return false
 	}
+
 	return allow
 }
 

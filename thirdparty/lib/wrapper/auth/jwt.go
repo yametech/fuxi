@@ -1,11 +1,12 @@
 package auth
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/micro/micro/plugin"
 	"github.com/yametech/fuxi/common"
 	"github.com/yametech/fuxi/thirdparty/lib/token"
-	"net/http"
-	"strings"
 )
 
 type PrivateCheckerType func(username string, w http.ResponseWriter, r *http.Request) bool
@@ -36,9 +37,13 @@ func JWTAuthWrapper(token *token.Token, privateHandle PrivateCheckerType, loginH
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
-			if !privateHandle(userFromToken.UserName, w, r) {
-				return
-			}
+
+			// fmt.Printf("######## start privateHandle %s\n", r.URL.Path)
+			// if !privateHandle(userFromToken.UserName, w, r) {
+			// 	writeResponse(w, http.StatusBadRequest, fmt.Sprintf("not allow access uri %s", r.URL.Path))
+			// 	return
+			// }
+			// fmt.Printf("######## allow access uri %s\n", r.URL.Path)
 
 			r.Header.Set(common.HttpRequestUserHeaderKey, userFromToken.UserName)
 			// Config
@@ -49,4 +54,17 @@ func JWTAuthWrapper(token *token.Token, privateHandle PrivateCheckerType, loginH
 			h.ServeHTTP(w, r)
 		})
 	}
+}
+
+func writeResponse(w http.ResponseWriter, status int, data interface{}) {
+	var _data []byte
+	switch data.(type) {
+	case string:
+		_data = []byte(data.(string))
+	case []byte:
+		_data = data.([]byte)
+	}
+	w.WriteHeader(status)
+	w.Write(_data)
+	return
 }

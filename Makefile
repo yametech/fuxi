@@ -98,3 +98,6 @@ webhook:
 docker-build: gateway base workload	webhook
 	@echo "Docker build done"
 	
+
+xx:
+	docker build -t harbor.ym/devops/gateway:0.1.2 -f Dockerfile.gateway .
