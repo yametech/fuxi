@@ -13,27 +13,30 @@ type LoginHandle struct {
 	*Authorization
 }
 
-type userAuth struct {
-	UserName string `json:"username"`
-	Password string `json:"password"`
-}
-
 func parseUri(uri string) (isNamespaced bool, namespace string, bypass bool) {
-	if strings.Contains(uri, "/api/metrics") {
+	if strings.Contains(uri, "/api/metrics") || strings.Contains(uri, "/watch") {
 		bypass = true
 		return
 	}
-	isNamespaced = strings.Contains(uri, "/namespaces")
-	if isNamespaced {
+
+	if strings.Contains(uri, "/namespaces") && !strings.HasPrefix(uri, "/workload/api/v1") {
 		actions := strings.Split(uri, "/")
-		actions = actions[1:]
-		if len(actions) < 4 {
+		actions = trimSpace(actions)
+		idx := index(actions, "namespaces")
+		if idx == -1 {
 			isNamespaced = false
 			return
 		}
-		namespace = actions[4]
+		isNamespaced = true
+		namespace = actions[idx+1]
 	}
+
 	return
+}
+
+type userAuth struct {
+	UserName string `json:"username"`
+	Password string `json:"password"`
 }
 
 func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Request) bool {

@@ -3,9 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yametech/fuxi/thirdparty/lib/token"
 	"sort"
 	"time"
+
+	"github.com/yametech/fuxi/thirdparty/lib/token"
 
 	"github.com/yametech/fuxi/common"
 	v1 "github.com/yametech/fuxi/pkg/apis/fuxi/v1"
@@ -94,6 +95,7 @@ func (auth *Authorization) allowNamespaceAccess(userName string, namespace strin
 	}
 	// not contain in allowNamespace
 	if !In(baseDept.Spec.Namespace, namespace) {
+		fmt.Printf("####--------------------------------namespace %s not in allowNamespace %v\n", namespace, baseDept.Spec.Namespace)
 		return false, nil
 	}
 
