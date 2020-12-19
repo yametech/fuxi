@@ -49,7 +49,7 @@ const (
 
 type uriFilter struct{}
 
-func (f *uriFilter) Parse(uri string) (service, resourceType, namespaceName, resourceName string, err error) {
+func (f *uriFilter) ParseQuery(uri string) (service, resourceType, namespaceName, resourceName string, err error) {
 	uriItems := uriLength(uri)
 	switch len(uriItems) {
 	case 4:
@@ -58,6 +58,26 @@ func (f *uriFilter) Parse(uri string) (service, resourceType, namespaceName, res
 	case 5:
 		// /workload/api/v1/namespaces/im-ops
 		service, resourceType, namespaceName = uriItems[0], uriItems[3], uriItems[4]
+	case 6:
+		// /workload/api/v1/namespaces/tekton-store/pods
+		service, namespaceName, resourceType = uriItems[0], uriItems[4], uriItems[5]
+	case 7:
+		// /{service}/{api_type}/{api_version}/namespaces/{namespace_name}/{resource_type}/{resource_name}
+		// /workload/apis/batch/v1beta1/namespaces/im-ops/cronjobs
+		service, namespaceName, resourceType = uriItems[0], uriItems[5], uriItems[6]
+	}
+	// fmt.Printf("########--------------uri (%s) items (%v) namespaceName=%s resourceType=%s\n", uri, uriItems, namespaceName, resourceType)
+	return
+}
+
+func (f *uriFilter) ParseApply(uri string) (service, resourceType, namespaceName, resourceName string, err error) {
+	uriItems := uriLength(uri)
+	switch len(uriItems) {
+	case 4:
+
+	case 5:
+		// /workload/apis/fuxi.nip.io/v1/workload
+		service, resourceType = uriItems[0], uriItems[4]
 	case 6:
 		// /workload/api/v1/namespaces/tekton-store/pods
 		service, namespaceName, resourceType = uriItems[0], uriItems[4], uriItems[5]

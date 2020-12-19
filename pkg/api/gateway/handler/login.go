@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -26,21 +25,30 @@ func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Requ
 		return true
 	}
 
-	if strings.HasPrefix(r.URL.Path, "/workload/metrics") || strings.HasPrefix(r.URL.Path, "/workload/watch") {
-		return true
-	}
+	allow := false
 
-	_, resourceType, namespaceName, resourceName, err := _uriFilter.Parse(r.URL.Path)
-	if err != nil {
-		return false
-	}
+	switch r.Method {
 
-	_, _ = resourceType, resourceName
+	case http.MethodDelete:
+		allow = true
 
-	allow, err := h.allowNamespaceAccess(username, namespaceName)
-	if !allow || err != nil {
-		writeResponse(w, http.StatusForbidden, fmt.Sprintf("Access namespace %s is not allowed", namespaceName))
-		return false
+	case http.MethodPost, http.MethodPut:
+		allow = true
+
+	case http.MethodGet:
+		if strings.HasPrefix(r.URL.Path, "/workload/metrics") || strings.HasPrefix(r.URL.Path, "/workload/watch") {
+			return true
+		}
+		_, resourceType, namespaceName, resourceName, err := _uriFilter.ParseQuery(r.URL.Path)
+		if err != nil {
+			return false
+		}
+		_, _ = resourceType, resourceName
+
+		allow, err = h.allowNamespaceAccess(username, namespaceName)
+		if err != nil {
+			return false
+		}
 	}
 
 	return allow
