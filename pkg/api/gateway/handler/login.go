@@ -16,11 +16,6 @@ type LoginHandle struct {
 
 var _uriFilter = &uriFilter{}
 
-func parseUri(uri string, w http.ResponseWriter, h *LoginHandle) bool {
-
-	return false
-}
-
 type userAuth struct {
 	UserName string `json:"username"`
 	Password string `json:"password"`
@@ -40,10 +35,7 @@ func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Requ
 		return false
 	}
 
-	if (resourceType == "namespaces" && namespaceName == "") ||
-		(namespaceName != "" && resourceName == "") {
-		return false
-	}
+	_, _ = resourceType, resourceName
 
 	allow, err := h.allowNamespaceAccess(username, namespaceName)
 	if !allow || err != nil {
