@@ -24,37 +24,22 @@ import (
 type APIType uint8
 
 const (
-	/*
-		/{service}/{api_type}/{api_version}/{resource_type}
-	*/
-	FOUR APIType = iota
 
 	/*
-		/{service}/{api_type}/{api_version}/{resource_type}/{resource_name}
+		/{service}/api/v1/namespaces/{namespace_name}
+		eg: /workload/api/v1/namespaces
 	*/
-	FIVE
+	LIST_ALL_RESOURCE APIType = iota
 
 	/*
-		/{service}/{api_type}/{api_version}/namespaces/{namespace_name}/{resource_name}
+		/{service}/api/v1/namespaces/{namespace_name}
+		eg: /workload/api/v1/namespaces/im-ops
 	*/
-	SIX
+	LIST_NAMESPACE_RESOURCE
 
-	/*
-		list
-		/{service}/{api_type}/{api_group}/{api_version}/namespaces/{namespace_name}/{resource_type}
-	*/
-	SEVEN
+	WATCH_NAMESPACE_RESOURCE
 
-	/*
-		get
-		/{service}/{api_type}/{api_group}/{api_version}/namespaces/{namespace_name}/{resource_type}/{resource_name}
-	*/
-	EIGHT
-
-	/*
-		/api/watch?api=/apis/tekton.dev/v1alpha1/namespaces/im-ops/tasks?watch=1&resourceVersion=139071989
-	*/
-	WATCH
+	WATCH_ALL_NAMESPACES_RESOURCE
 
 	/*
 		/api/metrics?start=1608184020&end=1608187620&step=60&kubernetes_namespace=im-ops
@@ -64,15 +49,35 @@ const (
 
 type uriFilter struct{}
 
-func (f *uriFilter) Parse(uri string) (service, resourceType, namespaceName, resourceName string, err error) {
+func (f *uriFilter) ParseQuery(uri string) (service, resourceType, namespaceName, resourceName string, err error) {
 	uriItems := uriLength(uri)
 	switch len(uriItems) {
 	case 4:
 		// /workload/api/v1/pods
 		service, resourceName = uriItems[0], uriItems[3]
 	case 5:
+		// /workload/api/v1/namespaces/im-ops
+		service, resourceType, namespaceName = uriItems[0], uriItems[3], uriItems[4]
+	case 6:
+		// /workload/api/v1/namespaces/tekton-store/pods
+		service, namespaceName, resourceType = uriItems[0], uriItems[4], uriItems[5]
+	case 7:
+		// /{service}/{api_type}/{api_version}/namespaces/{namespace_name}/{resource_type}/{resource_name}
+		// /workload/apis/batch/v1beta1/namespaces/im-ops/cronjobs
+		service, namespaceName, resourceType = uriItems[0], uriItems[5], uriItems[6]
+	}
+	// fmt.Printf("########--------------uri (%s) items (%v) namespaceName=%s resourceType=%s\n", uri, uriItems, namespaceName, resourceType)
+	return
+}
 
-		service, resourceType, resourceName = uriItems[0], uriItems[3], uriItems[4]
+func (f *uriFilter) ParseApply(uri string) (service, resourceType, namespaceName, resourceName string, err error) {
+	uriItems := uriLength(uri)
+	switch len(uriItems) {
+	case 4:
+
+	case 5:
+		// /workload/apis/fuxi.nip.io/v1/workload
+		service, resourceType = uriItems[0], uriItems[4]
 	case 6:
 		// /workload/api/v1/namespaces/tekton-store/pods
 		service, namespaceName, resourceType = uriItems[0], uriItems[4], uriItems[5]

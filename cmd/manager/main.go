@@ -17,14 +17,14 @@ package main
 
 func main() {
 	//// Add the zap logger flag set to the CLI. The flag set must
-	//// be added before calling pflag.Parse().
+	//// be added before calling pflag.ParseQuery().
 	//pflag.CommandLine.AddFlagSet(zap.FlagSet())
 	//
 	//// Add flags registered by imported packages (e.g. glog and
 	//// controller-runtime)
 	//pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	//
-	//pflag.Parse()
+	//pflag.ParseQuery()
 	//
 	//// Use a zap logr.Logger implementation. If none of the zap
 	//// flags are configured (or if the zap flag set is not being
