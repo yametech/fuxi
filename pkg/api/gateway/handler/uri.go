@@ -49,7 +49,7 @@ const (
 
 type uriFilter struct{}
 
-func (f *uriFilter) ParseQuery(uri string) (service, resourceType, namespaceName, resourceName string, err error) {
+func (f *uriFilter) ParseQuery(uri string) (service, resourceType, namespaceName, resourceName, op string, err error) {
 	uriItems := uriLength(uri)
 	switch len(uriItems) {
 	case 4:
@@ -62,11 +62,22 @@ func (f *uriFilter) ParseQuery(uri string) (service, resourceType, namespaceName
 		// /workload/api/v1/namespaces/tekton-store/pods
 		service, namespaceName, resourceType = uriItems[0], uriItems[4], uriItems[5]
 	case 7:
-		// /{service}/{api_type}/{api_version}/namespaces/{namespace_name}/{resource_type}/{resource_name}
-		// /workload/apis/batch/v1beta1/namespaces/im-ops/cronjobs
-		service, namespaceName, resourceType = uriItems[0], uriItems[5], uriItems[6]
+		// need to distinguish the url of api/apis
+
+		// /workload/api/v1/namespaces/im-test/secrets/default-token-l7mgh
+		if strings.HasPrefix(uri, "/workload/api") {
+			service, namespaceName, resourceType, resourceName = uriItems[0], uriItems[4], uriItems[5], uriItems[6]
+		}
+		// /workload/apis/nuwa.nip.io/v1/namespaces/im-ops/stones
+		if strings.HasPrefix(uri, "/workload/apis") {
+			service, namespaceName, resourceType = uriItems[0], uriItems[5], uriItems[6]
+		}
+
+	case 8:
+		// /workload/api/v1/namespaces/im/pods/sky-idmp-ui-0-b-0/log?container=main&timestamps=true&tailLines=1000&sinceTime=1970-01-01T00%3A00%3A00.000Z
+		service, namespaceName, resourceType, resourceName, op = uriItems[0], uriItems[4], uriItems[5], uriItems[6], uriItems[7]
 	}
-	// fmt.Printf("########--------------uri (%s) items (%v) namespaceName=%s resourceType=%s\n", uri, uriItems, namespaceName, resourceType)
+
 	return
 }
 

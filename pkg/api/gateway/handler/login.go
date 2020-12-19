@@ -36,10 +36,13 @@ func (h *LoginHandle) Check(username string, w http.ResponseWriter, r *http.Requ
 		allow = true
 
 	case http.MethodGet:
-		if strings.HasPrefix(r.URL.Path, "/workload/metrics") || strings.HasPrefix(r.URL.Path, "/workload/watch") {
+		if strings.HasPrefix(r.URL.Path, "/workload/metrics") ||
+			strings.HasPrefix(r.URL.Path, "/workload/watch") ||
+			strings.HasPrefix(r.URL.Path, "/workload/shell/pod") ||
+			strings.HasPrefix(r.URL.Path, "/workload/attach") {
 			return true
 		}
-		_, resourceType, namespaceName, resourceName, err := _uriFilter.ParseQuery(r.URL.Path)
+		_, resourceType, namespaceName, resourceName, _, err := _uriFilter.ParseQuery(r.URL.Path)
 		if err != nil {
 			return false
 		}
