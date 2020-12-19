@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -38,12 +39,12 @@ func JWTAuthWrapper(token *token.Token, privateHandle PrivateCheckerType, loginH
 				return
 			}
 
-			// fmt.Printf("######## start privateHandle %s\n", r.URL.Path)
-			// if !privateHandle(userFromToken.UserName, w, r) {
-			// 	writeResponse(w, http.StatusBadRequest, fmt.Sprintf("not allow access uri %s", r.URL.Path))
-			// 	return
-			// }
-			// fmt.Printf("######## allow access uri %s\n", r.URL.Path)
+			fmt.Printf("######## start privateHandle %s\n", r.URL.Path)
+			if !privateHandle(userFromToken.UserName, w, r) {
+				writeResponse(w, http.StatusBadRequest, fmt.Sprintf("not allow access uri %s", r.URL.Path))
+				return
+			}
+			fmt.Printf("######## allow access uri %s\n", r.URL.Path)
 
 			r.Header.Set(common.HttpRequestUserHeaderKey, userFromToken.UserName)
 			// Config
