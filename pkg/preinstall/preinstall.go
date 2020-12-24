@@ -57,19 +57,6 @@ func InitGatewayInstallConfigure(name string, check auth.PrivateCheckerType, log
 			plugin.WithName("auth"),
 			plugin.WithHandler(
 				auth.JWTAuthWrapper(gwic.Token, check, loginHandle),
-				func(h http.Handler) http.Handler {
-					return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						w.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
-						w.Header().Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization")
-						w.Header().Add("Access-Control-Allow-Origin", "*")
-
-						if r.Method == "OPTIONS" {
-							w.WriteHeader(http.StatusOK)
-						}
-
-						h.ServeHTTP(w, r)
-					})
-				},
 			),
 			plugin.WithFlag(
 				defaultETCDFlag(),
