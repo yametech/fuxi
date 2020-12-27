@@ -49,7 +49,8 @@ func NamespaceDelete(g *gin.Context) { workloadsAPI.DeleteNamespace(g) }
 // @Router /workload/api/v1/namespaces/:name [post]
 func NamespaceCreate(g *gin.Context) { workloadsAPI.CreateNamespace(g) }
 
-func NamespacePatchAnnotateNode(g *gin.Context) { workloadsAPI.PatchAnnotateNodeNamespace(g) }
+func NamespacePatchAnnotateNetworkAttach(g *gin.Context) { workloadsAPI.PatchAnnotateNetworkAttach(g) }
+func NamespacePatchAnnotateNode(g *gin.Context)          { workloadsAPI.PatchAnnotateNodeNamespace(g) }
 func NamespacePatchAnnotateStorageClass(g *gin.Context) {
 	workloadsAPI.PatchAnnotateStorageClassNamespace(g)
 }

@@ -25,4 +25,6 @@ const (
 	// NamespaceAnnotationForNodeResource
 	// eg: nuwa.kubernetes.io/default_storage_limit: '["a","b","c"]'
 	NamespaceAnnotationForStorageClass = "fuxi.kubernetes.io/default_storage_limit"
+	// eg: k8s.v1.cni.cncf.io/namespaces: macvlan-class
+	NamespaceAnnotationForNetworkAttach = "k8s.v1.cni.cncf.io/namespaces"
 )

@@ -14,9 +14,10 @@ import (
 )
 
 type patchAnnotateData struct {
-	Namespace      string   `json:"namespace"`
-	Nodes          []string `json:"nodes"`
-	StorageClasses []string `json:"storageClasses"`
+	Namespace         string   `json:"namespace"`
+	Nodes             []string `json:"nodes"`
+	StorageClasses    []string `json:"storageClasses"`
+	NetworkAttachment string   `json:"networkAttachment"`
 }
 
 func jsonPatchData(o interface{}) (string, error) {
@@ -48,6 +49,39 @@ func (w *WorkloadsAPI) PatchAnnotateStorageClassNamespace(g *gin.Context) {
 		"metadata": map[string]interface{}{
 			"annotations": map[string]string{
 				consts.NamespaceAnnotationForStorageClass: patchNodeListValue,
+			},
+		},
+	}
+	_, err = w.namespace.Patch("", pad.Namespace, patchData)
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+
+	g.JSON(http.StatusOK, "")
+}
+
+func (w *WorkloadsAPI) PatchAnnotateNetworkAttach(g *gin.Context) {
+	rawData, err := g.GetRawData()
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+	pad := patchAnnotateData{}
+	err = json.Unmarshal(rawData, &pad)
+	if err != nil {
+		common.ToRequestParamsError(g, err)
+		return
+	}
+
+	if err != nil {
+		common.ToInternalServerError(g, "", err)
+		return
+	}
+	patchData := map[string]interface{}{
+		"metadata": map[string]interface{}{
+			"annotations": map[string]string{
+				consts.NamespaceAnnotationForNetworkAttach: pad.NetworkAttachment,
 			},
 		},
 	}
