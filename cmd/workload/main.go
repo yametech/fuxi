@@ -76,8 +76,6 @@ func WrapH(h http.Handler) gin.HandlerFunc {
 	}
 }
 
-
-
 func main() {
 	// #api
 	// #v1
@@ -398,6 +396,7 @@ func main() {
 		group.DELETE("/api/v1/namespaces/:namespace", NamespaceDelete)
 		group.POST("/namespaces/annotation/node", NamespacePatchAnnotateNode)
 		group.POST("/namespaces/annotation/storageclass", NamespacePatchAnnotateStorageClass)
+		group.POST("/namespaces/annotation/networkattachment", NamespacePatchAnnotateNetworkAttach)
 	}
 
 	// post  workload/stack
