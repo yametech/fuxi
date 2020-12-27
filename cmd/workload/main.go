@@ -10,6 +10,7 @@ import (
 	"github.com/yametech/fuxi/pkg/app/helm"
 	"helm.sh/helm/v3/pkg/action"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/util/log"
 	"github.com/micro/go-micro/web"
@@ -75,12 +76,15 @@ func WrapH(h http.Handler) gin.HandlerFunc {
 	}
 }
 
+
+
 func main() {
 	// #api
 	// #v1
 	// Pod
 	{
 		serveHttp := WrapH(handler.CreateAttachHandler("/workload/shell/pod"))
+		pprof.Register(router)
 		router.GET("/workload/shell/pod/*path", serveHttp)
 		group.GET("/attach/namespace/:namespace/pod/:name/container/:container/:shelltype", PodAttach)
 
