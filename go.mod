@@ -32,7 +32,6 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kubeapps/kubeapps v1.11.3
 	github.com/mailru/easyjson v0.7.1 // indirect
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.8 // indirect
 	github.com/micro/cli v0.2.0
 	github.com/micro/go-micro v1.16.0
