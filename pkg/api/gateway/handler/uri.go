@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -65,11 +66,22 @@ func (f *uriFilter) ParseQuery(uri string) (service, resourceType, namespaceName
 		// need to distinguish the url of api/apis
 
 		// /workload/api/v1/namespaces/im-test/secrets/default-token-l7mgh
-		if strings.HasPrefix(uri, "/workload/api") {
+		matchAPI, matchErr := regexp.MatchString("/*/api", uri)
+		if err != nil {
+			err = matchErr
+			return
+		}
+		if matchAPI {
 			service, namespaceName, resourceType, resourceName = uriItems[0], uriItems[4], uriItems[5], uriItems[6]
 		}
+
+		matchAPIS, matchErr := regexp.MatchString("/*/apis", uri)
+		if err != nil {
+			err = matchErr
+			return
+		}
 		// /workload/apis/nuwa.nip.io/v1/namespaces/im-ops/stones
-		if strings.HasPrefix(uri, "/workload/apis") {
+		if matchAPIS {
 			service, namespaceName, resourceType = uriItems[0], uriItems[5], uriItems[6]
 		}
 
